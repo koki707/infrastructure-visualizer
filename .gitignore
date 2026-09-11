@@ -1,0 +1,26 @@
+# Dependencies and production output
+node_modules/
+dist/
+.pnpm-store/
+pnpm-store/
+
+# Local environment configuration (keep examples trackable)
+.env
+.env.*
+!.env.example
+
+# Local tools and generated output
+outputs/
+work/
+.wrangler/
+.vite/
+coverage/
+*.log
+*.tsbuildinfo
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

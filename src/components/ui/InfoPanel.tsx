@@ -1,0 +1,4 @@
+import type { NetworkNode } from '../../types/network'
+import { GlossaryText } from './GlossaryText'
+
+export function InfoPanel({ node, sending, onExplore, onOpenTerm }: { node: NetworkNode; sending: boolean; onExplore: () => void; onOpenTerm: (termId: string) => void }) { return <section className="panel p-5"><p className="eyebrow">{sending ? '現在地' : '選択中'}</p><h2 className="mt-2 text-xl font-bold text-slate-900">{node.name}</h2><p className="mt-1 text-sm text-cyan-700"><GlossaryText text={node.detail} onOpenTerm={onOpenTerm} /></p><p className="mt-4 text-sm leading-6 text-slate-700"><GlossaryText text={node.description} onOpenTerm={onOpenTerm} /></p><button onClick={onExplore} className="mt-4 w-full rounded-lg border border-cyan-600 bg-cyan-50 px-3 py-2.5 text-sm font-bold text-cyan-700 transition hover:bg-cyan-100">内部を見る →</button></section> }

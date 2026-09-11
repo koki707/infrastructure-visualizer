@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Add a Sitemap directive after generating sitemap.xml with SITE_URL for the public domain.

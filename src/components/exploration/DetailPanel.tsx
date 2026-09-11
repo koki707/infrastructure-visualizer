@@ -1,0 +1,4 @@
+import type { ExplorationWorld } from '../../types/exploration'
+import { GlossaryText } from '../ui/GlossaryText'
+
+export function DetailPanel({ world, selectedId, onOpenTerm }: { world: ExplorationWorld; selectedId: string | null; onOpenTerm: (termId: string) => void }) { const item = world.items.find(value => value.id === selectedId); return <section className="panel p-5"><p className="eyebrow">現在見ているもの</p><h2 className="mt-2 text-xl font-bold text-slate-900">{item?.title ?? world.title}</h2><p className="mt-3 text-sm leading-6 text-slate-700"><GlossaryText text={item?.description ?? world.lead} onOpenTerm={onOpenTerm} /></p>{world.note && <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900"><GlossaryText text={world.note} onOpenTerm={onOpenTerm} /></p>}<p className="mt-4 text-xs text-slate-500">光る要素をクリックすると、より詳しい世界へ進めます。</p></section> }

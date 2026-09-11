@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base { body { margin: 0; min-width: 320px; background: #f8fafc; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; } * { box-sizing: border-box; } button, a, select { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2; } }
+@keyframes enter-world { from { opacity: .2; transform: scale(.975); } to { opacity: 1; transform: scale(1); } }
+@layer components {
+  .panel { @apply rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-200/80; }
+  .eyebrow { @apply text-[10px] font-bold tracking-[.16em] text-cyan-700; }
+  .world-transition { animation: enter-world .55s ease-out; }
+  .flow-node { @apply rounded-xl border px-4 py-3 text-sm font-bold shadow-sm; }
+  .flow-node span { @apply mt-1 block text-xs font-normal; }
+  .flow-node-pc { @apply border-sky-200 bg-sky-50 text-sky-900; }
+  .flow-node-router { @apply border-violet-200 bg-violet-50 text-violet-900; }
+  .flow-node-server { @apply border-emerald-200 bg-emerald-50 text-emerald-900; }
+  .flow-line { @apply mx-auto h-4 w-px bg-cyan-300; }
+}
