@@ -127,14 +127,40 @@ const DEEP_DIVES: Record<string, GlossaryDetailSection[]> = {
     { title: 'アドレス変換', body: 'NATはパケットのIPアドレスを書き換える仕組みです。家庭用ルーターでは、Portもあわせて変換するNAPTが使われることが一般的です。' },
     { title: '対応表を持つ', body: 'NAPTでは、内部の送信元IP・Portと外部側のIP・Portの対応をルーターが保持します。返信パケットはこの対応表を使って、家庭内の適切な端末へ戻されます。' },
   ],
+  arp: [
+    { title: '遠いサーバーのMACを調べるのではない', body: '宛先IPが同じIPネットワークにない場合、PCは通常、次の中継先であるDefault GatewayのMACアドレスを調べます。WebサーバーのMACアドレスをインターネット越しに取得するものではありません。' },
+    { title: 'RequestとReplyの違い', body: 'ARP Requestは同一のブロードキャストドメイン内へ送られます。対象のIPアドレスを持つ機器は、通常、自分のMACアドレスを含むARP Replyを問い合わせ元へ返します。ARPはルーターを越えて転送されません。' },
+  ],
+  cidr: [
+    { title: 'Prefixの意味', body: 'CIDRの /24 のような数字は、アドレスの先頭から何ビットをネットワークの識別に使うかを示します。IPv4では残りのビットが、そのネットワーク内のホストを区別するために使われます。' },
+    { title: '経路をまとめる', body: 'CIDRを使うと、似た宛先を1つのPrefixでまとめてRouting Tableへ登録できます。これにより、個々の端末ごとの経路を大量に並べずに済みます。' },
+  ],
+  'routing-table': [
+    { title: '何を持つ？', body: 'Routing Tableには、宛先Prefix、次に送る中継先（Next Hop）、送出に使うInterfaceなどが記録されます。実際にはメトリックや経路の由来など、さらに多くの情報を持つことがあります。' },
+    { title: '最長一致', body: '複数の経路が宛先に一致する場合、通常はより長いPrefix、つまりより具体的なネットワークを表す経路を選びます。これをLongest Prefix Matchと呼びます。' },
+  ],
+  'longest-prefix-match': [
+    { title: 'より具体的な住所を優先する', body: '10.0.0.0/8 と 10.20.0.0/16 の両方に 10.20.3.18 が一致する場合、/16 のほうが先頭ビットをより多く指定しており、より具体的なので選ばれます。' },
+  ],
+  'default-gateway': [
+    { title: 'LANの外へ出る入口', body: 'PCは宛先が自分と同じIPネットワークにないと判断すると、通常はDefault Gatewayへパケットを送ります。Gatewayはルーターであり、次のネットワークに向けて経路選択を行います。' },
+  ],
+  napt: [
+    { title: 'NATとの関係', body: 'NATはアドレス変換を広く指す言葉です。送信元または宛先のIPアドレスに加え、Transport層のPortも変換して複数の通信を区別する代表例をNAPTと呼びます。' },
+    { title: '返信を戻すには', body: 'ルーターは内部側と外部側のIP・Portの組を対応表として保持します。外部から戻るパケットは、その対応表を使って内部の正しい端末・通信へ振り分けられます。' },
+  ],
+  dhcp: [
+    { title: '何を渡す？', body: 'DHCPはIPアドレスだけでなく、Subnet Mask、Default Gateway、DNS Serverなどの設定を端末へ配布できます。配布内容と期限はネットワークの運用方針によって異なります。' },
+    { title: '代表的な流れ', body: 'IPv4では、DHCP Discover、Offer、Request、ACKというメッセージ交換を代表例として説明することがあります。実際の再取得や更新、Relayの有無などで流れは変わります。' },
+  ],
 }
 
 const TERM_CATEGORIES: Record<string, GlossaryCategoryId> = {
   alu: 'computer',
   url: 'web', dns: 'web', http: 'web', https: 'web', tls: 'web',
   tcp: 'transport', udp: 'transport', syn: 'transport', ack: 'transport',
-  ip: 'ip-routing', ipv4: 'ip-routing', ipv6: 'ip-routing', router: 'ip-routing', nat: 'ip-routing',
-  ethernet: 'link', mac: 'link', nic: 'link', lan: 'link', switch: 'link', wifi: 'link', fcs: 'link',
+  ip: 'ip-routing', ipv4: 'ip-routing', ipv6: 'ip-routing', router: 'ip-routing', nat: 'ip-routing', napt: 'ip-routing', cidr: 'ip-routing', 'routing-table': 'ip-routing', 'longest-prefix-match': 'ip-routing', 'default-gateway': 'ip-routing', dhcp: 'ip-routing',
+  ethernet: 'link', mac: 'link', nic: 'link', lan: 'link', switch: 'link', wifi: 'link', fcs: 'link', arp: 'link',
   isp: 'access', ftth: 'access', onu: 'access', ont: 'access',
 }
 
@@ -165,6 +191,13 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   { id: 'ack', term: 'ACK', expansion: 'Acknowledgment', summary: 'TCPヘッダのフラグの1つで、受信確認を表します。', why: '相手から届いたデータや接続開始要求を確認し、TCPの信頼性を支えるためです。', related: ['TCP', 'SYN'], matches: ['ACK'] },
   { id: 'fcs', term: 'FCS', expansion: 'Frame Check Sequence', summary: 'Ethernet Frameの末尾に置かれる誤り検出用の値です。Ethernetでは通常CRCを利用します。', why: 'リンク上を流れる間にフレームが壊れていないかを受信側が検査するためです。誤りを検出したフレームは通常破棄され、Ethernet自体が再送を保証するわけではありません。', related: ['Ethernet', 'Ethernet Frame', 'TCP'], matches: ['FCS'] },
   { id: 'nat', term: 'NAT', expansion: 'Network Address Translation', summary: 'プライベートIPアドレスとグローバルIPアドレスなどを変換する仕組みです。', why: '家庭内の複数機器がインターネット接続を共有する場面などで使われます。', related: ['IP', 'Router'], matches: ['NAT'] },
+  { id: 'arp', term: 'ARP', expansion: 'Address Resolution Protocol', summary: 'IPv4の同一リンク内で、IPアドレスに対応するMACアドレスを調べるための仕組みです。', why: 'Ethernet Frameを次の相手へ送るにはMACアドレスが必要です。PCがIPアドレスしか知らないとき、ARPがその対応を知る手がかりになります。', related: ['MAC', 'Ethernet', 'Switch', 'Router', 'IPv4'], matches: ['ARP'] },
+  { id: 'cidr', term: 'CIDR', expansion: 'Classless Inter-Domain Routing', summary: 'IPアドレスのネットワーク部分をPrefix長で表し、経路をまとめる方法です。例：192.168.1.0/24。', why: 'ネットワークのまとまりを表してRouting Tableを効率よく扱い、ルーターが宛先に合う経路を選べるようにするためです。', related: ['IPv4', 'Routing Table', 'Longest Prefix Match'], matches: ['CIDR'] },
+  { id: 'routing-table', term: 'Routing Table', summary: 'ルーターなどが、宛先Prefix・Next Hop・Interfaceなどを記録し、次の転送先を選ぶための表です。', why: '宛先IPアドレスだけでは次にどこへ送るか決まりません。対応する経路の情報を保持する必要があります。', related: ['Router', 'CIDR', 'Longest Prefix Match', 'Default Gateway'], matches: ['Routing Table', 'ルーティングテーブル'] },
+  { id: 'longest-prefix-match', term: 'Longest Prefix Match', summary: '複数の経路が宛先IPアドレスに一致するとき、通常は最も長いPrefixを持つ、より具体的な経路を選ぶ考え方です。', why: '広いネットワーク向けの一般的な経路と、より狭いネットワーク向けの個別の経路を共存させるためです。', related: ['Routing Table', 'CIDR', 'Router'], matches: ['Longest Prefix Match', '最長一致'] },
+  { id: 'default-gateway', term: 'Default Gateway', summary: 'PCが自分と異なるIPネットワークにある宛先へ送るとき、通常最初に渡すルーターです。', why: 'LAN内に直接いない相手へ送るには、次のネットワークに出るための入口が必要です。', related: ['Router', 'ARP', 'IPv4'], matches: ['Default Gateway', 'デフォルトゲートウェイ'] },
+  { id: 'napt', term: 'NAPT', expansion: 'Network Address and Port Translation', summary: 'IPアドレスに加えてPortも変換し、複数の内部通信を外部側のアドレス・Portと対応付ける仕組みです。', why: '1つまたは少数の外部側IPアドレスを複数端末で共有する場合に、返信をどの通信へ戻すか区別するためです。', related: ['NAT', 'TCP', 'Router'], matches: ['NAPT'] },
+  { id: 'dhcp', term: 'DHCP', expansion: 'Dynamic Host Configuration Protocol', summary: '端末へIPアドレスやDefault Gateway、DNS Serverなどのネットワーク設定を配布する仕組みです。', why: '端末ごとに設定を手作業で入力せず、ネットワークへ参加するために必要な情報を管理しやすくするためです。', related: ['IPv4', 'Default Gateway', 'DNS'], matches: ['DHCP'] },
 ].map(term => ({ ...term, category: TERM_CATEGORIES[term.id] ?? 'link', deepDive: DEEP_DIVES[term.id] ?? [] }))
 
 export function glossaryTermsFor(context: string[]) {

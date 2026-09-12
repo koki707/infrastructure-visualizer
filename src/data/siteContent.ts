@@ -1,7 +1,7 @@
 export const SITE = {
   name: 'Infrastructure Simulator',
   japaneseName: 'ITインフラシミュレーション',
-  description: 'PCからサーバーまで、Webアクセスの裏側で起きている通信処理を3Dシミュレーションで学べる教育用Webアプリ。',
+  description: 'Webアクセスを入口に、IT・コンピュータの見えない仕組みをシミュレーションで学べる教育用Webアプリ。',
 } as const
 
 /** Public contact endpoint set by the deployer; never used by the URL simulation. */
@@ -31,7 +31,7 @@ export const TOPIC_GROUPS = [
 ] as const
 
 export const NEXT_TOPIC_GROUPS = [
-  { title: 'ARP', body: 'IPアドレスをもとに、同一リンクで使うMACアドレスをどのように知るかを扱う予定です。' },
-  { title: 'NAT / NAPT', body: '家庭内のPrivate IPと、インターネット側で使うPublic IP・Portの変換を扱う予定です。' },
-  { title: 'DHCP', body: 'PCがIPアドレスなどの設定を取得する流れを扱う予定です。' },
+  { title: 'DHCP', body: 'PCがIPアドレス、Default Gateway、DNS Serverなどの設定を取得する流れを扱う予定です。' },
+  { title: 'IPv6', body: 'IPv6のアドレス表記、Neighbor Discovery、IPv4との併用を扱う予定です。' },
+  { title: 'Firewall', body: '通信を許可・拒否する判断と、ルールの読み方を扱う予定です。' },
 ] as const

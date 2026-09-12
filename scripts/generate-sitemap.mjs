@@ -17,7 +17,7 @@ try {
   process.exit(1)
 }
 
-const routes = ['/', '/visualizer', '/glossary', '/about', '/guide', '/topics', '/notes', '/privacy', '/terms']
+const routes = ['/', '/visualizer', '/topics', '/learn/arp', '/learn/routing', '/learn/nat-napt', '/glossary', '/about', '/guide', '/notes', '/privacy', '/terms']
 const xmlEscape = (value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((route) => `  <url><loc>${xmlEscape(new URL(route, baseUrl).toString())}</loc></url>`).join('\n')}\n</urlset>\n`
 

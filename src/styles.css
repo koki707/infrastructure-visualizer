@@ -13,4 +13,13 @@
   .flow-node-router { @apply border-violet-200 bg-violet-50 text-violet-900; }
   .flow-node-server { @apply border-emerald-200 bg-emerald-50 text-emerald-900; }
   .flow-line { @apply mx-auto h-4 w-px bg-cyan-300; }
+  .lesson-device { @apply min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-center text-xs text-slate-600 transition duration-200; }
+  .lesson-device b { @apply mt-2 block text-sm text-slate-900; }
+  .lesson-device span:last-child { @apply mt-1 block break-words font-mono text-[10px] text-slate-500; }
+  .lesson-device-icon { @apply mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-extrabold tracking-wide; }
+  .lesson-device-active { @apply border-cyan-400 bg-cyan-50 shadow-sm shadow-cyan-100; }
+  .lesson-device-amber { @apply border-amber-400 bg-amber-50 shadow-sm shadow-amber-100; }
+  .lesson-arrow { @apply hidden text-center text-2xl font-bold text-slate-300 transition duration-200 md:block; }
+  .lesson-arrow-active { @apply text-cyan-600; }
+  .lesson-arrow-amber { @apply text-amber-600; }
 }
