@@ -4,6 +4,9 @@ import { LEARNING_TOPIC_BY_ID } from '../../data/learningTopics'
 import type { LearningTopic } from '../../types/learning'
 import type { Navigate } from '../site/SiteLayout'
 import { GlossaryText } from '../ui/GlossaryText'
+import { DhcpLesson } from './DhcpLesson'
+import { FirewallLesson } from './FirewallLesson'
+import { Ipv6Lesson } from './Ipv6Lesson'
 
 type LessonProps = {
   topic: LearningTopic
@@ -155,7 +158,11 @@ function NatLesson({ onNavigate }: Pick<LessonProps, 'onNavigate'>) {
 function LessonBody({ topic, onNavigate }: LessonProps) {
   if (topic.id === 'arp') return <ArpLesson onNavigate={onNavigate} />
   if (topic.id === 'routing') return <RoutingLesson onNavigate={onNavigate} />
-  return <NatLesson onNavigate={onNavigate} />
+  if (topic.id === 'nat-napt') return <NatLesson onNavigate={onNavigate} />
+  if (topic.id === 'dhcp') return <DhcpLesson onNavigate={onNavigate} />
+  if (topic.id === 'ipv6') return <Ipv6Lesson onNavigate={onNavigate} />
+  if (topic.id === 'firewall') return <FirewallLesson onNavigate={onNavigate} />
+  return <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm leading-7 text-slate-600">この教材の図解は準備中です。</section>
 }
 
 export function LearningTopicContent({ topic, onNavigate }: LessonProps) {

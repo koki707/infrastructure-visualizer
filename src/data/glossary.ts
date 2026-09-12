@@ -3,6 +3,7 @@ import type { GlossaryCategory, GlossaryCategoryId, GlossaryDetailSection, Gloss
 export const GLOSSARY_CATEGORIES: GlossaryCategory[] = [
   { id: 'computer', title: 'コンピュータ内部', description: 'CPUや命令実行など、PCの中で起きる処理です。' },
   { id: 'web', title: 'Webアクセス', description: 'URLからHTTP/HTTPSでWebサーバーへ届くまでに関係する用語です。' },
+  { id: 'security', title: 'セキュリティ', description: '通信やサービスを守るための、許可判断や防御に関係する用語です。' },
   { id: 'network', title: 'ネットワーク通信', description: 'データを端末からネットワークへ運ぶ仕組みをまとめた上位分類です。' },
   { id: 'transport', title: 'トランスポート層', description: 'TCPやUDP、ポート番号、到達確認に関係する用語です。', parent: 'network' },
   { id: 'ip-routing', title: 'IPとルーティング', description: 'IPアドレス、経路選択、NATなど、ネットワークを越える配送に関係する用語です。', parent: 'network' },
@@ -153,15 +154,28 @@ const DEEP_DIVES: Record<string, GlossaryDetailSection[]> = {
     { title: '何を渡す？', body: 'DHCPはIPアドレスだけでなく、Subnet Mask、Default Gateway、DNS Serverなどの設定を端末へ配布できます。配布内容と期限はネットワークの運用方針によって異なります。' },
     { title: '代表的な流れ', body: 'IPv4では、DHCP Discover、Offer、Request、ACKというメッセージ交換を代表例として説明することがあります。実際の再取得や更新、Relayの有無などで流れは変わります。' },
   ],
+  ndp: [
+    { title: 'ARPとの違い', body: 'NDPはIPv6で近隣の機器やルーターを見つけるためにICMPv6を利用する仕組みです。IPv4のARPと目的が近い部分はありますが、メッセージ形式や扱う役割は同じではありません。' },
+    { title: 'LANでの役割', body: 'NDPには近隣探索のほか、ルーターの発見やアドレス設定に関係する機能があります。実際の動作は端末、ルーター、ネットワークの設定により異なります。' },
+  ],
+  port: [
+    { title: 'IPアドレスだけでは足りない理由', body: 'IPアドレスは端末やネットワークへの配送先を示します。同じ端末上の複数の通信先を区別するため、TCPやUDPではPort番号を組み合わせます。' },
+    { title: '通信を区別する組み合わせ', body: 'TCP/UDPの通信は、送信元IP・送信元Port・宛先IP・宛先PortとProtocolの組み合わせで区別できます。Port番号だけで「アプリケーションそのもの」を一意に表すわけではありません。' },
+  ],
+  firewall: [
+    { title: '何を見て判断する？', body: 'Firewallは送信元・宛先のIPアドレス、Protocol、Port、通信の向き、接続状態などを条件として、定義されたルールと照合します。どの条件を使うかは製品・設定・配置によって異なります。' },
+    { title: 'StatefulとStateless', body: 'Stateful Firewallは接続の状態を記録し、たとえば許可した通信への返信を区別できます。Statelessなフィルタは各パケットを個別に評価します。どちらが使われるかでルールの書き方や挙動は変わります。' },
+  ],
 }
 
 const TERM_CATEGORIES: Record<string, GlossaryCategoryId> = {
   alu: 'computer',
   url: 'web', dns: 'web', http: 'web', https: 'web', tls: 'web',
-  tcp: 'transport', udp: 'transport', syn: 'transport', ack: 'transport',
+  tcp: 'transport', udp: 'transport', syn: 'transport', ack: 'transport', port: 'transport',
   ip: 'ip-routing', ipv4: 'ip-routing', ipv6: 'ip-routing', router: 'ip-routing', nat: 'ip-routing', napt: 'ip-routing', cidr: 'ip-routing', 'routing-table': 'ip-routing', 'longest-prefix-match': 'ip-routing', 'default-gateway': 'ip-routing', dhcp: 'ip-routing',
-  ethernet: 'link', mac: 'link', nic: 'link', lan: 'link', switch: 'link', wifi: 'link', fcs: 'link', arp: 'link',
+  ethernet: 'link', mac: 'link', nic: 'link', lan: 'link', switch: 'link', wifi: 'link', fcs: 'link', arp: 'link', ndp: 'link',
   isp: 'access', ftth: 'access', onu: 'access', ont: 'access',
+  firewall: 'security',
 }
 
 export const GLOSSARY_TERMS: GlossaryTerm[] = [
@@ -170,6 +184,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   { id: 'dns', term: 'DNS', expansion: 'Domain Name System', summary: 'ドメイン名（example.com）を、IPアドレスなどの情報へ対応付ける仕組みです。このシミュレーションではA / AAAAレコードによるIPアドレス取得を代表例として扱います。', why: 'ネットワーク上ではIPアドレスを使って配送するため、人が読みやすい名前を対応する情報へ変換する必要があります。', related: ['IP', 'DNS Server'], matches: ['DNS'] },
   { id: 'tcp', term: 'TCP', expansion: 'Transmission Control Protocol', summary: 'アプリケーション間で、順序・到達・再送などを扱うトランスポート層のプロトコルです。', why: 'IPだけでは、順番どおりに届いたかや失われたかを保証しません。TCPがその上の信頼性を担います。', related: ['IP', 'Port', 'SYN', 'ACK'], matches: ['TCP'] },
   { id: 'udp', term: 'UDP', expansion: 'User Datagram Protocol', summary: '接続確立や再送を標準では行わない、軽量なトランスポート層プロトコルです。', why: 'アプリケーション側で必要な制御を選べるため、用途によってはTCPより適しています。速さが必ず保証されるわけではありません。', related: ['TCP', 'DNS'], matches: ['UDP'] },
+  { id: 'port', term: 'Port', summary: 'TCPやUDPで、同じ端末内の通信先を区別するために使われる16ビットの番号です。', why: 'IPアドレスだけでは端末までしか配送先を絞れません。複数の通信を区別するために、送信元・宛先のPort番号も組み合わせます。', related: ['TCP', 'UDP', 'IP'], matches: ['Port', 'ポート番号'] },
   { id: 'ip', term: 'IP', expansion: 'Internet Protocol', summary: '異なるネットワークをまたいで、宛先IPアドレスに向けてパケットを配送する仕組みです。', why: 'ルーターが宛先を見て次の経路を選べるように、ネットワークを越えて共通に使える住所が必要です。', related: ['IPv4', 'IPv6', 'Router'], matches: ['IP', 'IPv4', 'IPv6'] },
   { id: 'ipv4', term: 'IPv4', expansion: 'Internet Protocol version 4', summary: '32ビットのIPアドレスを使う、広く利用されているIPの版です。例：192.0.2.1。', why: '宛先ネットワークと宛先ホストを区別し、ルーターが配送先を決める基準になります。', related: ['IP', 'Router'], matches: ['IPv4'] },
   { id: 'ipv6', term: 'IPv6', expansion: 'Internet Protocol version 6', summary: '128ビットのIPアドレスを使う、IPv4の後継となるIPの版です。', why: 'IPv4アドレスの不足などを背景に設計され、IPv4とは別のアドレス形式と運用上の特徴があります。', related: ['IP', 'IPv4'], matches: ['IPv6'] },
@@ -198,6 +213,8 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   { id: 'default-gateway', term: 'Default Gateway', summary: 'PCが自分と異なるIPネットワークにある宛先へ送るとき、通常最初に渡すルーターです。', why: 'LAN内に直接いない相手へ送るには、次のネットワークに出るための入口が必要です。', related: ['Router', 'ARP', 'IPv4'], matches: ['Default Gateway', 'デフォルトゲートウェイ'] },
   { id: 'napt', term: 'NAPT', expansion: 'Network Address and Port Translation', summary: 'IPアドレスに加えてPortも変換し、複数の内部通信を外部側のアドレス・Portと対応付ける仕組みです。', why: '1つまたは少数の外部側IPアドレスを複数端末で共有する場合に、返信をどの通信へ戻すか区別するためです。', related: ['NAT', 'TCP', 'Router'], matches: ['NAPT'] },
   { id: 'dhcp', term: 'DHCP', expansion: 'Dynamic Host Configuration Protocol', summary: '端末へIPアドレスやDefault Gateway、DNS Serverなどのネットワーク設定を配布する仕組みです。', why: '端末ごとに設定を手作業で入力せず、ネットワークへ参加するために必要な情報を管理しやすくするためです。', related: ['IPv4', 'Default Gateway', 'DNS'], matches: ['DHCP'] },
+  { id: 'ndp', term: 'NDP', expansion: 'Neighbor Discovery Protocol', summary: 'IPv6の同一リンク内で、近隣機器やルーターを見つけるためにICMPv6を利用する仕組みです。', why: 'IPv6で次の相手へデータを送るには、近隣機器やルーターの情報を知る必要があります。IPv4のARPとは別の仕組みです。', related: ['IPv6', 'ARP', 'Router'], matches: ['NDP', 'Neighbor Discovery Protocol'] },
+  { id: 'firewall', term: 'Firewall', summary: '通信の条件をルールと照合し、許可・拒否などを判断する防御の仕組みです。', why: '公開するサービスやネットワークへ届く通信を必要な範囲に絞り、不要な到達を減らすためです。Firewallだけで安全性をすべて保証するものではありません。', related: ['IP', 'TCP', 'Port', 'Router'], matches: ['Firewall', 'ファイアウォール'] },
 ].map(term => ({ ...term, category: TERM_CATEGORIES[term.id] ?? 'link', deepDive: DEEP_DIVES[term.id] ?? [] }))
 
 export function glossaryTermsFor(context: string[]) {

@@ -31,7 +31,7 @@ export const TOPIC_GROUPS = [
 ] as const
 
 export const NEXT_TOPIC_GROUPS = [
-  { title: 'DHCP', body: 'PCがIPアドレス、Default Gateway、DNS Serverなどの設定を取得する流れを扱う予定です。' },
-  { title: 'IPv6', body: 'IPv6のアドレス表記、Neighbor Discovery、IPv4との併用を扱う予定です。' },
-  { title: 'Firewall', body: '通信を許可・拒否する判断と、ルールの読み方を扱う予定です。' },
+  { title: 'DNS Resolver', body: '名前を問い合わせた先で、キャッシュや権威DNSがどのように関わるかを深める予定です。' },
+  { title: 'ICMP', body: '到達確認やエラー通知が、IP通信の観測にどう役立つかを扱う予定です。' },
+  { title: 'QUIC / HTTP/3', body: 'TCP + TLSとは異なる、UDP上のQUICを利用するWeb通信の代表例を扱う予定です。' },
 ] as const

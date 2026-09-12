@@ -4,7 +4,7 @@ Webアクセスを入口に、PCからサーバーまでの通信やIT・コン�
 
 > 見えないITインフラを、見て・触って・中に入って理解する。
 
-URL選択、DNS、TCP、TLS、HTTP、Ethernet、PC内部、ルーター内部などを、ブラウザ内だけで動く教育用モデルとして表示します。さらに、ARP、CIDRによる経路選択、NAT / NAPTを操作できる図解教材として追加しています。**選択したURLへ実際にアクセスしたり、DNS問い合わせやパケット送信を行ったりすることはありません。**
+URL選択、DNS、TCP、TLS、HTTP、Ethernet、PC内部、ルーター内部などを、ブラウザ内だけで動く教育用モデルとして表示します。さらに、DHCP、ARP、CIDRによる経路選択、NAT / NAPT、IPv6、Firewallを操作できる図解教材として追加しています。**選択したURLへ実際にアクセスしたり、DNS問い合わせやパケット送信を行ったりすることはありません。**
 
 特定の資格試験の完全対策や範囲網羅を目的としたサイトではありません。教科書や文章だけではイメージしにくい仕組みを、見て・動かして理解するための学習補助ツールです。
 
@@ -16,7 +16,7 @@ URL選択、DNS、TCP、TLS、HTTP、Ethernet、PC内部、ルーター内部な
 - PC・Switch・Router・DNS Server・Web Serverの内部探索
 - Network Stack、Ethernet Frame、IPv4 Packet、TCP Segment、MAC Address、Bitsまでの階層探索
 - 階層・キーワード検索・詳細説明を備えた用語集、About、Guide、Topics、Notes、Privacy、Terms、404ページ
-- 「学習を探す」から開ける、ARP・CIDR / Longest Prefix Match・NAT / NAPTのインタラクティブ教材
+- 「学習を探す」から開ける、DHCP・ARP・CIDR / Longest Prefix Match・NAT / NAPT・IPv6・Firewallのインタラクティブ教材
 - 前提知識・関連教材・次に学ぶ内容をつなぐLearning Topicデータモデル
 
 ## 技術スタック
@@ -73,6 +73,9 @@ pnpm run preview
 | `/learn/arp` | ARPをステップで追う教材 |
 | `/learn/routing` | CIDRとLongest Prefix Matchを操作する教材 |
 | `/learn/nat-napt` | NAT / NAPTの変換を追う教材 |
+| `/learn/dhcp` | DHCPv4のDORAをステップで追う教材 |
+| `/learn/ipv6` | IPv6の表記・LANでの役割を操作して学ぶ教材 |
+| `/learn/firewall` | Firewallのルール評価を操作して学ぶ教材 |
 | `/notes` | 教材上の注意・簡略化 |
 | `/privacy` | プライバシーについて |
 | `/terms` | 利用規約 |
@@ -102,8 +105,8 @@ src/
 既存の `ExplorationWorld` は、PC内部やEthernet Frameなど「3D空間へ段階的に入る」教材を担います。一方、新しい `LearningTopic` は、テーマごとに最適な表現を選ぶための小さな共通データモデルです。
 
 - 3D探索に向くもの：PC内部、ネットワークの全体像、パケットの移動
-- 2Dステップ図解に向くもの：ARP、NAT / NAPT、TCPの手順
-- 操作できる図に向くもの：CIDR / Longest Prefix Match、Routing Table
+- 2Dステップ図解に向くもの：DHCP、ARP、NAT / NAPT、TCPの手順
+- 操作できる図に向くもの：CIDR / Longest Prefix Match、Routing Table、IPv6、Firewallのルール評価
 - 文章と図を中心にするもの：仕様の比較や、将来追加する暗号・可用性の基礎
 
 新しいテーマは `src/data/learningTopics.ts` にメタデータを置き、`/learn/:id` から必要な教材だけを読み込みます。既存の3Dシミュレーションは、このサイトの代表教材として独立して維持します。

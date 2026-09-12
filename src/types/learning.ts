@@ -9,7 +9,7 @@ export type LearningCategoryId = 'network' | 'computer' | 'os' | 'database' | 's
 
 export type VisualizationType = 'interactive-2d' | 'step-animation' | '3d' | 'text-diagram'
 
-export type LearningTopicStatus = 'available' | 'planned'
+export type LearningTopicStatus = 'available' | 'partial' | 'planned'
 
 export interface LearningTopic {
   id: string
