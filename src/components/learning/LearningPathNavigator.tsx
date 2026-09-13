@@ -26,7 +26,7 @@ export function LearningPathNavigator({ topicId, onNavigate }: Props) {
       <div><p className="eyebrow">RECOMMENDED LEARNING PATH</p><h2 className="mt-2 text-lg font-bold text-slate-900">{path.title}</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700">{path.description}</p></div>
       <button type="button" onClick={() => onNavigate('/topics')} className="rounded-lg border border-cyan-300 bg-white px-3 py-2 text-xs font-bold text-cyan-800 transition hover:border-cyan-500 hover:bg-cyan-50">教材一覧へ</button>
     </div>
-    <ol className="mt-5 flex gap-2 overflow-x-auto pb-1" aria-label="Webアクセスの土台を学ぶ順番">
+    <ol className="mt-5 flex gap-2 overflow-x-auto pb-1" aria-label={`${path.title}の順番`}>
       {topics.map((item, index) => <li key={item.id} className="flex shrink-0 items-center gap-2">
         <button
           type="button"

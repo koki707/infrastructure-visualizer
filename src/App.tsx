@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { SiteFooter, SiteHeader } from './components/site/SiteLayout'
-import { AboutPage, GuidePage, HomePage, NotesPage, PAGE_META, PrivacyPage, TopicsPage } from './pages/StaticPages'
+import { AboutPage, GuidePage, HomePage, NotesPage, PAGE_META, PrivacyPage } from './pages/StaticPages'
 import { GlossaryDetailPage, GlossaryIndexPage } from './pages/GlossaryPages'
 import { GLOSSARY_TERMS } from './data/glossary'
 import { NotFoundPage, TermsPage } from './pages/PublicPages'
 import { learningTopicFromPath } from './data/learningTopics'
+import { LearningCatalogPage } from './pages/LearningCatalogPage'
 
 // New learning topics are loaded only when the user opens them. The existing
 // visualizer keeps its established state and remains independent from this route.
@@ -72,7 +73,7 @@ export default function App() {
     : glossaryTerm ? <GlossaryDetailPage key={glossaryTerm.id} term={glossaryTerm} onNavigate={navigate} />
     : path === '/about' ? <AboutPage onNavigate={navigate} />
     : path === '/guide' ? <GuidePage onNavigate={navigate} />
-      : path === '/topics' ? <TopicsPage onNavigate={navigate} />
+      : path === '/topics' ? <LearningCatalogPage onNavigate={navigate} />
         : path === '/notes' ? <NotesPage onNavigate={navigate} />
           : path === '/privacy' ? <PrivacyPage onNavigate={navigate} />
           : path === '/terms' ? <TermsPage onNavigate={navigate} />

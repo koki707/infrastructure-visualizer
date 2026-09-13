@@ -3,7 +3,7 @@ export interface GlossaryDetailSection {
   body: string
 }
 
-export type GlossaryCategoryId = 'computer' | 'web' | 'network' | 'transport' | 'ip-routing' | 'link' | 'access' | 'security'
+export type GlossaryCategoryId = 'computer' | 'os' | 'database' | 'system' | 'algorithms' | 'web' | 'network' | 'transport' | 'ip-routing' | 'link' | 'access' | 'security'
 
 export interface GlossaryCategory {
   id: GlossaryCategoryId

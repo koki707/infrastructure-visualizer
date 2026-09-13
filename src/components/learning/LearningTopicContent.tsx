@@ -1,17 +1,29 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { GLOSSARY_TERMS } from '../../data/glossary'
-import { LEARNING_TOPIC_BY_ID } from '../../data/learningTopics'
+import { LEARNING_CATEGORIES, LEARNING_TOPIC_BY_ID } from '../../data/learningTopics'
 import type { LearningTopic } from '../../types/learning'
 import type { Navigate } from '../site/SiteLayout'
 import { GlossaryText } from '../ui/GlossaryText'
-import { DhcpLesson } from './DhcpLesson'
-import { DnsLesson } from './DnsLesson'
-import { FirewallLesson } from './FirewallLesson'
-import { Ipv6Lesson } from './Ipv6Lesson'
 import { LearningPathNavigator } from './LearningPathNavigator'
-import { TcpConnectionLesson } from './TcpConnectionLesson'
 
 const ArpThreeScene = lazy(() => import('./ArpThreeScene'))
+const DhcpLesson = lazy(() => import('./DhcpLesson').then(module => ({ default: module.DhcpLesson })))
+const DnsLesson = lazy(() => import('./DnsLesson').then(module => ({ default: module.DnsLesson })))
+const CpuInstructionLesson = lazy(() => import('./CpuInstructionLesson').then(module => ({ default: module.CpuInstructionLesson })))
+const CacheMemoryLesson = lazy(() => import('./CacheMemoryLesson').then(module => ({ default: module.CacheMemoryLesson })))
+const VirtualMemoryLesson = lazy(() => import('./VirtualMemoryLesson').then(module => ({ default: module.VirtualMemoryLesson })))
+const ProcessSchedulingLesson = lazy(() => import('./ProcessSchedulingLesson').then(module => ({ default: module.ProcessSchedulingLesson })))
+const DatabaseTransactionLesson = lazy(() => import('./DatabaseTransactionLesson').then(module => ({ default: module.DatabaseTransactionLesson })))
+const DatabaseIndexLesson = lazy(() => import('./DatabaseIndexLesson').then(module => ({ default: module.DatabaseIndexLesson })))
+const TlsHandshakeLesson = lazy(() => import('./TlsHandshakeLesson').then(module => ({ default: module.TlsHandshakeLesson })))
+const DigitalSignatureLesson = lazy(() => import('./DigitalSignatureLesson').then(module => ({ default: module.DigitalSignatureLesson })))
+const LoadBalancingLesson = lazy(() => import('./LoadBalancingLesson').then(module => ({ default: module.LoadBalancingLesson })))
+const FailoverLesson = lazy(() => import('./FailoverLesson').then(module => ({ default: module.FailoverLesson })))
+const BinarySearchLesson = lazy(() => import('./BinarySearchLesson').then(module => ({ default: module.BinarySearchLesson })))
+const GraphTraversalLesson = lazy(() => import('./GraphTraversalLesson').then(module => ({ default: module.GraphTraversalLesson })))
+const Ipv6Lesson = lazy(() => import('./Ipv6Lesson').then(module => ({ default: module.Ipv6Lesson })))
+const FirewallLesson = lazy(() => import('./FirewallLesson').then(module => ({ default: module.FirewallLesson })))
+const TcpConnectionLesson = lazy(() => import('./TcpConnectionLesson').then(module => ({ default: module.TcpConnectionLesson })))
 
 type LessonProps = {
   topic: LearningTopic
@@ -198,6 +210,18 @@ function LessonBody({ topic, onNavigate }: LessonProps) {
   if (topic.id === 'dhcp') return <DhcpLesson onNavigate={onNavigate} />
   if (topic.id === 'dns-resolution') return <DnsLesson onNavigate={onNavigate} />
   if (topic.id === 'tcp-connection') return <TcpConnectionLesson onNavigate={onNavigate} />
+  if (topic.id === 'cpu-instruction-cycle') return <CpuInstructionLesson onNavigate={onNavigate} />
+  if (topic.id === 'process-scheduling') return <ProcessSchedulingLesson onNavigate={onNavigate} />
+  if (topic.id === 'database-transaction') return <DatabaseTransactionLesson onNavigate={onNavigate} />
+  if (topic.id === 'tls-handshake') return <TlsHandshakeLesson onNavigate={onNavigate} />
+  if (topic.id === 'load-balancing') return <LoadBalancingLesson onNavigate={onNavigate} />
+  if (topic.id === 'binary-search') return <BinarySearchLesson onNavigate={onNavigate} />
+  if (topic.id === 'cache-memory') return <CacheMemoryLesson onNavigate={onNavigate} />
+  if (topic.id === 'virtual-memory-paging') return <VirtualMemoryLesson onNavigate={onNavigate} />
+  if (topic.id === 'database-index') return <DatabaseIndexLesson onNavigate={onNavigate} />
+  if (topic.id === 'digital-signature') return <DigitalSignatureLesson onNavigate={onNavigate} />
+  if (topic.id === 'system-failover') return <FailoverLesson onNavigate={onNavigate} />
+  if (topic.id === 'graph-traversal') return <GraphTraversalLesson onNavigate={onNavigate} />
   if (topic.id === 'ipv6') return <Ipv6Lesson onNavigate={onNavigate} />
   if (topic.id === 'firewall') return <FirewallLesson onNavigate={onNavigate} />
   return <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm leading-7 text-slate-600">この教材の図解は準備中です。</section>
@@ -205,16 +229,32 @@ function LessonBody({ topic, onNavigate }: LessonProps) {
 
 export function LearningTopicContent({ topic, onNavigate }: LessonProps) {
   const glossaryTerms = topic.glossaryTerms.map(termId => GLOSSARY_TERMS.find(term => term.id === termId)).filter((term): term is (typeof GLOSSARY_TERMS)[number] => Boolean(term))
+  const category = LEARNING_CATEGORIES.find(item => item.id === topic.category)
+  const simulatorPath = topic.simulatorPath
+  const simulatorContext = topic.category === 'computer'
+    ? {
+        title: 'PC内部の3D探索で確かめる',
+        body: 'この教材は、CPUの命令実行を一つずつ取り出して見ています。3DシミュレーションではPC内部に入り、CPU・Memory・OS・Network Stackがどの位置で関わるかを確認できます。',
+      }
+    : topic.category === 'security'
+      ? {
+          title: 'Webアクセスシミュレーションで確かめる',
+          body: 'この教材は、通信を保護するTLSの流れを一つずつ取り出して見ています。全体の位置に戻ると、TCP接続のあとにTLSがどのようにWebアクセスへつながるかを確認できます。',
+        }
+      : {
+          title: '既存のWebアクセスシミュレーションで確かめる',
+          body: 'この教材は、URLアクセスの流れに登場する仕組みを一つだけ取り出して見ています。全体の位置に戻ると、PC・Switch・Router・Ethernet・IPがどの順で関わるかを確認できます。',
+        }
   return <>
     <section className="grid gap-6 lg:grid-cols-[1.3fr_.7fr]">
-      <div><p className="eyebrow">NETWORK LEARNING · {visualizationLabel[topic.visualization]}</p><h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{topic.title}</h1><p className="mt-5 max-w-3xl text-base leading-8 text-slate-600"><LinkedText text={topic.summary} onNavigate={onNavigate} /></p></div>
+      <div><p className="eyebrow">{category?.title ?? 'IT LEARNING'} · {visualizationLabel[topic.visualization]}</p><h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{topic.title}</h1><p className="mt-5 max-w-3xl text-base leading-8 text-slate-600"><LinkedText text={topic.summary} onNavigate={onNavigate} /></p></div>
       <aside className="rounded-2xl border border-amber-200 bg-amber-50 p-5"><p className="text-sm font-bold text-amber-950">なぜ必要？</p><p className="mt-2 text-sm leading-7 text-amber-950/85"><LinkedText text={topic.why} onNavigate={onNavigate} /></p></aside>
     </section>
     <section className="mt-9 rounded-2xl border border-slate-200 bg-white p-5"><p className="eyebrow">LEARNING GOALS</p><ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-700 sm:grid-cols-3">{topic.learningGoals.map(goal => <li key={goal} className="rounded-xl bg-slate-50 px-3 py-3"><span className="mr-2 font-bold text-cyan-700">✓</span>{goal}</li>)}</ul></section>
     <div className="mt-7"><LearningPathNavigator topicId={topic.id} onNavigate={onNavigate} /></div>
     {topic.prerequisites && topic.prerequisites.length > 0 && <div className="mt-7"><TopicLinks title="先に見ると分かりやすい教材" ids={topic.prerequisites} onNavigate={onNavigate} /></div>}
-    <div className="mt-9"><LessonBody topic={topic} onNavigate={onNavigate} /></div>
-    <section className="mt-9 rounded-2xl border border-cyan-200 bg-cyan-50 p-6"><p className="eyebrow">CONNECTION TO THE SIMULATOR</p><h2 className="mt-2 text-lg font-bold text-slate-900">既存のWebアクセスシミュレーションで確かめる</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700">この教材は、URLアクセスの流れに登場する仕組みを一つだけ取り出して見ています。全体の位置に戻ると、PC・Switch・Router・Ethernet・IPがどの順で関わるかを確認できます。</p>{topic.simulatorPath && <button type="button" onClick={() => onNavigate(topic.simulatorPath!)} className="mt-4 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-700">シミュレーションを開く</button>}</section>
+    <div className="mt-9"><Suspense fallback={<section className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm leading-7 text-slate-600">教材を準備しています…</section>}><LessonBody topic={topic} onNavigate={onNavigate} /></Suspense></div>
+    {simulatorPath && <section className="mt-9 rounded-2xl border border-cyan-200 bg-cyan-50 p-6"><p className="eyebrow">CONNECTION TO THE SIMULATOR</p><h2 className="mt-2 text-lg font-bold text-slate-900">{simulatorContext.title}</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700">{simulatorContext.body}</p><button type="button" onClick={() => onNavigate(simulatorPath)} className="mt-4 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-700">シミュレーションを開く</button></section>}
     <div className="mt-8 grid gap-4 md:grid-cols-2"><TopicLinks title="関連する教材" ids={topic.relatedTopics} onNavigate={onNavigate} /><TopicLinks title="次に学ぶ内容" ids={topic.nextTopics} onNavigate={onNavigate} /></div>
     <section className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5"><p className="text-sm font-bold text-slate-900">教材上の簡略化</p><p className="mt-2 text-sm leading-7 text-slate-600">このページは、仕組みの関係を理解しやすくするための教育用モデルです。実際の機器構成、OSの実装、設定、通信のタイミングは環境によって異なります。</p><div className="mt-4 flex flex-wrap gap-2">{glossaryTerms.map(term => <button key={term.id} type="button" onClick={() => onNavigate(`/glossary/${term.id}`)} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-cyan-800 transition hover:border-cyan-300 hover:bg-cyan-50">{term.term} を調べる</button>)}</div></section>
   </>

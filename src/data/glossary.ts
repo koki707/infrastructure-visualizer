@@ -2,6 +2,10 @@ import type { GlossaryCategory, GlossaryCategoryId, GlossaryDetailSection, Gloss
 
 export const GLOSSARY_CATEGORIES: GlossaryCategory[] = [
   { id: 'computer', title: 'コンピュータ内部', description: 'CPUや命令実行など、PCの中で起きる処理です。' },
+  { id: 'os', title: 'OS', description: 'プロセス、スケジューリング、仮想メモリなど、実行を調整する仕組みです。' },
+  { id: 'database', title: 'データベース', description: 'データの整合性、検索、同時実行を支える仕組みです。' },
+  { id: 'system', title: 'システム構成', description: '複数のサービスやサーバーを組み合わせて運用するための仕組みです。' },
+  { id: 'algorithms', title: 'アルゴリズムとデータ構造', description: '問題を効率よく解く手順と、データの持ち方に関係する用語です。' },
   { id: 'web', title: 'Webアクセス', description: 'URLからHTTP/HTTPSでWebサーバーへ届くまでに関係する用語です。' },
   { id: 'security', title: 'セキュリティ', description: '通信やサービスを守るための、許可判断や防御に関係する用語です。' },
   { id: 'network', title: 'ネットワーク通信', description: 'データを端末からネットワークへ運ぶ仕組みをまとめた上位分類です。' },
@@ -166,16 +170,87 @@ const DEEP_DIVES: Record<string, GlossaryDetailSection[]> = {
     { title: '何を見て判断する？', body: 'Firewallは送信元・宛先のIPアドレス、Protocol、Port、通信の向き、接続状態などを条件として、定義されたルールと照合します。どの条件を使うかは製品・設定・配置によって異なります。' },
     { title: 'StatefulとStateless', body: 'Stateful Firewallは接続の状態を記録し、たとえば許可した通信への返信を区別できます。Statelessなフィルタは各パケットを個別に評価します。どちらが使われるかでルールの書き方や挙動は変わります。' },
   ],
+  cpu: [
+    { title: '命令を実行する流れ', body: 'CPUはメモリから命令を読み出し、意味を解釈し、必要なデータをレジスタへ取り込み、演算や分岐を実行します。命令セットや実装によって詳細は異なります。' },
+    { title: '速さを決めるもの', body: 'クロック周波数だけでなく、命令の種類、パイプライン、キャッシュ、分岐予測、メモリ待ちなどが実行時間へ影響します。' },
+  ],
+  'program-counter': [
+    { title: '次の命令を指す目印', body: 'Program Counterは、CPUが次に取り出す命令の位置を示すための状態です。命令の幅、分岐、例外などにより、どのように更新されるかはCPUの設計で異なります。' },
+  ],
+  'instruction-register': [
+    { title: '読み出した命令を保持する', body: '教育用のCPUモデルでは、読み出した命令をInstruction Registerへ置いてDecodeすると説明することがあります。実際のCPUでは、同じ役割がパイプライン内の複数の保持場所へ分かれていることもあります。' },
+  ],
+  'control-unit': [
+    { title: '回路を協調させる', body: 'Control Unitは命令の種類に応じて、レジスタ、ALU、メモリなどをいつ使うかを制御します。独立した1つの箱とは限らず、CPU内部に分散した制御回路やマイクロコードとして実現される場合もあります。' },
+  ],
+  interrupt: [
+    { title: '通常の流れを一時的に切り替える', body: '割り込みを受けると、CPUは現在の実行状態を保存し、OSなどが用意した処理へ制御を移します。処理後に元の仕事へ戻れるよう、保存と復元が必要です。ソフトウェア例外とは区別して扱う設計もあります。' },
+  ],
+  cache: [
+    { title: 'なぜ必要？', body: 'CPUと主記憶の速度差を小さく見せるため、最近使ったデータや命令をCPUの近くに保持します。キャッシュに見つかることをcache hit、見つからないことをcache missと呼びます。' },
+  ],
+  process: [
+    { title: '実行中だけではない', body: 'プロセスは実行中・実行可能・待機などの状態を行き来します。OSは複数のプロセスへCPU時間を割り当て、入出力待ちの間には別の処理を進められます。' },
+  ],
+  'context-switch': [
+    { title: '何を切り替える？', body: 'OSは次に実行する処理を変えるとき、レジスタやプログラムカウンタなどの実行状態を保存し、別の処理の状態を復元します。これには時間がかかるため、無制限に速く切り替えられるわけではありません。' },
+  ],
+  transaction: [
+    { title: '途中の状態を見せないために', body: '複数の更新をひとまとまりとして扱い、すべて成功したときだけ確定することで、途中まで更新された不整合な状態を減らします。実際の隔離レベルや同時実行制御は製品・設定によって異なります。' },
+  ],
+  'isolation-level': [
+    { title: '同時実行時の見え方を決める', body: 'Isolation Levelは、同時に動くトランザクションの変更をどの時点で読み取れるかや、どの競合を防ぐかに関係する設定・性質です。名称が同じでも、細かな挙動はDBMSによって異なり得ます。' },
+  ],
+  mvcc: [
+    { title: '複数の版を使う考え方', body: 'MVCCでは、データの複数の版を使うことで、読み取りと更新が必要以上に互いを待たないようにします。どの版を読めるか、不要な版をいつ片付けるかはDBMSやIsolation Levelで変わります。' },
+  ],
+  'row-lock': [
+    { title: '更新対象を限定して守る', body: 'Row Lockは、特定の行を更新する間に競合する操作を調整する代表的なLockです。実際には行・ページ・表など、Lockの粒度や取得方法はDBMSと実行計画によって変わります。' },
+  ],
+  lock: [
+    { title: '同時更新との関係', body: '複数のトランザクションが同じデータを更新するとき、Lockなどの仕組みで競合を調整できます。待ち合わせが循環するとdeadlockになることがあるため、DBMSは検出や回避を行う場合があります。' },
+  ],
+  certificate: [
+    { title: '接続先を確認する材料', body: 'TLSではサーバーが証明書を提示し、クライアントは信頼できる認証局の連鎖、名前、有効期限などを検証します。暗号化だけでなく、意図した相手へ接続しているかを確かめるためにも使われます。' },
+  ],
+  'private-key': [
+    { title: '公開してはいけない鍵', body: 'Private Keyは対応するPublic Keyと組になる秘密の鍵です。TLSではサーバーが秘密鍵を持つことを署名などで示し、接続先の認証を助けます。鍵交換や暗号化への使われ方は方式とTLSの版により異なります。' },
+  ],
+  'shared-secret': [
+    { title: '双方だけが導く材料', body: 'Shared Secretは、鍵交換によってクライアントとサーバーの双方が導く秘密の値です。通常はこの値そのものを送るのではなく、そこから通信方向ごとの保護鍵を導出します。' },
+  ],
+  sni: [
+    { title: '接続したい名前を先に知らせる', body: 'SNIはTLSのClientHelloに含められる拡張で、接続したいホスト名をサーバーへ知らせます。複数のWebサイトを同じIPアドレスで運用するときに、適切な証明書を選ぶ助けになります。暗号化されたClientHelloを使う方式では保護される場合もあります。' },
+  ],
+  'load-balancer': [
+    { title: '1台に集中させない', body: 'Load Balancerは、受け取ったリクエストを複数のサーバーへ振り分けます。振り分け方式、ヘルスチェック、セッションの扱いは構成によって変わります。' },
+  ],
+  'l4-l7': [
+    { title: '判断材料の深さが異なる', body: 'L4の振り分けは、IPアドレスやPortなどのTransport層までの情報を主に扱います。L7の振り分けは、HTTPのHostやPathなどアプリケーション層の情報も条件にできます。実際に使える機能は製品と構成によって異なります。' },
+  ],
+  'session-affinity': [
+    { title: '同じ利用者を同じ送信先へ寄せる', body: 'Session Affinityは、同じ利用者からの後続リクエストを同じバックエンドへ送りやすくする仕組みです。状態を持つアプリケーションに役立つ場合がありますが、負荷の偏りや障害時の扱いも考える必要があります。' },
+  ],
+  'binary-search': [
+    { title: '半分ずつ絞る', body: '整列済みの配列で中央の値を比較し、探す範囲を半分ずつ捨てていく探索方法です。データが並んでいない場合は、この前提をそのまま使えません。' },
+  ],
+  'time-complexity': [
+    { title: '入力が増えたときの伸び方を見る', body: 'Time Complexityは、入力の大きさに対して計算回数がどのように増えるかを表す目安です。O(log n)は、二分探索のように候補をほぼ半分ずつ減らす処理で現れる代表例です。実行時間そのものは、定数項や実装、環境にも左右されます。' },
+  ],
 }
 
 const TERM_CATEGORIES: Record<string, GlossaryCategoryId> = {
-  alu: 'computer',
+  alu: 'computer', cpu: 'computer', register: 'computer', instruction: 'computer', cache: 'computer', memory: 'computer', 'program-counter': 'computer', 'instruction-register': 'computer', 'control-unit': 'computer', fetch: 'computer', decode: 'computer', execute: 'computer', writeback: 'computer', 'cache-line': 'computer', 'cache-hit': 'computer', 'cache-miss': 'computer',
+  process: 'os', thread: 'os', scheduler: 'os', 'context-switch': 'os', 'virtual-memory': 'os', paging: 'os', 'ready-queue': 'os', io: 'os', 'time-slice': 'os', interrupt: 'os', 'page-table': 'os', 'page-fault': 'os', tlb: 'os',
+  database: 'database', transaction: 'database', acid: 'database', lock: 'database', commit: 'database', rollback: 'database', index: 'database', 'isolation-level': 'database', mvcc: 'database', 'row-lock': 'database', 'b-tree': 'database', 'leaf-node': 'database', row: 'database',
+  'load-balancer': 'system', 'reverse-proxy': 'system', 'health-check': 'system', 'round-robin': 'system', 'least-connections': 'system', 'l4-l7': 'system', 'session-affinity': 'system', failover: 'system', redundancy: 'system', 'active-standby': 'system',
+  algorithm: 'algorithms', 'binary-search': 'algorithms', array: 'algorithms', 'time-complexity': 'algorithms', graph: 'algorithms', node: 'algorithms', edge: 'algorithms', bfs: 'algorithms', dfs: 'algorithms', queue: 'algorithms', stack: 'algorithms',
   url: 'web', dns: 'web', http: 'web', https: 'web', tls: 'web',
   tcp: 'transport', udp: 'transport', syn: 'transport', ack: 'transport', port: 'transport',
   ip: 'ip-routing', ipv4: 'ip-routing', ipv6: 'ip-routing', router: 'ip-routing', nat: 'ip-routing', napt: 'ip-routing', cidr: 'ip-routing', 'routing-table': 'ip-routing', 'longest-prefix-match': 'ip-routing', 'default-gateway': 'ip-routing', dhcp: 'ip-routing',
   ethernet: 'link', mac: 'link', nic: 'link', lan: 'link', switch: 'link', wifi: 'link', fcs: 'link', arp: 'link', ndp: 'link',
   isp: 'access', ftth: 'access', onu: 'access', ont: 'access',
-  firewall: 'security',
+  firewall: 'security', certificate: 'security', 'public-key': 'security', 'session-key': 'security', 'private-key': 'security', 'shared-secret': 'security', sni: 'security',
 }
 
 export const GLOSSARY_TERMS: GlossaryTerm[] = [
@@ -215,6 +290,76 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   { id: 'dhcp', term: 'DHCP', expansion: 'Dynamic Host Configuration Protocol', summary: '端末へIPアドレスやDefault Gateway、DNS Serverなどのネットワーク設定を配布する仕組みです。', why: '端末ごとに設定を手作業で入力せず、ネットワークへ参加するために必要な情報を管理しやすくするためです。', related: ['IPv4', 'Default Gateway', 'DNS'], matches: ['DHCP'] },
   { id: 'ndp', term: 'NDP', expansion: 'Neighbor Discovery Protocol', summary: 'IPv6の同一リンク内で、近隣機器やルーターを見つけるためにICMPv6を利用する仕組みです。', why: 'IPv6で次の相手へデータを送るには、近隣機器やルーターの情報を知る必要があります。IPv4のARPとは別の仕組みです。', related: ['IPv6', 'ARP', 'Router'], matches: ['NDP', 'Neighbor Discovery Protocol'] },
   { id: 'firewall', term: 'Firewall', summary: '通信の条件をルールと照合し、許可・拒否などを判断する防御の仕組みです。', why: '公開するサービスやネットワークへ届く通信を必要な範囲に絞り、不要な到達を減らすためです。Firewallだけで安全性をすべて保証するものではありません。', related: ['IP', 'TCP', 'Port', 'Router'], matches: ['Firewall', 'ファイアウォール'] },
+  { id: 'cpu', term: 'CPU', expansion: 'Central Processing Unit', summary: 'プログラムの命令を読み取り、演算・比較・分岐などを実行する処理装置です。', why: 'ソフトウェアで記述された手順を、実際の計算や制御として進める中心が必要だからです。', related: ['Instruction', 'Register', 'ALU', 'Cache'], matches: ['CPU'] },
+  { id: 'instruction', term: 'Instruction', summary: 'CPUへ「加算する」「メモリから読む」「分岐する」などを指示する、機械語の基本単位です。', why: 'プログラムの処理をCPUが解釈・実行できる小さな操作へ表すためです。', related: ['CPU', 'Register', 'ALU'], matches: ['Instruction', '命令'] },
+  { id: 'program-counter', term: 'Program Counter', summary: 'CPUが次に取り出す命令の位置を示すための状態です。PCと略されることがあります。', why: '命令を順番に進めたり、分岐先へ移動したりするには、次に読む命令を示す目印が必要だからです。', related: ['Instruction', 'Instruction Register', 'Control Unit'], matches: ['Program Counter', 'プログラムカウンタ'] },
+  { id: 'instruction-register', term: 'Instruction Register', summary: '読み出した命令を保持し、解釈に使うための場所を表す教育用のCPUモデルです。IRと略されることがあります。', why: '命令のビット列を、制御回路が扱える状態として保持してから、次の処理へ渡すためです。', related: ['Instruction', 'Program Counter', 'Control Unit'], matches: ['Instruction Register', '命令レジスタ'] },
+  { id: 'control-unit', term: 'Control Unit', summary: '命令を解釈し、CPU内のどの回路をいつ動かすかを制御する仕組みです。', why: 'レジスタ、ALU、メモリなどの複数の部分が、命令に応じて正しい順序で協調する必要があるためです。', related: ['Instruction', 'ALU', 'Register'], matches: ['Control Unit', '制御装置'] },
+  { id: 'fetch', term: 'Fetch', summary: 'Program Counterが示す位置から、次に実行する命令を読み出す段階です。', why: 'CPUが実行する内容を知るには、まず命令のビット列を取り出す必要があるためです。', related: ['Program Counter', 'Instruction', 'Memory'], matches: ['Fetch', '命令取得'] },
+  { id: 'decode', term: 'Decode', summary: '読み出した命令のビット列を解釈し、必要な操作やデータ経路を決める段階です。', why: '同じビット列でも、命令セットで定められた意味に従って、どの回路を使うか決める必要があるためです。', related: ['Instruction Register', 'Control Unit', 'Execute'], matches: ['Decode', '命令解釈'] },
+  { id: 'execute', term: 'Execute', summary: '命令に従って演算、比較、分岐、メモリ操作などを行う段階を表す呼び方です。', why: 'Decodeで決まった処理を実際に進め、プログラムの状態を変えるためです。', related: ['ALU', 'Control Unit', 'Writeback'], matches: ['Execute', '命令実行'] },
+  { id: 'writeback', term: 'Writeback', summary: '演算などで得た結果を、Registerなどへ戻して後続の命令が使えるようにする段階です。', why: '計算結果をCPUの状態として保存し、次の処理へ引き継ぐためです。', related: ['Execute', 'Register', 'Instruction'], matches: ['Writeback', '書き戻し'] },
+  { id: 'register', term: 'Register', summary: 'CPU内部にある非常に高速で小容量の記憶場所です。計算中の値や次の命令の位置などを保持します。', why: '演算に使う値へ素早くアクセスし、命令実行を進めるためです。', related: ['CPU', 'ALU', 'Instruction'], matches: ['Register', 'レジスタ'] },
+  { id: 'cache', term: 'Cache', summary: 'CPUの近くに、よく使うデータや命令のコピーを保持する高速な記憶領域です。', why: 'CPUが主記憶の応答を待つ時間を減らし、平均的な処理速度を高めるためです。', related: ['CPU', 'Memory'], matches: ['Cache', 'キャッシュ'] },
+  { id: 'memory', term: 'Memory', summary: '実行中のプログラムやデータを保持する記憶領域です。通常は主記憶（RAM）を指す文脈で使われます。', why: 'CPUが実行する命令や扱うデータを、必要なときに読み書きできるようにするためです。', related: ['CPU', 'Cache', 'Virtual Memory'], matches: ['Memory', 'メモリ', 'RAM'] },
+  { id: 'process', term: 'Process', summary: 'OSが管理する、実行中または実行可能なプログラムの単位です。メモリ空間や資源の情報を持ちます。', why: '複数のプログラムを安全に並行して扱い、CPUやメモリを割り当てるためです。', related: ['Thread', 'Scheduler', 'Context Switch'], matches: ['Process', 'プロセス'] },
+  { id: 'thread', term: 'Thread', summary: 'Processの中で実行される、より小さな処理の流れです。同じProcess内の資源を共有できます。', why: '1つのアプリケーションの中で複数の作業を並行して進めやすくするためです。', related: ['Process', 'Context Switch'], matches: ['Thread', 'スレッド'] },
+  { id: 'scheduler', term: 'Scheduler', summary: 'OSの中で、どのProcessやThreadへ次にCPU時間を割り当てるかを決める仕組みです。', why: '複数の処理がCPUを公平かつ効率よく使えるようにするためです。', related: ['Process', 'Context Switch'], matches: ['Scheduler', 'スケジューラ'] },
+  { id: 'context-switch', term: 'Context Switch', summary: 'CPUが実行するProcessやThreadを切り替える際、現在の実行状態を保存し、次の状態を復元する処理です。', why: '1つのCPUでも複数の処理を交互に進められるようにするためです。', related: ['Process', 'Thread', 'Scheduler'], matches: ['Context Switch', 'コンテキストスイッチ'] },
+  { id: 'virtual-memory', term: 'Virtual Memory', summary: '各Processに連続した大きなアドレス空間があるように見せ、物理メモリを管理する仕組みです。', why: 'Processどうしを分離し、限られた物理メモリを柔軟に扱うためです。', related: ['Memory', 'Paging', 'Process'], matches: ['Virtual Memory', '仮想メモリ'] },
+  { id: 'paging', term: 'Paging', summary: '仮想メモリを一定サイズのページに分け、物理メモリ上の配置と対応付ける管理方式です。', why: '各Processの連続したアドレス空間を、実際のメモリ配置から分離して扱うためです。', related: ['Virtual Memory', 'Memory'], matches: ['Paging', 'ページング'] },
+  { id: 'ready-queue', term: 'Ready Queue', summary: '実行できる状態だが、CPUが空くのを待つProcessやThreadを並べておく考え方です。', why: '1つのCPUコアが同時に実行できる仕事には限りがあるため、次に動かす候補を管理する必要があります。', related: ['Scheduler', 'Process', 'Thread'], matches: ['Ready Queue', 'レディキュー'] },
+  { id: 'io', term: 'I/O', expansion: 'Input / Output', summary: 'ディスク、ネットワーク、キーボードなど、CPUやメモリの外側とデータをやり取りする処理です。', why: 'プログラムは計算だけで完結せず、保存・通信・利用者操作など外部とのやり取りが必要になるためです。', related: ['Process', 'Interrupt', 'Memory'], matches: ['I/O', '入出力'] },
+  { id: 'time-slice', term: 'Time Slice', summary: 'OSが実行可能な仕事へ一度に割り当てるCPU時間の目安です。タイムクォンタムとも呼ばれます。', why: '1つの処理がCPUを長く占有し続けず、複数の処理が応答性を保ちながら進められるようにするためです。', related: ['Scheduler', 'Context Switch', 'Process'], matches: ['Time Slice', 'タイムスライス', 'タイムクォンタム'] },
+  { id: 'interrupt', term: 'Interrupt', summary: '外部装置などからの通知をきっかけに、CPUが通常の実行を一時中断して必要な処理へ移る仕組みです。', why: 'I/Oの完了などをCPUが常に確認し続けず、必要なときに対応できるようにするためです。', related: ['I/O', 'Context Switch', 'Scheduler'], matches: ['Interrupt', '割り込み'] },
+  { id: 'database', term: 'Database', summary: 'アプリケーションが使うデータを、検索・更新・整合性の仕組みとともに保持するシステムです。', why: '複数の利用者や処理が必要なデータを、管理可能な形で安全に扱うためです。', related: ['Transaction', 'Index', 'Lock'], matches: ['Database', 'データベース', 'DB'] },
+  { id: 'transaction', term: 'Transaction', summary: '複数のデータ操作を、まとめて成功または失敗として扱う処理単位です。', why: '途中までしか更新されない不整合な状態を減らすためです。', related: ['Commit', 'Rollback', 'Lock', 'ACID'], matches: ['Transaction', 'トランザクション'] },
+  { id: 'acid', term: 'ACID', expansion: 'Atomicity, Consistency, Isolation, Durability', summary: 'トランザクションを考えるときの代表的な性質をまとめた呼び方です。', why: '更新のまとまり、整合性、同時実行、障害後の扱いを整理して考えるためです。', related: ['Transaction', 'Commit', 'Rollback'], matches: ['ACID'] },
+  { id: 'lock', term: 'Lock', summary: '同じデータを複数の処理が同時に更新するとき、競合を調整するための仕組みです。', why: '更新が互いに上書きし合ったり、不整合な途中状態を読んだりすることを減らすためです。', related: ['Transaction', 'Rollback'], matches: ['Lock', 'ロック'] },
+  { id: 'commit', term: 'Commit', summary: 'Transactionで行った変更を確定する操作です。', why: '一連の更新が成功したことを明示し、他の処理から整合した状態として扱えるようにするためです。', related: ['Transaction', 'Rollback'], matches: ['Commit', 'コミット'] },
+  { id: 'rollback', term: 'Rollback', summary: 'Transactionで行った未確定の変更を取り消し、開始前の状態へ戻す操作です。', why: '途中で失敗した更新を残さず、整合した状態に戻すためです。', related: ['Transaction', 'Commit'], matches: ['Rollback', 'ロールバック'] },
+  { id: 'index', term: 'Index', summary: 'データの場所を探しやすくするための補助的な構造です。DBではB-treeなどがよく使われます。', why: '大量の行を最初から順に調べず、必要なデータへ効率よくたどるためです。', related: ['Database', 'Binary Search'], matches: ['Index', 'インデックス'] },
+  { id: 'isolation-level', term: 'Isolation Level', summary: '同時に動くTransactionどうしで、どの変更をどの時点で読めるかなどに関係する設定・性質です。', why: '複数の更新や読み取りが重なるとき、整合性と待ち時間のバランスを設計する必要があるためです。', related: ['Transaction', 'Lock', 'MVCC'], matches: ['Isolation Level', '分離レベル', '隔離レベル'] },
+  { id: 'mvcc', term: 'MVCC', expansion: 'Multi-Version Concurrency Control', summary: 'データの複数の版を使い、読み取りと更新の競合を抑えるための同時実行制御の考え方です。', why: '読み取りと更新が必要以上に互いを待たずに済むようにしつつ、Transactionごとに一貫した見え方を作るためです。', related: ['Transaction', 'Isolation Level', 'Lock'], matches: ['MVCC', 'Multi-Version Concurrency Control'] },
+  { id: 'row-lock', term: 'Row Lock', summary: '特定の行を更新する間に、競合する操作を調整するためのLockの代表例です。', why: '無関係なデータまで止めずに、同じデータへの同時更新による不整合を減らすためです。', related: ['Lock', 'Transaction', 'Isolation Level'], matches: ['Row Lock', '行ロック'] },
+  { id: 'certificate', term: 'Certificate', summary: 'TLSで接続先の公開鍵や名前などを示し、認証に使う電子的な証明書です。', why: '暗号化する相手が意図したサーバーであるかを検証する手がかりにするためです。', related: ['TLS', 'Public Key'], matches: ['Certificate', '証明書'] },
+  { id: 'public-key', term: 'Public Key', summary: '公開してよい鍵です。対応する秘密鍵と組み合わせて、暗号や署名の仕組みに使われます。', why: '安全に共有できる情報を使い、相手の確認や鍵合意を行うためです。', related: ['TLS', 'Certificate', 'Session Key'], matches: ['Public Key', '公開鍵'] },
+  { id: 'session-key', term: 'Session Key', summary: '通信のセッションごとに使う共通鍵です。TLSでは、鍵合意によって得た鍵を使いデータを効率よく保護します。', why: '大量の通信データを、効率よく暗号化・復号するためです。', related: ['TLS', 'Public Key'], matches: ['Session Key', 'セッション鍵'] },
+  { id: 'private-key', term: 'Private Key', summary: '対応するPublic Keyと組になる、外部へ公開してはいけない鍵です。', why: 'TLSではServerが正しい秘密鍵を持つことを示すことで、接続先の認証を助けるためです。', related: ['Public Key', 'Certificate', 'TLS'], matches: ['Private Key', '秘密鍵'] },
+  { id: 'shared-secret', term: 'Shared Secret', summary: '鍵交換を通じてClientとServerの双方が導く、通信を保護する鍵の材料です。', why: '値そのものをネットワークへ送らずに、双方で保護鍵を導き出せるようにするためです。', related: ['TLS', 'Session Key', 'Public Key'], matches: ['Shared Secret', '共有秘密'] },
+  { id: 'sni', term: 'SNI', expansion: 'Server Name Indication', summary: 'TLS接続を始めるときに、接続したいホスト名をServerへ知らせるための拡張です。', why: '複数のWebサイトが同じIPアドレスを共有する場合でも、Serverが適切な証明書を選べるようにするためです。', related: ['TLS', 'Certificate', 'HTTPS'], matches: ['SNI', 'Server Name Indication'] },
+  { id: 'load-balancer', term: 'Load Balancer', summary: '受け取ったリクエストを複数のサーバーへ振り分ける役割を持つ仕組みです。', why: '1台への負荷集中を避け、障害時にも処理を続けやすくするためです。', related: ['Reverse Proxy', 'Health Check', 'Web Server'], matches: ['Load Balancer', 'ロードバランサー'] },
+  { id: 'reverse-proxy', term: 'Reverse Proxy', summary: '利用者からのリクエストを受け、内側のWeb Serverなどへ代理で転送する仕組みです。', why: '公開する入口をまとめ、TLS終端・負荷分散・キャッシュなどの役割を分けるためです。', related: ['Load Balancer', 'Web Server'], matches: ['Reverse Proxy', 'リバースプロキシ'] },
+  { id: 'health-check', term: 'Health Check', summary: 'サーバーやサービスが応答できるかを確認し、正常な送信先を判断するための検査です。', why: '障害やメンテナンス中のサーバーへ、不要なリクエストを送らないためです。', related: ['Load Balancer'], matches: ['Health Check', 'ヘルスチェック'] },
+  { id: 'round-robin', term: 'Round Robin', summary: '利用可能なServerを順番に1台ずつ選ぶ、Load Balancerの代表的な振り分け方式です。', why: '単純な規則でリクエストを分散できるためです。ただしServerごとの処理時間や接続数の差までは直接考慮しません。', related: ['Load Balancer', 'Least Connections', 'Health Check'], matches: ['Round Robin', 'ラウンドロビン'] },
+  { id: 'least-connections', term: 'Least Connections', summary: '現在の接続数が少ないServerを優先して選ぶ、Load Balancerの代表的な振り分け方式です。', why: '長く処理中の接続が多いServerへ新しい通信を集中させにくくするためです。接続数の数え方や重み付けは製品により異なります。', related: ['Load Balancer', 'Round Robin', 'Health Check'], matches: ['Least Connections', '最小接続数'] },
+  { id: 'l4-l7', term: 'L4 / L7', summary: 'Load Balancerなどが、IP・Portまでの情報で判断するか、HTTPなどアプリケーション層の情報まで見るかを表す区分です。', why: '振り分けに使える情報、TLSの扱い、PathやHostでの分岐など、設計上の選択肢を整理するためです。', related: ['Load Balancer', 'TCP', 'HTTP'], matches: ['L4/L7', 'L4 / L7'] },
+  { id: 'session-affinity', term: 'Session Affinity', summary: '同じ利用者からの後続リクエストを、同じServerへ送りやすくする仕組みです。スティッキーセッションとも呼ばれます。', why: 'Server側に一時的な状態を持つ構成で、利用者の処理を継続しやすくするためです。一方で負荷の偏りや障害時の切り替えも考える必要があります。', related: ['Load Balancer', 'Health Check', 'Session Key'], matches: ['Session Affinity', 'セッションアフィニティ', 'スティッキーセッション'] },
+  { id: 'algorithm', term: 'Algorithm', summary: '問題を解くための、明確な手順や計算方法です。', why: '同じ目的でも、入力の大きさに応じて必要な時間やメモリが大きく変わるため、手順を比較して選ぶ必要があります。', related: ['Array', 'Binary Search'], matches: ['Algorithm', 'アルゴリズム'] },
+  { id: 'array', term: 'Array', summary: '要素を順序付きで並べ、位置（添字）でアクセスできるデータ構造です。', why: '複数の値をまとまりとして扱い、特定の位置の値へ素早くアクセスするためです。', related: ['Binary Search', 'Algorithm'], matches: ['Array', '配列'] },
+  { id: 'binary-search', term: 'Binary Search', summary: '整列済みの配列で、中央と比較しながら探索範囲を半分ずつ絞るアルゴリズムです。', why: '最初から順に比較するより、必要な比較回数を大幅に減らせる場合があるためです。', related: ['Array', 'Algorithm', 'Index'], matches: ['Binary Search', '二分探索'] },
+  { id: 'time-complexity', term: 'Time Complexity', summary: '入力の大きさに応じて、計算回数がどのように増えるかを表す目安です。', why: '同じ目的のAlgorithmでも、データ量が増えたときの扱いやすさを比較するためです。実際の秒数だけを直接示すものではありません。', related: ['Algorithm', 'Binary Search', 'Index'], matches: ['Time Complexity', '計算量', 'O(log n)'] },
+  { id: 'cache-line', term: 'Cache Line', summary: 'CacheとMain Memoryの間で、まとまりとして読み書きされるデータの単位です。', why: '近くのデータも続けて使われやすい性質を利用し、1回のメモリアクセスを効率よく使うためです。', related: ['Cache', 'Memory', 'Cache Hit'], matches: ['Cache Line', 'キャッシュライン'] },
+  { id: 'cache-hit', term: 'Cache Hit', summary: 'CPUが必要とするデータや命令が、すでにCache内に見つかる状態です。', why: 'Main Memoryまで待たずに済むため、平均的なアクセス時間を小さくできます。', related: ['Cache', 'Cache Miss', 'Cache Line'], matches: ['Cache Hit', 'キャッシュヒット'] },
+  { id: 'cache-miss', term: 'Cache Miss', summary: 'CPUが必要とするデータや命令がCache内に見つからず、下位のMemory階層から取得する必要がある状態です。', why: 'Cacheにすべてのデータは収まらないため、必要なときに取り込む仕組みが必要です。', related: ['Cache', 'Cache Hit', 'Memory'], matches: ['Cache Miss', 'キャッシュミス'] },
+  { id: 'page-table', term: 'Page Table', summary: 'Virtual Addressのページ番号を、Physical Memory上のFrameなどへ対応付けるための表です。', why: 'Processごとに独立したアドレス空間を見せつつ、実際のメモリ配置をOSが管理するためです。', related: ['Virtual Memory', 'Paging', 'Page Fault'], matches: ['Page Table', 'ページテーブル'] },
+  { id: 'page-fault', term: 'Page Fault', summary: 'Virtual Addressに対応するページが、必要な形でPhysical Memoryにないときに起きる例外・処理です。', why: '必要なページをストレージなどから読み込んだり、アクセスの正しさを確認したりする必要があるためです。', related: ['Virtual Memory', 'Paging', 'Page Table'], matches: ['Page Fault', 'ページフォールト'] },
+  { id: 'tlb', term: 'TLB', expansion: 'Translation Lookaside Buffer', summary: '最近使ったVirtual AddressからPhysical Addressへの変換結果を保持する高速なキャッシュです。', why: '毎回Page Tableをたどる負担を減らし、アドレス変換を速くするためです。', related: ['Virtual Memory', 'Page Table', 'Cache'], matches: ['TLB', 'Translation Lookaside Buffer'] },
+  { id: 'b-tree', term: 'B-tree', summary: '複数の子を持つNodeを使い、ディスクやページ単位のデータを効率よく探索するためによく使われる木構造の一種です。', why: '木の高さを小さく保ち、多くのデータから必要な範囲へ少ない段階で近づくためです。', related: ['Index', 'Leaf Node', 'Database'], matches: ['B-tree', 'B-tree系', 'B木'] },
+  { id: 'leaf-node', term: 'Leaf Node', summary: '木構造の末端にあるNodeです。B-tree系のIndexでは、検索対象のキーやデータ位置への参照を持つことがあります。', why: '上位のNodeで候補を絞ったあと、実際の目的のデータ位置へたどり着くためです。', related: ['B-tree', 'Index', 'Row'], matches: ['Leaf Node', '葉ノード'] },
+  { id: 'row', term: 'Row', summary: 'Tableの中で、1件分のデータを表す横方向のまとまりです。Recordと呼ばれることもあります。', why: '複数のColumnに分かれた属性を、1つの対象に対応するデータとしてまとめるためです。', related: ['Database', 'Index', 'Transaction'], matches: ['Row', '行', 'Record', 'レコード'] },
+  { id: 'hash', term: 'Hash', summary: '任意の長さのデータから、決まった長さの値を計算する関数や、その結果を指す言葉です。', why: 'データが変わると結果も変わる性質を利用し、改ざん検出やデータ構造の設計に使うためです。', related: ['Digital Signature', 'Certificate'], matches: ['Hash', 'ハッシュ'] },
+  { id: 'digital-signature', term: 'Digital Signature', summary: 'HashなどをPrivate Keyで署名し、Public Keyで検証することで、改ざん検出と署名者の確認に使う仕組みです。', why: '受け取ったデータが途中で書き換えられていないことと、対応する秘密鍵の所有者が署名したことを確かめるためです。', related: ['Hash', 'Private Key', 'Public Key', 'Certificate'], matches: ['Digital Signature', '電子署名'] },
+  { id: 'failover', term: 'Failover', summary: '稼働中の機器やサービスに障害が起きたとき、待機系や別の健全な系へ役割を切り替える仕組みです。', why: '1つの障害点によってサービス全体が止まる時間を減らすためです。', related: ['Redundancy', 'Active / Standby', 'Health Check'], matches: ['Failover', 'フェイルオーバー'] },
+  { id: 'redundancy', term: 'Redundancy', summary: '同じ役割を担える機器・経路・データを複数用意して、障害に備える考え方です。', why: '一部が故障しても、残りの要素でサービスを継続できる可能性を高めるためです。', related: ['Failover', 'Load Balancer'], matches: ['Redundancy', '冗長化'] },
+  { id: 'active-standby', term: 'Active / Standby', summary: '通常はActiveが処理を担当し、Standbyが障害時に引き継げるよう準備する構成です。', why: '役割を明確にしながら、障害時に別の系へ切り替えられるようにするためです。', related: ['Failover', 'Redundancy'], matches: ['Active / Standby', 'Active/Standby', 'アクティブ／スタンバイ'] },
+  { id: 'graph', term: 'Graph', summary: 'Nodeと、それらを結ぶEdgeで、つながりを表すデータ構造です。', why: '経路、依存関係、SNSの関係のように、値が単純な1列ではない構造を表すためです。', related: ['Node', 'Edge', 'BFS', 'DFS'], matches: ['Graph', 'グラフ'] },
+  { id: 'node', term: 'Node', summary: 'Graphや木構造を構成する1つの要素です。Vertexと呼ばれることもあります。', why: '対象どうしのつながりを、個別の地点や要素として表すためです。', related: ['Graph', 'Edge'], matches: ['Node', 'ノード', 'Vertex'] },
+  { id: 'edge', term: 'Edge', summary: 'GraphでNodeどうしの関係や接続を表す線です。', why: 'どのNodeからどのNodeへ移動・参照できるかを表現するためです。', related: ['Graph', 'Node'], matches: ['Edge', 'エッジ'] },
+  { id: 'bfs', term: 'BFS', expansion: 'Breadth-First Search', summary: '近いNodeから順に幅を広げるように探索するGraph探索の方法です。通常はQueueを使って次の候補を管理します。', why: '無重みGraphで辺の本数が最も少ない経路を調べるなど、近い関係から順に確認したいときに役立つためです。', related: ['Graph', 'Queue', 'DFS'], matches: ['BFS', 'Breadth-First Search', '幅優先探索'] },
+  { id: 'dfs', term: 'DFS', expansion: 'Depth-First Search', summary: '1つの経路をできるだけ深く進んでから戻るように探索するGraph探索の方法です。再帰やStackで表現できます。', why: '連結している範囲を調べたり、探索木を作ったりするために使われます。', related: ['Graph', 'Stack', 'BFS'], matches: ['DFS', 'Depth-First Search', '深さ優先探索'] },
+  { id: 'queue', term: 'Queue', summary: '先に入れた要素から先に取り出す、First In First Outのデータ構造です。', why: 'BFSのように、先に見つけた候補から順に処理したい場合に使うためです。', related: ['BFS', 'Graph'], matches: ['Queue', 'キュー'] },
+  { id: 'stack', term: 'Stack', summary: '最後に入れた要素から先に取り出す、Last In First Outのデータ構造です。', why: 'DFSのように、直近の分岐から先に深くたどりたい場合に使うためです。', related: ['DFS', 'Graph'], matches: ['Stack', 'スタック'] },
 ].map(term => ({ ...term, category: TERM_CATEGORIES[term.id] ?? 'link', deepDive: DEEP_DIVES[term.id] ?? [] }))
 
 export function glossaryTermsFor(context: string[]) {

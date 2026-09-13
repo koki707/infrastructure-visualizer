@@ -14,6 +14,8 @@ export const FEATURES = [
   { title: 'PC内部から追える', body: 'アプリケーションからOS、Network Stack、NICへ、データが渡される流れを確認できます。', tag: 'PC → NIC' },
   { title: '通信データの中身を見る', body: 'Application Data、TCP Segment、IP Packet、Ethernet Frameの構造を順に確かめられます。', tag: 'Data Structure' },
   { title: '機器の中まで探索', body: 'PC、Switch、Router、DNS Server、Web Serverを選び、内部の役割まで段階的に学べます。', tag: 'Explore Inside' },
+  { title: '処理の進み方を止めて見る', body: 'CPUの命令実行、OSの切り替え、DatabaseのTransactionなど、途中の状態を止めながら因果関係を確かめられます。', tag: 'Step by Step' },
+  { title: '判断の違いを操作する', body: 'Cache Hit / Miss、Load Balancing、Failover、Binary Search、Graph探索など、条件によって結果が変わる仕組みを操作できます。', tag: 'Interactive' },
 ] as const
 
 export const LEARNING_STEPS = [
@@ -33,5 +35,8 @@ export const TOPIC_GROUPS = [
 export const NEXT_TOPIC_GROUPS = [
   { title: 'ICMP', body: '到達確認やエラー通知が、IP通信の観測にどう役立つかを扱う予定です。' },
   { title: 'QUIC / HTTP/3', body: 'TCP + TLSとは異なる、UDP上のQUICを利用するWeb通信の代表例を扱う予定です。' },
-  { title: 'NDP', body: 'IPv6 LANで、近隣機器や次のリンクの相手を見つける仕組みを、ARPとの違いとともに扱う予定です。' },
+  { title: 'Virtual Memory', body: '仮想アドレス、Paging、Page Faultが、限られたMemoryをどう使いやすくするかを扱う予定です。' },
+  { title: 'Database Index', body: '大量のRowから必要なデータを探すとき、Indexがどのように探索を助けるかを扱う予定です。' },
+  { title: 'Digital Signature', body: 'HashとPublic Keyを使い、改ざん検出や署名者の確認をどう行うかを扱う予定です。' },
+  { title: 'Graph Search', body: 'ネットワークや経路のようなつながりを、BFSやDFSでどうたどるかを扱う予定です。' },
 ] as const
