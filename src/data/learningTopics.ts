@@ -38,7 +38,7 @@ export const LEARNING_TOPICS: LearningTopic[] = [
     shortTitle: 'ARP',
     summary: 'IPアドレスしか分からない状態から、同一LANでEthernet Frameを送るためのMACアドレスを調べる仕組みです。',
     why: 'IPパケットをLAN上で送るには、まず次に受け取る機器のMACアドレスが必要です。宛先が別ネットワークにあるとき、PCは通常、WebサーバーではなくデフォルトゲートウェイのMACアドレスを調べます。',
-    visualization: 'interactive-2d',
+    visualization: 'hybrid-3d',
     learningGoals: ['IPアドレスとMACアドレスの役割の違いを説明できる', 'ARP RequestとARP Replyの向きの違いを確認できる', 'ARPが同一のリンク内で使われ、ルーターを越えないことを理解する'],
     prerequisites: [],
     relatedTopics: ['dhcp', 'routing', 'nat-napt'],

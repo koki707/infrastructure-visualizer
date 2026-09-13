@@ -7,7 +7,7 @@
  */
 export type LearningCategoryId = 'network' | 'computer' | 'os' | 'database' | 'security' | 'system' | 'algorithms'
 
-export type VisualizationType = 'interactive-2d' | 'step-animation' | '3d' | 'text-diagram'
+export type VisualizationType = 'interactive-2d' | 'step-animation' | '3d' | 'hybrid-3d' | 'text-diagram'
 
 export type LearningTopicStatus = 'available' | 'partial' | 'planned'
 

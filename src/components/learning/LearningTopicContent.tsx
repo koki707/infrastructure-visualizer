@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { GLOSSARY_TERMS } from '../../data/glossary'
 import { LEARNING_TOPIC_BY_ID } from '../../data/learningTopics'
 import type { LearningTopic } from '../../types/learning'
@@ -7,6 +7,8 @@ import { GlossaryText } from '../ui/GlossaryText'
 import { DhcpLesson } from './DhcpLesson'
 import { FirewallLesson } from './FirewallLesson'
 import { Ipv6Lesson } from './Ipv6Lesson'
+
+const ArpThreeScene = lazy(() => import('./ArpThreeScene'))
 
 type LessonProps = {
   topic: LearningTopic
@@ -17,6 +19,7 @@ const visualizationLabel = {
   'interactive-2d': '手を動かす2D図解',
   'step-animation': 'ステップで追う図解',
   '3d': '3D探索',
+  'hybrid-3d': '3D + ステップ図解',
   'text-diagram': '図と文章',
 } as const
 
@@ -40,6 +43,7 @@ function TopicLinks({ ids, title, onNavigate }: { ids: string[] | undefined; tit
 
 function ArpLesson({ onNavigate }: Pick<LessonProps, 'onNavigate'>) {
   const [step, setStep] = useState(0)
+  const [sceneVersion, setSceneVersion] = useState(0)
   const steps = [
     {
       label: '最初の疑問',
@@ -53,6 +57,13 @@ function ArpLesson({ onNavigate }: Pick<LessonProps, 'onNavigate'>) {
       title: '「192.168.1.1を持っているのは誰？」と尋ねる',
       body: 'PCはARP RequestをLAN内へブロードキャストします。Switchは同じブロードキャストドメイン内のポートへ転送します。',
       detail: 'ARP RequestはIPネットワークを越えて送られません。ルーターの外側へWebサーバーを探しに行くものではありません。',
+      active: 'switch',
+    },
+    {
+      label: 'LAN内に転送',
+      title: 'Switchは同じLANのポートへ広げる',
+      body: 'Switchは受信したARP Requestを、受信元以外の同じブロードキャストドメイン内へ転送します。192.168.1.1を持つHome Routerが応答します。',
+      detail: 'この教育用の例では、VLANや個別のSwitch設定を省略しています。ARP Requestは通常、ルーターを越えて別のIPネットワークへは転送されません。',
       active: 'switch',
     },
     {
@@ -71,24 +82,46 @@ function ArpLesson({ onNavigate }: Pick<LessonProps, 'onNavigate'>) {
     },
   ] as const
   const current = steps[step]
+  const sceneSummary = [
+    { signal: 'まだARP送信なし', link: '次ホップのMACアドレスが未解決', outcome: 'ARP cacheに項目がありません' },
+    { signal: 'ARP Request', link: 'L2宛先: FF:FF:FF:FF:FF:FF', outcome: 'PCからSwitchへ送信します' },
+    { signal: 'ARP Request（broadcast）', link: 'Switchが同一LAN内へ転送', outcome: 'Home Routerだけが応答対象です' },
+    { signal: 'ARP Reply（unicast）', link: 'Home Router → Switch → PC', outcome: 'ARP cacheにMACアドレスを記録します' },
+    { signal: 'Ethernet Frame', link: 'L2宛先: Gateway MAC', outcome: 'IPの最終宛先はWeb Serverのままです' },
+  ] as const
+  const currentScene = sceneSummary[step]
 
   return <section aria-label="ARPのステップ図解" className="rounded-3xl border border-sky-200 bg-sky-50/50 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="eyebrow">INTERACTIVE ARP</p><h2 className="mt-2 text-xl font-bold text-slate-900">IPアドレスから、次のリンクの宛先を見つける</h2></div><span className="rounded-full border border-sky-200 bg-white px-3 py-1.5 text-xs font-bold text-sky-800">{step + 1} / {steps.length}</span></div>
-    <div className="mt-6 grid gap-3 sm:grid-cols-4" role="tablist" aria-label="ARPのステップ">
-      {steps.map((item, index) => <button key={item.label} type="button" role="tab" aria-selected={step === index} onClick={() => setStep(index)} className={`rounded-xl border px-3 py-3 text-left text-xs font-semibold transition ${step === index ? 'border-cyan-500 bg-white text-cyan-900 shadow-sm' : 'border-sky-100 bg-sky-50 text-slate-600 hover:border-cyan-300 hover:bg-white'}`}><span className="block text-[10px] text-cyan-700">{index + 1}</span><span className="mt-1 block">{item.label}</span></button>)}
+    <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5" role="tablist" aria-label="ARPのステップ">
+      {steps.map((item, index) => <button key={item.label} type="button" role="tab" aria-selected={step === index} onClick={() => { setStep(index); setSceneVersion(version => version + 1) }} className={`rounded-xl border px-3 py-3 text-left text-xs font-semibold transition ${step === index ? 'border-cyan-500 bg-white text-cyan-900 shadow-sm' : 'border-sky-100 bg-sky-50 text-slate-600 hover:border-cyan-300 hover:bg-white'}`}><span className="block text-[10px] text-cyan-700">{index + 1}</span><span className="mt-1 block">{item.label}</span></button>)}
     </div>
+    <section className="mt-6 overflow-hidden rounded-2xl border border-sky-200 bg-white" aria-label="ARPの3Dシミュレーション">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-sky-100 bg-sky-50 px-4 py-3">
+        <div><p className="eyebrow">3D ARP SIMULATION</p><p className="mt-1 text-sm font-bold text-slate-900">{currentScene.signal}</p></div>
+        <div className="flex flex-wrap gap-2"><button type="button" onClick={() => setSceneVersion(version => version + 1)} className="rounded-lg border border-cyan-300 bg-white px-3 py-2 text-xs font-bold text-cyan-800 transition hover:border-cyan-500 hover:bg-cyan-50">この動きを再生</button><button type="button" onClick={() => { setStep(0); setSceneVersion(version => version + 1) }} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">最初に戻す</button></div>
+      </div>
+      <div className="h-[320px] bg-sky-50/40 sm:h-[350px]">
+        <Suspense fallback={<div className="flex h-full items-center justify-center text-sm font-semibold text-slate-600">3Dシミュレーションを準備しています…</div>}><ArpThreeScene step={step} replayKey={sceneVersion} /></Suspense>
+      </div>
+      <div className="grid gap-2 border-t border-sky-100 bg-white p-4 text-xs leading-6 sm:grid-cols-3" aria-live="polite">
+        <div className="rounded-lg bg-slate-50 px-3 py-2"><span className="font-bold text-slate-500">現在の信号</span><p className="mt-1 font-semibold text-slate-800">{currentScene.signal}</p></div>
+        <div className="rounded-lg bg-slate-50 px-3 py-2"><span className="font-bold text-slate-500">見るポイント</span><p className="mt-1 text-slate-800">{currentScene.link}</p></div>
+        <div className="rounded-lg bg-slate-50 px-3 py-2"><span className="font-bold text-slate-500">結果</span><p className="mt-1 text-slate-800">{currentScene.outcome}</p></div>
+      </div>
+    </section>
     <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
       <div className="grid items-center gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
         <div className={`lesson-device ${current.active === 'pc' || current.active === 'frame' ? 'lesson-device-active' : ''}`}><span className="lesson-device-icon bg-sky-100 text-sky-800">PC</span><b>PC</b><span>192.168.1.10</span></div>
-        <div className={`lesson-arrow ${step === 1 ? 'lesson-arrow-active' : ''}`} aria-hidden="true">{step === 1 ? '⇢' : '→'}</div>
+        <div className={`lesson-arrow ${step >= 1 ? 'lesson-arrow-active' : ''}`} aria-hidden="true">{step === 3 ? '←' : step >= 1 ? '⇢' : '→'}</div>
         <div className={`lesson-device ${current.active === 'switch' ? 'lesson-device-active' : ''}`}><span className="lesson-device-icon bg-violet-100 text-violet-800">SW</span><b>LAN Switch</b><span>同一LAN内で転送</span></div>
-        <div className={`lesson-arrow ${step >= 1 ? 'lesson-arrow-active' : ''}`} aria-hidden="true">{step >= 1 ? '⇢' : '→'}</div>
+        <div className={`lesson-arrow ${step >= 2 ? 'lesson-arrow-active' : ''}`} aria-hidden="true">{step === 3 ? '←' : step >= 2 ? '⇢' : '→'}</div>
         <div className={`lesson-device ${current.active === 'router' || current.active === 'frame' ? 'lesson-device-active' : ''}`}><span className="lesson-device-icon bg-amber-100 text-amber-800">GW</span><b>Home Router</b><span>192.168.1.1</span></div>
       </div>
       <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4" aria-live="polite"><p className="text-xs font-bold text-cyan-800">{current.label}</p><h3 className="mt-1 text-base font-bold text-slate-900">{current.title}</h3><p className="mt-2 text-sm leading-7 text-slate-700"><LinkedText text={current.body} onNavigate={onNavigate} /></p><p className="mt-2 rounded-lg border-l-2 border-amber-400 bg-amber-50 px-3 py-2 text-xs leading-6 text-amber-950"><LinkedText text={current.detail} onNavigate={onNavigate} /></p></div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2"><div className={`rounded-xl border p-3 ${step === 1 ? 'border-cyan-400 bg-cyan-50' : 'border-slate-200 bg-white'}`}><p className="text-xs font-bold text-slate-700">ARP Request（例）</p><code className="mt-2 block break-words text-xs leading-6 text-cyan-900">Who has 192.168.1.1?<br />Tell 192.168.1.10</code></div><div className={`rounded-xl border p-3 ${step >= 2 ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200 bg-white'}`}><p className="text-xs font-bold text-slate-700">ARP cache（例）</p><code className="mt-2 block break-words text-xs leading-6 text-emerald-900">192.168.1.1 → 02:00:5E:10:00:01</code></div></div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2"><div className={`rounded-xl border p-3 ${step === 1 || step === 2 ? 'border-cyan-400 bg-cyan-50' : 'border-slate-200 bg-white'}`}><p className="text-xs font-bold text-slate-700">ARP Request（例）</p><code className="mt-2 block break-words text-xs leading-6 text-cyan-900">Who has 192.168.1.1?<br />Tell 192.168.1.10</code></div><div className={`rounded-xl border p-3 ${step >= 3 ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200 bg-white'}`}><p className="text-xs font-bold text-slate-700">ARP cache（例）</p><code className="mt-2 block break-words text-xs leading-6 text-emerald-900">192.168.1.1 → 02:00:5E:10:00:01</code></div></div>
     </div>
-    <p className="mt-4 text-xs leading-6 text-slate-600">IPv4 LANの代表例を示しています。IPv6では、同じ目的にNeighbor Discovery Protocol（NDP）が使われ、ARPは使われません。</p>
+    <p className="mt-4 text-xs leading-6 text-slate-600">IPv4 LANの代表例を示しています。IPv6では、同じ目的にNeighbor Discovery Protocol（NDP）が使われ、ARPは使われません。表示しているMACアドレスは教育用のローカル管理アドレスの例です。</p>
   </section>
 }
 
