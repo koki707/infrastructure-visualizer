@@ -7,16 +7,16 @@ export type Navigate = (path: string) => void
 const NAV_ITEMS = [
   ['/visualizer', 'シミュレーション'],
   ['/topics', '学習を探す'],
-  ['/guide', '使い方'],
   ['/glossary', '用語集'],
+  ['/guide', '使い方'],
   ['/about', 'このサイトについて'],
 ] as const
 
 const FOOTER_ITEMS = [
   ['/visualizer', 'シミュレーション'],
   ['/topics', '学習を探す'],
-  ['/guide', '使い方'],
   ['/glossary', '用語集'],
+  ['/guide', '使い方'],
   ['/about', 'このサイトについて'],
   ['/notes', '教材上の注意'],
   ['/privacy', 'プライバシー'],

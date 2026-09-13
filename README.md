@@ -4,7 +4,7 @@ Webアクセスを入口に、PCからサーバーまでの通信やIT・コン�
 
 > 見えないITインフラを、見て・触って・中に入って理解する。
 
-URL選択、DNS、TCP、TLS、HTTP、Ethernet、PC内部、ルーター内部などを、ブラウザ内だけで動く教育用モデルとして表示します。さらに、DHCP、ARP（3Dステップシミュレーション）、CIDRによる経路選択、NAT / NAPT、IPv6、Firewallを操作できる教材として追加しています。**選択したURLへ実際にアクセスしたり、DNS問い合わせやパケット送信を行ったりすることはありません。**
+URL選択、DNS、TCP、TLS、HTTP、Ethernet、PC内部、ルーター内部などを、ブラウザ内だけで動く教育用モデルとして表示します。さらに、DHCP、ARP・DNS（3Dステップシミュレーション）、TCP接続、CIDRによる経路選択、NAT / NAPT、IPv6、Firewallを操作できる教材として追加しています。**選択したURLへ実際にアクセスしたり、DNS問い合わせやパケット送信を行ったりすることはありません。**
 
 特定の資格試験の完全対策や範囲網羅を目的としたサイトではありません。教科書や文章だけではイメージしにくい仕組みを、見て・動かして理解するための学習補助ツールです。
 
@@ -16,8 +16,8 @@ URL選択、DNS、TCP、TLS、HTTP、Ethernet、PC内部、ルーター内部な
 - PC・Switch・Router・DNS Server・Web Serverの内部探索
 - Network Stack、Ethernet Frame、IPv4 Packet、TCP Segment、MAC Address、Bitsまでの階層探索
 - 階層・キーワード検索・詳細説明を備えた用語集、About、Guide、Topics、Notes、Privacy、Terms、404ページ
-- 「学習を探す」から開ける、DHCP・ARP（3Dステップ）・CIDR / Longest Prefix Match・NAT / NAPT・IPv6・Firewallのインタラクティブ教材
-- 前提知識・関連教材・次に学ぶ内容をつなぐLearning Topicデータモデル
+- 「学習を探す」から開ける、DHCP・ARP / DNS（3Dステップ）・TCP接続・CIDR / Longest Prefix Match・NAT / NAPT・IPv6・Firewallのインタラクティブ教材
+- 前提知識・関連教材・次に学ぶ内容と、「Webアクセスの土台を学ぶ」推奨ルートをつなぐLearning Topicデータモデル
 
 ## 技術スタック
 
@@ -71,6 +71,8 @@ pnpm run preview
 | `/guide` | 使い方 |
 | `/topics` | 学習を探す（既存シミュレーションと追加教材の入口） |
 | `/learn/arp` | ARPを3Dとステップで追う教材 |
+| `/learn/dns-resolution` | DNS名前解決を3Dとステップで追う教材 |
+| `/learn/tcp-connection` | TCP 3-way handshakeを値とともに追う教材 |
 | `/learn/routing` | CIDRとLongest Prefix Matchを操作する教材 |
 | `/learn/nat-napt` | NAT / NAPTの変換を追う教材 |
 | `/learn/dhcp` | DHCPv4のDORAをステップで追う教材 |
@@ -104,12 +106,14 @@ src/
 
 既存の `ExplorationWorld` は、PC内部やEthernet Frameなど「3D空間へ段階的に入る」教材を担います。一方、新しい `LearningTopic` は、テーマごとに最適な表現を選ぶための小さな共通データモデルです。
 
-- 3D探索・空間シミュレーションに向くもの：PC内部、ネットワークの全体像、パケットの移動、ARPの同一LAN内のやり取り
-- 2Dステップ図解に向くもの：DHCP、NAT / NAPT、TCPの手順
+- 3D探索・空間シミュレーションに向くもの：PC内部、ネットワークの全体像、パケットの移動、ARPの同一LAN内のやり取り、DNS名前解決の問い合わせ経路
+- 2Dステップ図解に向くもの：DHCP、NAT / NAPT、TCP接続の手順
 - 操作できる図に向くもの：CIDR / Longest Prefix Match、Routing Table、IPv6、Firewallのルール評価
 - 文章と図を中心にするもの：仕様の比較や、将来追加する暗号・可用性の基礎
 
 新しいテーマは `src/data/learningTopics.ts` にメタデータを置き、`/learn/:id` から必要な教材だけを読み込みます。既存の3Dシミュレーションは、このサイトの代表教材として独立して維持します。
+
+学習ページでは、前提・関連項目とは別に「学びやすい順番」の推奨ルートを表示します。この順番は、実際の1回の通信をそのまま再現した厳密な時系列ではなく、概念のつながりを理解するための案内です。
 
 ## 公開前の設定
 

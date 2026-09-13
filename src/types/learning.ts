@@ -35,3 +35,19 @@ export interface LearningCategory {
   description: string
   status: LearningTopicStatus
 }
+
+/**
+ * A recommended learning order, kept separate from protocol dependencies and
+ * the exact runtime order of a single network request.
+ */
+export interface LearningPath {
+  id: string
+  title: string
+  description: string
+  topicIds: string[]
+  branches?: Array<{
+    fromTopicId: string
+    title: string
+    topicIds: string[]
+  }>
+}

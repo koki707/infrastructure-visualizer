@@ -5,8 +5,11 @@ import type { LearningTopic } from '../../types/learning'
 import type { Navigate } from '../site/SiteLayout'
 import { GlossaryText } from '../ui/GlossaryText'
 import { DhcpLesson } from './DhcpLesson'
+import { DnsLesson } from './DnsLesson'
 import { FirewallLesson } from './FirewallLesson'
 import { Ipv6Lesson } from './Ipv6Lesson'
+import { LearningPathNavigator } from './LearningPathNavigator'
+import { TcpConnectionLesson } from './TcpConnectionLesson'
 
 const ArpThreeScene = lazy(() => import('./ArpThreeScene'))
 
@@ -193,6 +196,8 @@ function LessonBody({ topic, onNavigate }: LessonProps) {
   if (topic.id === 'routing') return <RoutingLesson onNavigate={onNavigate} />
   if (topic.id === 'nat-napt') return <NatLesson onNavigate={onNavigate} />
   if (topic.id === 'dhcp') return <DhcpLesson onNavigate={onNavigate} />
+  if (topic.id === 'dns-resolution') return <DnsLesson onNavigate={onNavigate} />
+  if (topic.id === 'tcp-connection') return <TcpConnectionLesson onNavigate={onNavigate} />
   if (topic.id === 'ipv6') return <Ipv6Lesson onNavigate={onNavigate} />
   if (topic.id === 'firewall') return <FirewallLesson onNavigate={onNavigate} />
   return <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm leading-7 text-slate-600">この教材の図解は準備中です。</section>
@@ -206,6 +211,8 @@ export function LearningTopicContent({ topic, onNavigate }: LessonProps) {
       <aside className="rounded-2xl border border-amber-200 bg-amber-50 p-5"><p className="text-sm font-bold text-amber-950">なぜ必要？</p><p className="mt-2 text-sm leading-7 text-amber-950/85"><LinkedText text={topic.why} onNavigate={onNavigate} /></p></aside>
     </section>
     <section className="mt-9 rounded-2xl border border-slate-200 bg-white p-5"><p className="eyebrow">LEARNING GOALS</p><ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-700 sm:grid-cols-3">{topic.learningGoals.map(goal => <li key={goal} className="rounded-xl bg-slate-50 px-3 py-3"><span className="mr-2 font-bold text-cyan-700">✓</span>{goal}</li>)}</ul></section>
+    <div className="mt-7"><LearningPathNavigator topicId={topic.id} onNavigate={onNavigate} /></div>
+    {topic.prerequisites && topic.prerequisites.length > 0 && <div className="mt-7"><TopicLinks title="先に見ると分かりやすい教材" ids={topic.prerequisites} onNavigate={onNavigate} /></div>}
     <div className="mt-9"><LessonBody topic={topic} onNavigate={onNavigate} /></div>
     <section className="mt-9 rounded-2xl border border-cyan-200 bg-cyan-50 p-6"><p className="eyebrow">CONNECTION TO THE SIMULATOR</p><h2 className="mt-2 text-lg font-bold text-slate-900">既存のWebアクセスシミュレーションで確かめる</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700">この教材は、URLアクセスの流れに登場する仕組みを一つだけ取り出して見ています。全体の位置に戻ると、PC・Switch・Router・Ethernet・IPがどの順で関わるかを確認できます。</p>{topic.simulatorPath && <button type="button" onClick={() => onNavigate(topic.simulatorPath!)} className="mt-4 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-700">シミュレーションを開く</button>}</section>
     <div className="mt-8 grid gap-4 md:grid-cols-2"><TopicLinks title="関連する教材" ids={topic.relatedTopics} onNavigate={onNavigate} /><TopicLinks title="次に学ぶ内容" ids={topic.nextTopics} onNavigate={onNavigate} /></div>

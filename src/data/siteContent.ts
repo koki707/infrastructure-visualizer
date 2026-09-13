@@ -31,7 +31,7 @@ export const TOPIC_GROUPS = [
 ] as const
 
 export const NEXT_TOPIC_GROUPS = [
-  { title: 'DNS Resolver', body: '名前を問い合わせた先で、キャッシュや権威DNSがどのように関わるかを深める予定です。' },
   { title: 'ICMP', body: '到達確認やエラー通知が、IP通信の観測にどう役立つかを扱う予定です。' },
   { title: 'QUIC / HTTP/3', body: 'TCP + TLSとは異なる、UDP上のQUICを利用するWeb通信の代表例を扱う予定です。' },
+  { title: 'NDP', body: 'IPv6 LANで、近隣機器や次のリンクの相手を見つける仕組みを、ARPとの違いとともに扱う予定です。' },
 ] as const

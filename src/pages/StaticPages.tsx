@@ -2,6 +2,7 @@ import { FEATURES, LEARNING_STEPS, NEXT_TOPIC_GROUPS, SITE, TOPIC_GROUPS } from 
 import { LEARNING_CATEGORIES, LEARNING_TOPICS } from '../data/learningTopics'
 import { PageContainer, SectionTitle, type Navigate } from '../components/site/SiteLayout'
 import { GlossaryText } from '../components/ui/GlossaryText'
+import { LearningPathOverview } from '../components/learning/LearningPathOverview'
 
 function PrimaryButton({ children, onClick }: { children: string; onClick: () => void }) {
   return <button type="button" onClick={onClick} className="rounded-xl bg-cyan-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-cyan-700">{children}</button>
@@ -17,6 +18,8 @@ export function HomePage({ onNavigate }: { onNavigate: Navigate }) {
       <div><p className="eyebrow">INTERACTIVE IT LEARNING</p><h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-slate-900 sm:text-5xl">見えないITの仕組みを、<br />見て理解する。</h1><p className="mt-6 max-w-xl text-base leading-8 text-slate-600"><GlossaryText text="Webサイトへアクセスしたとき、PCの中からサーバーまで何が起きているのか。3D空間を探索しながら、データの流れを追って学べます。ネットワークを入口に、文章だけではイメージしにくいIT・コンピュータの仕組みを少しずつ広げていきます。" onOpenTerm={(termId) => onNavigate(`/glossary/${termId}`)} /></p><div className="mt-8 flex flex-wrap gap-3"><PrimaryButton onClick={() => onNavigate('/visualizer')}>シミュレーションを始める</PrimaryButton><button type="button" onClick={() => onNavigate('/topics')} className="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700">学習を探す</button></div></div>
       <div className="rounded-3xl border border-cyan-100 bg-slate-50 p-5 shadow-sm"><div className="rounded-2xl border border-slate-200 bg-white p-5"><div className="flex items-center justify-between"><span className="eyebrow">URL ACCESS FLOW</span><span className="rounded-full bg-cyan-50 px-2 py-1 text-[10px] font-bold text-cyan-700">SIMULATION</span></div><div className="mt-7 grid gap-3"><div className="flow-node flow-node-pc">PC <span>Application / OS / NIC</span></div><div className="flow-line" /><div className="flow-node flow-node-router">Router <span>宛先IPから次の経路を選ぶ</span></div><div className="flow-line" /><div className="flow-node flow-node-server">Web Server <span>データを取り出して処理する</span></div></div></div><p className="mt-4 px-1 text-sm leading-6 text-slate-600"><GlossaryText text="遠くから見ると抽象的に、中に入るほど具体的に。通信の全体像から、フレームやビットまで進めます。" onOpenTerm={(termId) => onNavigate(`/glossary/${termId}`)} /></p></div>
     </section>
+
+    <LearningPathOverview onNavigate={onNavigate} />
 
     <section className="border-t border-slate-200 py-16"><SectionTitle eyebrow="WHAT YOU CAN LEARN" title="このサイトで分かること" lead="用語を単独で覚えるのではなく、Webアクセスという一つの流れの中で関係を確かめます。" onOpenTerm={(termId) => onNavigate(`/glossary/${termId}`)} /><div className="mt-9 grid gap-4 sm:grid-cols-2"><>{FEATURES.map(feature => <article key={feature.title} className="panel p-6"><p className="eyebrow">{feature.tag}</p><h2 className="mt-3 text-lg font-bold text-slate-900">{feature.title}</h2><p className="mt-2 text-sm leading-7 text-slate-600"><GlossaryText text={feature.body} onOpenTerm={(termId) => onNavigate(`/glossary/${termId}`)} /></p></article>)}</></div></section>
 

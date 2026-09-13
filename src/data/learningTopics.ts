@@ -1,4 +1,4 @@
-import type { LearningCategory, LearningTopic } from '../types/learning'
+import type { LearningCategory, LearningPath, LearningTopic } from '../types/learning'
 
 /**
  * The first three topics are intentionally small and complete. Future areas
@@ -57,9 +57,41 @@ export const LEARNING_TOPICS: LearningTopic[] = [
     visualization: 'interactive-2d',
     learningGoals: ['CIDRの / 数字が先頭から使うビット数であることを確認できる', '複数の候補からLongest Prefix Matchを選べる', '一致がない場合にdefault routeが使われる理由を説明できる'],
     prerequisites: ['arp'],
-    relatedTopics: ['dhcp', 'arp', 'nat-napt', 'firewall'],
-    nextTopics: ['nat-napt', 'firewall'],
+    relatedTopics: ['dhcp', 'arp', 'dns-resolution', 'nat-napt', 'firewall'],
+    nextTopics: ['dns-resolution'],
     glossaryTerms: ['ipv4', 'cidr', 'routing-table', 'longest-prefix-match', 'default-gateway', 'router'],
+    status: 'available',
+    simulatorPath: '/visualizer',
+  },
+  {
+    id: 'dns-resolution',
+    category: 'network',
+    title: 'DNS：名前から接続先を見つける',
+    shortTitle: 'DNS',
+    summary: 'URLに含まれるホスト名を手がかりに、PCが設定済みのDNSリゾルバへ問い合わせ、接続先の情報を得る代表的な流れです。',
+    why: '人が覚えやすいドメイン名だけでは、IPネットワーク上で配送できません。名前とIPアドレスなどの情報を対応付ける仕組みが必要です。',
+    visualization: 'hybrid-3d',
+    learningGoals: ['DNSがURL全体ではなく主にホスト名を扱うことを説明できる', 'PC・再帰リゾルバ・上流DNSの役割を大まかに区別できる', 'DNS Answerを受け取った後に、別途Web Serverへの通信が始まることを理解する'],
+    prerequisites: ['arp', 'routing'],
+    relatedTopics: ['dhcp', 'arp', 'routing', 'tcp-connection'],
+    nextTopics: ['tcp-connection'],
+    glossaryTerms: ['url', 'dns', 'ip', 'udp', 'tcp', 'router', 'ipv4'],
+    status: 'available',
+    simulatorPath: '/visualizer',
+  },
+  {
+    id: 'tcp-connection',
+    category: 'network',
+    title: 'TCP：接続を確立してデータを順番に運ぶ',
+    shortTitle: 'TCP接続',
+    summary: 'ClientとWeb ServerがSYN / SYN + ACK / ACKで初期状態を確認し、順序や確認を扱う接続を始める代表的な流れです。',
+    why: 'IPだけでは、データが正しい順番で届いたか、途中で不足したかを扱えません。TCPは、通信の両端で順序・確認・再送などを行うための基盤を提供します。',
+    visualization: 'step-animation',
+    learningGoals: ['3-way handshakeの3つのメッセージの向きと役割を追える', 'Sequence NumberがTCPのバイトストリーム上の位置に関係することを説明できる', 'DNSで接続先を得た後に、別途TCP接続が始まることを理解する'],
+    prerequisites: ['dns-resolution'],
+    relatedTopics: ['dns-resolution', 'nat-napt', 'firewall'],
+    nextTopics: ['firewall'],
+    glossaryTerms: ['tcp', 'syn', 'ack', 'port', 'ip', 'tls', 'https'],
     status: 'available',
     simulatorPath: '/visualizer',
   },
@@ -73,7 +105,7 @@ export const LEARNING_TOPICS: LearningTopic[] = [
     visualization: 'step-animation',
     learningGoals: ['NATとNAPTの関係を大まかに説明できる', '送信時の変換と返信時の逆変換を追える', '対応表が返信先を判断するために必要なことを理解する'],
     prerequisites: ['arp', 'routing'],
-    relatedTopics: ['arp', 'routing', 'firewall'],
+    relatedTopics: ['arp', 'routing', 'dns-resolution', 'tcp-connection', 'firewall'],
     nextTopics: ['firewall'],
     glossaryTerms: ['nat', 'napt', 'ipv4', 'tcp', 'router', 'firewall'],
     status: 'available',
@@ -104,7 +136,7 @@ export const LEARNING_TOPICS: LearningTopic[] = [
     visualization: 'interactive-2d',
     learningGoals: ['Firewallが通信の条件とルールを照合することを説明できる', '許可ルールとdefault denyの違いを例で確認できる', 'Stateful Firewallが既存の通信状態を利用できることを大まかに理解する'],
     prerequisites: ['routing'],
-    relatedTopics: ['routing', 'nat-napt'],
+    relatedTopics: ['routing', 'nat-napt', 'tcp-connection'],
     glossaryTerms: ['firewall', 'ip', 'tcp', 'router', 'nat'],
     status: 'available',
     simulatorPath: '/visualizer',
@@ -112,6 +144,27 @@ export const LEARNING_TOPICS: LearningTopic[] = [
 ]
 
 export const LEARNING_TOPIC_BY_ID = new Map(LEARNING_TOPICS.map(topic => [topic.id, topic]))
+
+/**
+ * This is an optional recommended route, not a protocol dependency graph or
+ * the exact order in which every Web request is processed.
+ */
+export const LEARNING_PATHS: LearningPath[] = [
+  {
+    id: 'network-foundations',
+    title: 'Webアクセスの土台を学ぶ',
+    description: 'ネットワークへ参加してから、名前を解決して通信を始めるまでを、理解しやすい順番でたどります。',
+    topicIds: ['dhcp', 'arp', 'routing', 'dns-resolution', 'tcp-connection'],
+    branches: [
+      { fromTopicId: 'routing', title: '家庭や組織の境界を学ぶ', topicIds: ['nat-napt', 'firewall'] },
+      { fromTopicId: 'arp', title: 'IPv6と比較して学ぶ', topicIds: ['ipv6'] },
+    ],
+  },
+]
+
+export function learningPathForTopic(topicId: string) {
+  return LEARNING_PATHS.find(path => path.topicIds.includes(topicId) || path.branches?.some(branch => branch.topicIds.includes(topicId))) ?? null
+}
 
 export function learningTopicFromPath(path: string) {
   if (!path.startsWith('/learn/')) return null
