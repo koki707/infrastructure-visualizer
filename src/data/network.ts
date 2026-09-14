@@ -1,19 +1,19 @@
 import type { Connection, NetworkNode, Position, SimulationDestination } from '../types/network'
 
 export const NETWORK_NODES: NetworkNode[] = [
-  { id: 'pc', name: 'PC', type: 'pc', position: [-9, -2.9, 1.5], detail: '送信元 · 有線LAN', description: 'この代表例では、PCはCat6 Ethernetケーブルで家庭内LANへ接続しています。アプリケーションで作られたデータが、ネットワークへ送り出される出発点です。' },
-  { id: 'switch', name: 'LAN Switch', type: 'switch', position: [-5.8, -1.4, .8], detail: 'Ethernet転送', description: '宅内のEthernet（電気信号）を受け、宛先MACアドレスを参照して適切なポートへEthernetフレームを転送します。' },
-  { id: 'home-router', name: 'Home Router', type: 'router', position: [-2.7, -.1, -.2], detail: '家庭内LAN → FTTH', description: '家庭内ネットワークの出口です。宅内ではEthernetやWi‑Fiを使い、回線終端装置（ONU/ONT）側では光アクセス回線へつながる代表例として表しています。' },
-  { id: 'dns-server', name: 'DNS Server', type: 'dns', position: [-.7, 3.7, -3.4], detail: '名前解決', description: 'ドメイン名に対応するIPアドレスを返すDNSリゾルバを、学習用に独立した機器として表しています。' },
-  { id: 'isp-router', name: 'ISP Router', type: 'router', position: [1.6, 1.5, .5], detail: 'ISP光アクセス網', description: '回線事業者／ISPのネットワーク内のエッジルーターです。多くの区間で光ファイバを使い、次の経路へIPパケットを転送します。' },
-  { id: 'internet-router', name: 'Internet Router', type: 'router', position: [4.8, -1.3, 1.8], detail: '光バックボーン', description: 'インターネット上の中継ルーターです。実際には多数の事業者ネットワークと光回線が相互接続されています。' },
-  { id: 'web-server', name: 'Docs Web Server', type: 'server', position: [8.6, 2.7, -1.8], detail: 'docs.example.test · データセンター内', description: 'ドキュメントサイトを提供する、データセンターのラック内にあるWebサーバです。ラック内のスイッチ／サーバ間も通常はEthernetまたは高速な光接続で構成されます。' },
-  { id: 'shop-web-server', name: 'Shop Web Server', type: 'server', position: [10.2, .2, .75], detail: 'shop.example.test · データセンター内', description: 'オンラインストアを提供するWebサーバです。選択したURLの代表的な接続先として、同じデータセンター領域に配置しています。' },
-  { id: 'status-web-server', name: 'Status Web Server', type: 'server', position: [7.25, .5, .15], detail: 'status.example.test · データセンター内', description: 'サービスの稼働状況を表示するWebサーバです。選択したURLに応じて、通信の到着先として強調されます。' },
+  { id: 'pc', name: 'PC', type: 'pc', position: [-9, -2.9, 1.5], detail: '送信元 · 有線LAN', description: 'この代表例では、PCはカテゴリ6 Ethernetケーブルで家庭内LANへ接続しています。アプリケーションで作られたデータが、ネットワークへ送り出される出発点です。' },
+  { id: 'switch', name: 'LANスイッチ', type: 'switch', position: [-5.8, -1.4, .8], detail: 'Ethernet転送', description: '宅内のEthernet（電気信号）を受け、宛先MACアドレスを参照して適切なポートへEthernetフレームを転送します。' },
+  { id: 'home-router', name: 'ホームルーター', type: 'router', position: [-2.7, -.1, -.2], detail: '家庭内LAN → FTTH', description: '家庭内ネットワークの出口です。宅内ではEthernetやWi‑Fiを使い、回線終端装置（ONU/ONT）側では光アクセス回線へつながる代表例として表しています。' },
+  { id: 'dns-server', name: 'DNSサーバー', type: 'dns', position: [-.7, 3.7, -3.4], detail: '名前解決', description: 'ドメイン名に対応するIPアドレスを返すDNSリゾルバを、学習用に独立した機器として表しています。' },
+  { id: 'isp-router', name: 'ISPルーター', type: 'router', position: [1.6, 1.5, .5], detail: 'ISP光アクセス網', description: '回線事業者／ISPのネットワーク内のエッジルーターです。多くの区間で光ファイバを使い、次の経路へIPパケットを転送します。' },
+  { id: 'internet-router', name: 'インターネットルーター', type: 'router', position: [4.8, -1.3, 1.8], detail: '光バックボーン', description: 'インターネット上の中継ルーターです。実際には多数の事業者ネットワークと光回線が相互接続されています。' },
+  { id: 'web-server', name: 'ドキュメントWebサーバー', type: 'server', position: [8.6, 2.7, -1.8], detail: 'docs.example.test · データセンター内', description: 'ドキュメントサイトを提供する、データセンターのラック内にあるWebサーバーです。ラック内のスイッチ／サーバー間も通常はEthernetまたは高速な光接続で構成されます。' },
+  { id: 'shop-web-server', name: 'ショップWebサーバー', type: 'server', position: [10.2, .2, .75], detail: 'shop.example.test · データセンター内', description: 'オンラインストアを提供するWebサーバーです。選択したURLの代表的な接続先として、同じデータセンター領域に配置しています。' },
+  { id: 'status-web-server', name: 'ステータスWebサーバー', type: 'server', position: [7.25, .5, .15], detail: 'status.example.test · データセンター内', description: 'サービスの稼働状況を表示するWebサーバーです。選択したURLに応じて、通信の到着先として強調されます。' },
 ]
 
 export const CONNECTIONS: Connection[] = [
-  { from: 'pc', to: 'switch', medium: 'ethernet', label: 'Cat6 Ethernet · 電気信号', via: [[-7.8, -3.2, 1.28]] },
+  { from: 'pc', to: 'switch', medium: 'ethernet', label: 'カテゴリ6 Ethernet · 電気信号', via: [[-7.8, -3.2, 1.28]] },
   { from: 'switch', to: 'home-router', medium: 'ethernet', label: '宅内 Ethernet', via: [[-4.25, -2.35, .15]] },
   { from: 'home-router', to: 'isp-router', medium: 'fiber', label: 'FTTH · 光アクセス回線', via: [[-.85, -2.55, -.15], [.15, -1.42, .2]] },
   { from: 'isp-router', to: 'internet-router', medium: 'backbone-fiber', label: 'ISP / バックボーン光回線', via: [[3.25, -.05, 1.5]] },

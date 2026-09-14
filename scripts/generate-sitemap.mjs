@@ -17,7 +17,37 @@ try {
   process.exit(1)
 }
 
-const routes = ['/', '/visualizer', '/glossary', '/about', '/guide', '/topics', '/notes', '/privacy', '/terms']
+const routes = [
+  '/',
+  '/visualizer',
+  '/topics',
+  '/learn/dhcp',
+  '/learn/arp',
+  '/learn/routing',
+  '/learn/dns-resolution',
+  '/learn/tcp-connection',
+  '/learn/nat-napt',
+  '/learn/ipv6',
+  '/learn/firewall',
+  '/learn/cpu-instruction-cycle',
+  '/learn/cache-memory',
+  '/learn/virtual-memory-paging',
+  '/learn/process-scheduling',
+  '/learn/database-transaction',
+  '/learn/database-index',
+  '/learn/tls-handshake',
+  '/learn/digital-signature',
+  '/learn/load-balancing',
+  '/learn/system-failover',
+  '/learn/binary-search',
+  '/learn/graph-traversal',
+  '/glossary',
+  '/about',
+  '/guide',
+  '/notes',
+  '/privacy',
+  '/terms',
+]
 const xmlEscape = (value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((route) => `  <url><loc>${xmlEscape(new URL(route, baseUrl).toString())}</loc></url>`).join('\n')}\n</urlset>\n`
 

@@ -9,10 +9,10 @@ import { ProtocolUnit, type PacketUnitKind } from './ProtocolUnit'
 type Point = [number, number, number]
 
 const LAYER_POSITIONS: Array<{ id: string; position: Point; color: string; subtitle: string }> = [
-  { id: 'app-layer', position: [0, 2.55, 0], color: '#38bdf8', subtitle: 'Application Data' },
-  { id: 'transport', position: [0, 1.35, 0], color: '#818cf8', subtitle: '+ TCP Header' },
-  { id: 'network', position: [0, .15, 0], color: '#fbbf24', subtitle: '+ IP Header' },
-  { id: 'ethernet', position: [0, -1.05, 0], color: '#2dd4bf', subtitle: '+ Ethernet Header / FCS' },
+  { id: 'app-layer', position: [0, 2.55, 0], color: '#38bdf8', subtitle: 'アプリケーションデータ' },
+  { id: 'transport', position: [0, 1.35, 0], color: '#818cf8', subtitle: '+ TCPヘッダ' },
+  { id: 'network', position: [0, .15, 0], color: '#fbbf24', subtitle: '+ IPヘッダ' },
+  { id: 'ethernet', position: [0, -1.05, 0], color: '#2dd4bf', subtitle: '+ Ethernetヘッダ / FCS' },
   { id: 'physical', position: [0, -2.25, 0], color: '#34d399', subtitle: '信号として送出' },
 ]
 const PACKET_PATH: Point[] = LAYER_POSITIONS.map(layer => [0, layer.position[1], .55])

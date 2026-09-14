@@ -1,18 +1,18 @@
 import { PageContainer, SectionTitle, type Navigate } from '../components/site/SiteLayout'
 
 const TERMS_SECTIONS = [
-  ['サービスの目的', 'Infrastructure Simulator は、ITインフラやWebアクセスの仕組みを視覚的に学ぶための個人開発の教育プロジェクトです。'],
+  ['サービスの目的', 'ITインフラ・シミュレーターは、ウェブアクセスを入口に、ITインフラやコンピュータの仕組みを視覚的に学ぶための個人開発の教育プロジェクトです。'],
   ['教育用シミュレーション', '本サイトのURL選択、DNS、TCP、TLS、HTTP、通信経路、機器内部の表示は教育目的のモデルです。入力されたURLへ実際にアクセスしたり、DNS問い合わせやパケット送信を行ったりしません。'],
-  ['教材内容と正確性', '教材は理解しやすさを優先して一部を簡略化しています。内容の正確性には配慮していますが、個別の環境・製品・規格・試験問題への適合を保証するものではありません。'],
+  ['教材内容と正確性', '教材は理解しやすさを優先して一部を簡略化しています。内容の正確性には配慮していますが、個別の環境・製品・規格・設定への適合を保証するものではありません。'],
   ['禁止行為', '法令に反する行為、サービスの妨害、第三者の権利を侵害する行為、または本サイトの意図しない利用を禁止します。'],
   ['変更・停止と免責', 'β版のため、内容・機能・提供方法を予告なく変更または停止する場合があります。本サイトの利用により生じた損害について、法令上認められる範囲で責任を負いません。'],
   ['著作権と外部サービス', '本サイト内の自作コンテンツの権利は制作者に帰属します。依存ライブラリは各ライセンスに従います。現在、広告、アカウント登録、決済、アクセス解析は利用していません。'],
-  ['規約の変更', '本規約を更新した場合は、このページに掲載します。公開前・公開後を問わず、運用内容が変わる際にはPrivacyページとあわせて見直します。'],
+  ['規約の変更', '本規約を更新した場合は、このページに掲載します。公開前・公開後を問わず、運用内容が変わる際にはプライバシーページとあわせて見直します。'],
 ] as const
 
 export function TermsPage({ onNavigate }: { onNavigate: Navigate }) {
   return <PageContainer>
-    <SectionTitle eyebrow="TERMS" title="利用規約" lead="β版の教育サイトを利用する際の基本的な注意事項です。" />
+    <SectionTitle eyebrow="利用規約" title="利用規約" lead="ベータ版の教育サイトを利用する際の基本的な注意事項です。" />
     <div className="mt-10 max-w-3xl space-y-4">
       {TERMS_SECTIONS.map(([title, body]) => <article key={title} className="panel p-6"><h2 className="text-lg font-bold text-slate-900">{title}</h2><p className="mt-3 text-sm leading-7 text-slate-600">{body}</p></article>)}
     </div>

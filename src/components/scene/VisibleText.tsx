@@ -1,5 +1,5 @@
 import { Text as DreiText } from '@react-three/drei'
-import type { ComponentProps } from 'react'
+import { Suspense, type ComponentProps } from 'react'
 
 /**
  * Scene labels are instructional UI, not physical objects. Rendering them after
@@ -8,14 +8,16 @@ import type { ComponentProps } from 'react'
 export function VisibleText(props: ComponentProps<typeof DreiText>) {
   const { outlineWidth, outlineColor, ...textProps } = props
   return (
-    <DreiText
-      {...textProps}
-      font="/fonts/NotoSansJP-VF.ttf"
-      outlineWidth={outlineWidth ?? 0.01}
-      outlineColor={outlineColor ?? '#f8fafc'}
-      renderOrder={40}
-      material-depthTest={false}
-      material-depthWrite={false}
-    />
+    <Suspense fallback={null}>
+      <DreiText
+        {...textProps}
+        font="/fonts/NotoSansJP-VF.ttf"
+        outlineWidth={outlineWidth ?? 0.01}
+        outlineColor={outlineColor ?? '#f8fafc'}
+        renderOrder={40}
+        material-depthTest={false}
+        material-depthWrite={false}
+      />
+    </Suspense>
   )
 }

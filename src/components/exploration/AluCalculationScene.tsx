@@ -39,7 +39,7 @@ function AluChip({ item, selected, onSelect }: { item: ExplorationItem; selected
     <mesh position={[0, .12, .3]}><octahedronGeometry args={[.7, 0]} /><meshStandardMaterial color="#f59e0b" emissive="#fbbf24" emissiveIntensity={.45} metalness={.72} /></mesh>
     <Text position={[0, .94, .3]} fontSize={.22} color="#fff7ed" outlineWidth={.01} outlineColor="#451a03" anchorX="center">ALU · ADD</Text>
     <Text position={[0, -.73, .3]} fontSize={.16} color="#fed7aa" outlineWidth={.007} outlineColor="#451a03" anchorX="center">ビットごとの加算器</Text>
-    <Text position={[0, -1.05, .3]} fontSize={.12} color="#fde68a" outlineWidth={.006} outlineColor="#451a03" anchorX="center">carry を次の桁へ渡す</Text>
+    <Text position={[0, -1.05, .3]} fontSize={.12} color="#fde68a" outlineWidth={.006} outlineColor="#451a03" anchorX="center">キャリーを次の桁へ渡す</Text>
   </group>
 }
 
@@ -82,8 +82,8 @@ export function AluCalculationScene({ world, selectedId, onSelect }: { world: Ex
     <MovingOperand />
     <Text position={[-4.98, 2.82, .1]} fontSize={.22} color="#f8fafc" outlineWidth={.01} outlineColor="#020617">ADD R0, R1（教育用の8ビット例）</Text>
     <Text position={[-4.98, 2.42, .1]} fontSize={.17} color="#fef3c7" outlineWidth={.007} outlineColor="#020617">00101101 (2進数 / 45) + 00010011 (2進数 / 19) = 01000000 (2進数 / 64)</Text>
-    <BitRow bits={CARRY_BITS} position={[.72, -2.48, .1]} color="#f97316" label="各桁から次の桁への carry" />
-    <Text position={[.72, -2.93, .1]} fontSize={.13} color="#e2e8f0" outlineWidth={.006} outlineColor="#020617" anchorX="center">最上位桁のcarry=0：この例では8ビットからの桁あふれなし</Text>
+    <BitRow bits={CARRY_BITS} position={[.72, -2.48, .1]} color="#f97316" label="各桁から次の桁へのキャリー" />
+    <Text position={[.72, -2.93, .1]} fontSize={.13} color="#e2e8f0" outlineWidth={.006} outlineColor="#020617" anchorX="center">最上位桁のキャリー=0：この例では8ビットからの桁あふれなし</Text>
     <OrbitControls enablePan enableDamping minDistance={7} maxDistance={46} maxPolarAngle={Math.PI / 2.05} target={[0, .1, 0]} zoomToCursor />
   </Canvas>
 }
