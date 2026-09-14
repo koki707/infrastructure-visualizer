@@ -270,7 +270,7 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
       <span className="hidden rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs text-cyan-700 sm:block">ブラウザ内教育シミュレーション</span>
     </div>
 
-    <div className="mx-auto grid max-w-[1600px] gap-4 px-5 pb-6 lg:grid-cols-[310px_minmax(0,1fr)_310px] lg:px-8">
+    <div className="mx-auto grid max-w-[1600px] items-start gap-4 px-5 pb-6 lg:grid-cols-[310px_minmax(0,1fr)_310px] lg:px-8">
       <aside className="space-y-4">
         <ControlPanel
           destinationId={destinationId}
@@ -298,7 +298,7 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
         <EncapsulationPanel message={requestLine} url={url} onExplore={openWorld} onOpenTerm={openGlossary} />
       </aside>
 
-      <section className={`relative min-h-[520px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:min-h-[650px] ${world ? 'world-transition' : ''}`}>
+      <section className={`relative h-[520px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:h-[650px] ${world ? 'world-transition' : ''}`}>
         {world ? <>
           <ExplorationScene world={world} selectedId={selectedItemId} onSelect={selectItem} />
           <div className="pointer-events-none absolute left-5 right-5 top-4">
