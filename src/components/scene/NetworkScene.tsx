@@ -9,7 +9,16 @@ import { NodeModel, type DeviceActivity } from './NodeModel'
 import { PhysicalLink } from './PhysicalLink'
 import { VisibleText as Text } from './VisibleText'
 
-interface Props { selectedId: string; journey: PacketJourney | null; onSelect: (node: NetworkNode) => void; onExploreNode: (node: NetworkNode) => void }
+interface Props {
+  selectedId: string
+  journey: PacketJourney | null
+  /** A step-playback checkpoint. It keeps the arrival visible without implying an active cable transfer. */
+  pausedAtNodeId?: string | null
+  /** Freezes the packet's subtle rotation while the learner is reading a checkpoint. */
+  paused?: boolean
+  onSelect: (node: NetworkNode) => void
+  onExploreNode: (node: NetworkNode) => void
+}
 interface RegionProps { title: string; subtitle: string; position: [number, number, number]; size: [number, number]; color: string; active: boolean }
 type RegionId = 'home' | 'dns' | 'isp' | 'internet' | 'server'
 
@@ -83,7 +92,14 @@ function InternetMesh() {
   return <group>{routes.map((points, index) => <Line key={index} points={points} color="#94a3b8" lineWidth={.9} transparent opacity={.22} />)}</group>
 }
 
-function activityForJourney(journey: PacketJourney | null) {
+function activityForJourney(journey: PacketJourney | null, pausedAtNodeId?: string | null) {
+  if (journey && pausedAtNodeId) {
+    return {
+      activeLink: null,
+      activeRegion: regionForNode(pausedAtNodeId),
+      nodeActivity: new Map<string, DeviceActivity>([[pausedAtNodeId, 'incoming']]),
+    }
+  }
   if (!journey || journey.nodePath.length < 2) return { activeLink: null, activeRegion: null as RegionId | null, nodeActivity: new Map<string, DeviceActivity>() }
   const linkCount = journey.nodePath.length - 1
   const scaledProgress = Math.max(0, Math.min(journey.progress, 1)) * linkCount
@@ -102,8 +118,8 @@ function activityForJourney(journey: PacketJourney | null) {
   }
 }
 
-export function NetworkScene({ selectedId, journey, onSelect, onExploreNode }: Props) {
-  const activity = useMemo(() => activityForJourney(journey), [journey])
+export function NetworkScene({ selectedId, journey, pausedAtNodeId, paused = false, onSelect, onExploreNode }: Props) {
+  const activity = useMemo(() => activityForJourney(journey, pausedAtNodeId), [journey, pausedAtNodeId])
   return <Canvas shadows camera={{ position: [1, 10, 31], fov: 50 }} dpr={[1, 2]}>
     <color attach="background" args={['#eef6fb']} />
     {/* The previous 24–52 range reached the fog endpoint at max overview zoom. */}
@@ -124,7 +140,7 @@ export function NetworkScene({ selectedId, journey, onSelect, onExploreNode }: P
     {CONNECTIONS.map(connection => <PhysicalLink key={`${connection.from}-${connection.to}`} connection={connection} active={activity.activeLink === connectionKey(connection.from, connection.to)} />)}
     <DataCenterRacks />
     {NETWORK_NODES.map(node => <NodeModel key={node.id} node={node} active={node.id === selectedId} activity={activity.nodeActivity.get(node.id) ?? null} onSelect={onSelect} onExplore={onExploreNode} />)}
-    {journey !== null && <DataPacket journey={journey} />}
+    {journey !== null && <DataPacket journey={journey} paused={paused} />}
     <OrbitControls
       enablePan
       enableDamping

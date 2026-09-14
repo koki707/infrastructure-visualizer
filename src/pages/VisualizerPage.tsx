@@ -13,13 +13,15 @@ import { RequestStatusPanel } from '../components/ui/RequestStatusPanel'
 import { RequestTimeline } from '../components/ui/RequestTimeline'
 import { EXPLORATION_WORLDS } from '../data/exploration'
 import { ANIMATION_DURATION_MS, NETWORK_NODES, SIMULATION_DESTINATIONS } from '../data/network'
-import { requestStageAt, stageProgress, toRequestLine } from '../data/request'
+import { REQUEST_STOPS, requestStageAt, stageProgress, toRequestLine } from '../data/request'
 import type { ExplorationItem, ExplorationWorldId } from '../types/exploration'
 import type { NetworkNode } from '../types/network'
+import type { RequestPlaybackMode } from '../types/request'
 import { SiteHeader, type Navigate } from '../components/site/SiteLayout'
 
 const toBits = (value: string) => new TextEncoder().encode(value).reduce((bits, byte) => `${bits}${byte.toString(2).padStart(8, '0')} `, '').trim()
 const getWorldForNode = (node: NetworkNode): ExplorationWorldId => node.type === 'pc' ? 'pc' : node.type === 'switch' ? 'switch' : node.type === 'dns' ? 'dns' : node.type === 'server' ? 'server' : 'router'
+const STEP_HOP_DURATION_MS = 650
 
 /**
  * The existing three-column simulator lives in its own route chunk so ordinary
@@ -31,6 +33,9 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
   const [packetProgress, setPacketProgress] = useState<number | null>(null)
   const [sending, setSending] = useState(false)
   const [paused, setPaused] = useState(false)
+  const [playbackMode, setPlaybackMode] = useState<RequestPlaybackMode>('continuous')
+  const [stepStopIndex, setStepStopIndex] = useState(0)
+  const [stepTargetIndex, setStepTargetIndex] = useState<number | null>(null)
   const [worldHistory, setWorldHistory] = useState<ExplorationWorldId[]>([])
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
   const [learningPointHidden, setLearningPointHidden] = useState(false)
@@ -39,11 +44,16 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
   const elapsedRef = useRef(0)
   const segmentStartedAtRef = useRef(0)
   const animationFrameRef = useRef<number | null>(null)
+  const packetProgressRef = useRef<number | null>(null)
 
   const worldId = worldHistory.at(-1) ?? null
   const world = worldId ? EXPLORATION_WORLDS[worldId] : null
   const destination = SIMULATION_DESTINATIONS.find(item => item.id === destinationId) ?? SIMULATION_DESTINATIONS[0]
   const url = destination.url
+  const stepStops = useMemo(() => REQUEST_STOPS.map(stop => ({
+    ...stop,
+    nodeId: stop.nodeId === 'web-server' ? destination.serverNodeId : stop.nodeId,
+  })), [destination.serverNodeId])
   const requestStage = useMemo(() => {
     const stage = requestStageAt(packetProgress)
     if (!stage) return null
@@ -55,7 +65,16 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
       nodePath: stage.nodePath.map(replaceServer),
     }
   }, [destination.serverNodeId, packetProgress])
-  const activeNodeId = packetProgress === null ? selectedNode.id : requestStage?.toNodeId ?? selectedNode.id
+  const currentStepStop = playbackMode === 'step' && sending ? stepStops[stepStopIndex] ?? null : null
+  const movingStepStop = playbackMode === 'step' && sending && stepTargetIndex !== null ? stepStops[stepTargetIndex] ?? null : null
+  const pausedAtNodeId = paused && stepTargetIndex === null ? currentStepStop?.nodeId ?? null : null
+  const progressedNodeId = useMemo(() => {
+    if (!requestStage || packetProgress === null) return null
+    const nodeCount = requestStage.nodePath.length - 1
+    const nodeIndex = Math.min(nodeCount, Math.floor(stageProgress(requestStage, packetProgress) * nodeCount + 0.000001))
+    return requestStage.nodePath[nodeIndex] ?? requestStage.toNodeId
+  }, [packetProgress, requestStage])
+  const activeNodeId = packetProgress === null ? selectedNode.id : pausedAtNodeId ?? progressedNodeId ?? requestStage?.toNodeId ?? selectedNode.id
   const defaultRouteNodeIds = useMemo(() => ['pc', 'switch', 'home-router', 'isp-router', 'internet-router', destination.serverNodeId], [destination.serverNodeId])
   const progressNodeIds = packetProgress === null ? defaultRouteNodeIds : requestStage?.nodePath ?? defaultRouteNodeIds
   const journey = requestStage && packetProgress !== null
@@ -73,21 +92,73 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
     ? [world.title, world.lead, world.note ?? '', world.items.find(item => item.id === selectedItemId)?.title ?? '', world.items.find(item => item.id === selectedItemId)?.description ?? '']
     : [selectedNode.name, selectedNode.detail, selectedNode.description, requestStage?.shortTitle ?? '', requestStage?.protocol ?? '', requestStage?.description ?? '']
 
+  const stepPlayback = useMemo(() => {
+    if (playbackMode !== 'step' || !sending || !currentStepStop) return null
+    const displayStop = movingStepStop ?? currentStepStop
+    const node = NETWORK_NODES.find(item => item.id === displayStop.nodeId)
+    return {
+      currentIndex: stepStopIndex,
+      total: stepStops.length,
+      stageLabel: displayStop.label,
+      nodeName: node?.name ?? displayStop.nodeId,
+      isMoving: stepTargetIndex !== null,
+      isComplete: stepTargetIndex === null && stepStopIndex === stepStops.length - 1,
+    }
+  }, [currentStepStop, movingStepStop, playbackMode, sending, stepStopIndex, stepStops.length, stepTargetIndex])
+  const stepStatusText = stepPlayback
+    ? `止めて追う · ${stepPlayback.currentIndex + 1} / ${stepPlayback.total} · ${stepPlayback.stageLabel} · ${stepPlayback.nodeName}${stepPlayback.isMoving ? 'へ移動中' : stepPlayback.isComplete ? 'で処理を確認' : 'に到着'}`
+    : null
+
+  useEffect(() => {
+    packetProgressRef.current = packetProgress
+  }, [packetProgress])
+
   useEffect(() => {
     if (packetProgress === null) return
     const activeNode = NETWORK_NODES.find(node => node.id === activeNodeId)
     if (activeNode) setSelectedNode(activeNode)
-    if (packetProgress >= 1) {
+    if (packetProgress >= 1 && playbackMode === 'continuous') {
       const timer = window.setTimeout(() => {
         setPacketProgress(null)
         setSending(false)
       }, 1100)
       return () => window.clearTimeout(timer)
     }
-  }, [packetProgress, activeNodeId])
+  }, [packetProgress, activeNodeId, playbackMode])
 
   useEffect(() => {
     if (!sending || paused) return
+    if (playbackMode === 'step') {
+      if (stepTargetIndex === null) return
+      const from = packetProgressRef.current ?? 0
+      const target = stepStops[stepTargetIndex]?.progress
+      if (target === undefined || target <= from) return
+
+      const startedAt = performance.now()
+      const distance = target - from
+      const duration = Math.min(850, Math.max(420, STEP_HOP_DURATION_MS + distance * 1200))
+      const tick = (now: number) => {
+        const ratio = Math.min((now - startedAt) / duration, 1)
+        // A gentle ease makes the arrival legible without adding a long cinematic pause.
+        const eased = 1 - (1 - ratio) * (1 - ratio)
+        const next = from + distance * eased
+        setPacketProgress(next)
+        if (ratio < 1) {
+          animationFrameRef.current = requestAnimationFrame(tick)
+          return
+        }
+        packetProgressRef.current = target
+        setPacketProgress(target)
+        setStepStopIndex(stepTargetIndex)
+        setStepTargetIndex(null)
+        setPaused(true)
+      }
+      animationFrameRef.current = requestAnimationFrame(tick)
+      return () => {
+        if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
+
     segmentStartedAtRef.current = performance.now()
     const tick = (now: number) => {
       const elapsed = elapsedRef.current + now - segmentStartedAtRef.current
@@ -99,24 +170,65 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
     return () => {
       if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current)
     }
-  }, [sending, paused])
+  }, [sending, paused, playbackMode, stepStops, stepTargetIndex])
 
   const startTransmission = () => {
     if (sending) return
     elapsedRef.current = 0
-    setPacketProgress(0)
-    setPaused(false)
+    const initialProgress = playbackMode === 'step' ? stepStops[0]?.progress ?? 0 : 0
+    packetProgressRef.current = initialProgress
+    setPacketProgress(initialProgress)
+    setPaused(playbackMode === 'step')
+    setStepStopIndex(0)
+    setStepTargetIndex(null)
     setLearningPointHidden(false)
     setDevicePickerOpen(false)
     setSending(true)
   }
   const pauseTransmission = () => {
     if (!sending || paused) return
-    elapsedRef.current += performance.now() - segmentStartedAtRef.current
+    if (playbackMode === 'continuous') elapsedRef.current += performance.now() - segmentStartedAtRef.current
     setPaused(true)
   }
   const resumeTransmission = () => {
-    if (sending && paused) setPaused(false)
+    if (sending && paused && (playbackMode === 'continuous' || stepTargetIndex !== null)) setPaused(false)
+  }
+  const advanceStep = () => {
+    if (!sending || playbackMode !== 'step' || stepTargetIndex !== null) return
+    const nextIndex = stepStopIndex + 1
+    if (nextIndex >= stepStops.length) return
+    setLearningPointHidden(false)
+    setStepTargetIndex(nextIndex)
+    setPaused(false)
+  }
+  const previousStep = () => {
+    if (!sending || playbackMode !== 'step' || stepTargetIndex !== null || stepStopIndex <= 0) return
+    const previousIndex = stepStopIndex - 1
+    const previousProgress = stepStops[previousIndex]?.progress ?? 0
+    packetProgressRef.current = previousProgress
+    setPacketProgress(previousProgress)
+    setStepStopIndex(previousIndex)
+    setPaused(true)
+    setLearningPointHidden(false)
+  }
+  const resetStep = () => {
+    if (playbackMode !== 'step') return
+    const initialProgress = stepStops[0]?.progress ?? 0
+    packetProgressRef.current = initialProgress
+    setPacketProgress(initialProgress)
+    setStepStopIndex(0)
+    setStepTargetIndex(null)
+    setPaused(true)
+    setSending(true)
+    setLearningPointHidden(false)
+  }
+  const endStep = () => {
+    if (playbackMode !== 'step') return
+    setPacketProgress(null)
+    packetProgressRef.current = null
+    setSending(false)
+    setPaused(false)
+    setStepTargetIndex(null)
   }
 
   // Simulation state and exploration state are deliberately independent.
@@ -160,7 +272,22 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
 
     <div className="mx-auto grid max-w-[1600px] gap-4 px-5 pb-6 lg:grid-cols-[310px_minmax(0,1fr)_310px] lg:px-8">
       <aside className="space-y-4">
-        <ControlPanel destinationId={destinationId} destinations={SIMULATION_DESTINATIONS} sending={sending} paused={paused} onDestinationChange={setDestinationId} onSend={startTransmission} onPause={pauseTransmission} onResume={resumeTransmission} />
+        <ControlPanel
+          destinationId={destinationId}
+          destinations={SIMULATION_DESTINATIONS}
+          sending={sending}
+          paused={paused}
+          playbackMode={playbackMode}
+          stepPlayback={stepPlayback}
+          onDestinationChange={setDestinationId}
+          onPlaybackModeChange={setPlaybackMode}
+          onSend={startTransmission}
+          onPause={pauseTransmission}
+          onResume={resumeTransmission}
+          onNextStop={advanceStep}
+          onPreviousStop={previousStep}
+          onResetStep={stepPlayback?.isComplete ? endStep : resetStep}
+        />
         <section className="panel p-5">
           <p className="eyebrow">HTTPリクエスト（簡略）</p>
           <pre className="mt-3 whitespace-pre-wrap break-all font-mono text-xs leading-6 text-amber-700">{requestLine}</pre>
@@ -177,14 +304,16 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
           <div className="pointer-events-none absolute left-5 right-5 top-4">
             <div className="pointer-events-auto"><Breadcrumb items={breadcrumbItems} onBack={goBack} onHome={goHome} onNavigate={goToHistory} /></div>
             <div className="mt-3 inline-flex rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur"><span className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full ${sending ? 'bg-cyan-500' : 'bg-slate-400'}`} />{sending ? '通信中・自由に探索' : '自由に探索'}</div>
+            {stepStatusText && <p aria-live="polite" className="mt-2 inline-flex max-w-full rounded-lg border border-cyan-100 bg-white/90 px-3 py-1.5 text-xs font-semibold leading-5 text-cyan-900 shadow-sm backdrop-blur">{stepStatusText}</p>}
             <div className="mt-3 max-w-lg rounded-xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
               <p className="eyebrow">詳細世界</p><h2 className="mt-1 text-xl font-bold text-slate-900">{world.title}</h2><p className="mt-1 text-sm leading-6 text-slate-600">{world.lead}</p>
             </div>
           </div>
         </> : <>
-          <NetworkScene selectedId={selectedNode.id} journey={journey} onSelect={selectNode} onExploreNode={enterNode} />
+          <NetworkScene selectedId={selectedNode.id} journey={journey} pausedAtNodeId={pausedAtNodeId} paused={paused} onSelect={selectNode} onExploreNode={enterNode} />
           <div className="pointer-events-none absolute left-4 top-4 max-w-[calc(100%-2rem)]">
             <div className="inline-flex rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur"><span className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full ${sending ? 'bg-cyan-500' : 'bg-slate-400'}`} />{sending ? '通信を追う' : '自由に探索'}</div>
+            {stepStatusText && <p aria-live="polite" className="mt-2 max-w-xl rounded-lg border border-cyan-100 bg-white/90 px-3 py-1.5 text-xs font-semibold leading-5 text-cyan-900 shadow-sm backdrop-blur">{stepStatusText}</p>}
             <div className="pointer-events-auto mt-2 rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-xs text-slate-600 shadow-sm backdrop-blur">
               <p className="font-semibold text-slate-700">はじめ方</p>
               <p className="mt-1 leading-5">1. 接続先を選ぶ / 2. シミュレーションを開始 / 3. 気になる機器を選ぶ</p>

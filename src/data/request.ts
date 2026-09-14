@@ -1,4 +1,4 @@
-import type { RequestStage } from '../types/request'
+import type { RequestStage, RequestStop } from '../types/request'
 
 export const REQUEST_STAGES: RequestStage[] = [
   { id: 'dns-query', title: 'DNS問い合わせを送る', shortTitle: 'DNS問い合わせ', range: [0, .09], protocol: 'DNS', fromNodeId: 'pc', toNodeId: 'dns-server', nodePath: ['pc', 'switch', 'home-router', 'dns-server'], description: 'PCはドメイン名をIPアドレスに変換するため、DNSリゾルバへ問い合わせます。ここではISP側にリゾルバがあるものとして描いています。', learningPoint: { title: '名前を調べる準備', body: 'URLに含まれるドメイン名の宛先を知るため、まずDNSへ問い合わせています。', focus: '右側の「DNS問い合わせ」を選ぶと、DNSサーバーの役割を確認できます。' } },
@@ -22,6 +22,51 @@ export function stageProgress(stage: RequestStage | null, progress: number | nul
   if (!stage || progress === null) return 0
   const [start, end] = stage.range
   return Math.max(0, Math.min(1, (progress - start) / (end - start)))
+}
+
+/**
+ * Derive pause points directly from the same routes that animate the packet.
+ * A shared boundary (for example, DNS query arrival and DNS answer departure)
+ * is emitted only once, so step playback never pauses twice at the same device
+ * and progress value.
+ */
+export function createRequestStops(stages: readonly RequestStage[] = REQUEST_STAGES): RequestStop[] {
+  const stops: RequestStop[] = []
+  const boundaryTolerance = 1e-9
+
+  for (const stage of stages) {
+    const [start, end] = stage.range
+    const lastNodeIndex = Math.max(stage.nodePath.length - 1, 1)
+
+    stage.nodePath.forEach((nodeId, nodeIndex) => {
+      const progress = start + (end - start) * (nodeIndex / lastNodeIndex)
+      const previousStop = stops.at(-1)
+      const isSharedBoundary = previousStop
+        && previousStop.nodeId === nodeId
+        && Math.abs(previousStop.progress - progress) < boundaryTolerance
+
+      if (isSharedBoundary) return
+
+      stops.push({
+        id: `${stage.id}:${nodeIndex}`,
+        stageId: stage.id,
+        progress,
+        nodeId,
+        nodeIndex,
+        label: stage.shortTitle,
+      })
+    })
+  }
+
+  return stops
+}
+
+/** Ordered device-arrival stops for the main Web access simulation. */
+export const REQUEST_STOPS = createRequestStops()
+
+/** Find the next device arrival after a playback position. */
+export function nextRequestStop(progress: number) {
+  return REQUEST_STOPS.find((stop) => stop.progress > progress + 1e-9) ?? null
 }
 
 export function toRequestLine(url: string) {
