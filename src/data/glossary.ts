@@ -1,4 +1,4 @@
-import type { GlossaryCategory, GlossaryCategoryId, GlossaryDetailSection, GlossaryTerm } from '../types/glossary'
+import type { GlossaryBeginnerGuide, GlossaryCategory, GlossaryCategoryId, GlossaryDetailSection, GlossaryTerm } from '../types/glossary'
 
 export const GLOSSARY_CATEGORIES: GlossaryCategory[] = [
   { id: 'computer', title: 'コンピュータ内部', description: 'CPUや命令実行など、PCの中で起きる処理です。' },
@@ -239,6 +239,213 @@ const DEEP_DIVES: Record<string, GlossaryDetailSection[]> = {
   ],
 }
 
+/**
+ * 「まずひとことで」を届けるための入口です。比喩は理解の足場として
+ * 使い、実際の通信での位置と注意点を必ず併記します。
+ */
+const BEGINNER_GUIDES: Record<string, GlossaryBeginnerGuide> = {
+  url: {
+    japaneseName: 'ウェブアドレス', pronunciation: 'ユーアールエル',
+    inOneSentence: 'ウェブ上で「どの相手の、どの情報を、どの方法で受け取りたいか」を表す、住所のような文字列です。',
+    whyNeeded: '人は example.com や /news のような名前で目的地を指定したほうが扱いやすく、ブラウザはそこから接続先と要求する情報を読み取れます。',
+    everydayImage: '建物の住所に、部屋番号や用件を添えた案内のようなものです。ドメイン名が建物、パスが部屋やページ、クエリが追加の条件に当たります。',
+    whenItAppears: 'ウェブアクセスの最初です。ブラウザがURLを読み、まずドメイン名をDNSで調べてから通信を始めます。',
+    beginnerNote: 'URLそのものがネットワークを流れて相手を探すわけではありません。# の後ろのフラグメントは多くの場合ブラウザだけで使われ、HTTPリクエストには送られません。',
+  },
+  dns: {
+    japaneseName: 'ドメイン名の名前解決', pronunciation: 'ディーエヌエス',
+    inOneSentence: '人が読みやすいドメイン名と、通信で使うIPアドレスなどの情報を対応付ける仕組みです。',
+    whyNeeded: 'ネットワークの配送にはIPアドレスが必要ですが、人が数字だけを覚えるのは大変です。名前を使えるようにするため、対応を調べる役割が必要です。',
+    everydayImage: '連絡先の名前から電話番号を探す電話帳のようなものです。ただしDNSは世界中に分散した仕組みで、単一の電話帳ではありません。',
+    whenItAppears: 'URLに書かれたホスト名へ接続する前に登場します。すでに端末やDNSリゾルバのキャッシュに答えがあれば、外部への問い合わせを省けることもあります。',
+    beginnerNote: 'DNSはIPアドレスだけを返す仕組みではありません。この教材ではA・AAAAレコードによるIPアドレス取得を代表例として扱っています。',
+  },
+  ip: {
+    japaneseName: 'インターネット上の住所と配送ルール', pronunciation: 'アイピー',
+    inOneSentence: '異なるネットワークをまたいで、宛先へパケットを届けるための共通の住所と配送ルールです。',
+    whyNeeded: '家庭内LAN、事業者網、データセンターなど、別々のネットワークを越えて届けるには、途中のルーターが共通に読める宛先情報が必要です。',
+    everydayImage: '遠方まで荷物を送るときの住所に近い役割です。途中の配送拠点は住所を見て次の拠点を決めます。',
+    whenItAppears: 'TCPなどで包まれたデータにIPヘッダが付くとき、そして各ルーターが次の経路を選ぶときに使われます。',
+    beginnerNote: 'IPだけでは到達・順序・重複のない受信を保証しません。またIPアドレスとMACアドレスは同じ種類の住所ではなく、担当する範囲が異なります。',
+  },
+  ipv4: {
+    japaneseName: 'IPバージョン4', pronunciation: 'アイピーブイフォー',
+    inOneSentence: '32ビットのIPアドレスを使う、現在も広く使われているIPの方式です。',
+    whyNeeded: 'ルーターが宛先ネットワークと宛先の端末を区別し、パケットをどちらへ送るか決める基準になります。',
+    everydayImage: '192.168.1.10 のように4つの数字で書く住所表記です。ただし4つに区切るのは人が読みやすくするための表し方で、内部では32ビットの値です。',
+    whenItAppears: 'PCがIPパケットを作るときや、ルーターが宛先への経路を選ぶときに使われます。',
+    beginnerNote: '192.168.x.x のようなアドレスには、家庭や組織の内部で使うための範囲があります。インターネット全体でそのまま使えるアドレスとは限りません。',
+  },
+  ethernet: {
+    japaneseName: '有線LANで広く使われる通信方式', pronunciation: 'イーサネット',
+    inOneSentence: '同じLANや1本のリンク上でデータを運ぶための代表的な技術で、データはEthernetフレームとして送られます。',
+    whyNeeded: 'PCからスイッチ、ルーターなど、次に直接つながる相手へデータを渡すには、リンク上で使う宛先と誤り検出の仕組みが必要です。',
+    everydayImage: '近くの配送拠点まで荷物を渡すための封筒のようなものです。遠方まで同じ封筒が運ばれ続けるわけではありません。',
+    whenItAppears: 'NICから有線LANへ送るときや、ルーターが次のリンクへ送り直すときに登場します。',
+    beginnerNote: 'Ethernetフレームはインターネット全体を同じ形のまま通り抜けません。ルーターを越えるごとに、次のリンクに合うフレームへ包み直されます。',
+  },
+  mac: {
+    japaneseName: 'リンク内の宛先アドレス', pronunciation: 'マック',
+    inOneSentence: 'Ethernetなどの同一リンク内で、フレームを次の相手へ渡すために使うアドレスの仕組みです。',
+    whyNeeded: 'IPアドレスで次の中継先を決めても、Ethernetフレームをどの機器へ渡すかをリンク上で示す必要があります。',
+    everydayImage: '建物の中で次の受取人へ荷物を渡すときの宛名に近い役割です。遠方の最終目的地ではなく、まず次に渡す相手を示します。',
+    whenItAppears: 'Ethernetフレームを作るときに宛先MACアドレスとして入ります。IPv4では、ARPで次の相手のMACアドレスを調べることがあります。',
+    beginnerNote: 'MACアドレスは世界で完全に一意と保証されるものではありません。遠いウェブサーバーのMACアドレスをインターネット越しに調べるものでもありません。',
+  },
+  tcp: {
+    japaneseName: '順序と到達確認を扱う通信方式', pronunciation: 'ティーシーピー',
+    inOneSentence: 'アプリケーション間のデータを、順序をそろえながら届けるためのトランスポート層プロトコルです。',
+    whyNeeded: 'IPだけでは、途中で失われたか、順番が入れ替わったかを扱いません。TCPは受信確認や再送などで、アプリケーションが扱いやすいバイト列を作ります。',
+    everydayImage: 'ページ番号付きの書類を送り、受取人から「ここまで受け取った」と返事をもらうやり方に近いものです。',
+    whenItAppears: 'このサイトで扱う代表的なHTTPS通信では、DNSの後にTCP接続を作り、その上でTLSやHTTPのデータを運びます。',
+    beginnerNote: 'TCPのSequence Numberはパケットの通し番号ではなく、TCPのバイト列の位置に関係する番号です。HTTP/3ではTCPではなくQUICとUDPを使います。',
+  },
+  port: {
+    japaneseName: '端末内の通信先番号', pronunciation: 'ポート',
+    inOneSentence: 'TCPやUDPで、同じ端末の中にある通信先を区別するための番号です。',
+    whyNeeded: 'IPアドレスだけでは端末までしか分かりません。ウェブブラウザ、メール、別のアプリケーションなど、端末内のどの通信へ渡すかを区別する必要があります。',
+    everydayImage: '建物の住所だけでなく、部屋番号や受付窓口まで指定することに近い役割です。',
+    whenItAppears: 'TCPまたはUDPのヘッダに送信元ポート番号と宛先ポート番号として入ります。ウェブのHTTPSでは443番がよく使われます。',
+    beginnerNote: 'ポート番号だけで通信全体を一意に決めるわけではありません。実際のTCP通信は送信元・宛先のIPアドレス、ポート番号、プロトコルなどの組み合わせで区別されます。',
+  },
+  router: {
+    japaneseName: 'ネットワークの間をつなぐ中継機器', pronunciation: 'ルーター',
+    inOneSentence: '宛先IPアドレスを見て、データを次にどのネットワークへ送るかを決める機器です。',
+    whyNeeded: '家庭内LANだけでは遠いサーバーへ届きません。別のネットワークの間をつなぎ、次の行き先を選ぶ役割が必要です。',
+    everydayImage: '宛先の住所を見て、次の配送拠点へ振り分ける仕分け所に近い役割です。',
+    whenItAppears: 'PCがLAN外のウェブサーバーへ送るとき、まずデフォルトゲートウェイであるルーターへ渡します。その後もネットワークの境界ごとにルーターが登場します。',
+    beginnerNote: 'ルーターは受け取ったEthernetフレームをそのまま遠方へ送るのではありません。IPパケットを見て次を決め、次のリンク用の新しいフレームを作ります。',
+  },
+  switch: {
+    japaneseName: 'LAN内の振り分け機器', pronunciation: 'スイッチ',
+    inOneSentence: '同じLANの機器をつなぎ、主にMACアドレスを手がかりにEthernetフレームを適切なポートへ渡す機器です。',
+    whyNeeded: 'LAN内のすべての機器へ毎回同じデータを送らず、必要な相手がつながるポートへ届けやすくするためです。',
+    everydayImage: '同じ建物の中で、宛名を見て各部屋へ郵便物を振り分ける受付のようなものです。',
+    whenItAppears: 'PCが家庭や組織内のLANから、同一LAN上の相手や最初のルーターへフレームを送るときに登場します。',
+    beginnerNote: 'スイッチは通常、ルーターのようにインターネット全体のIP経路を選びません。宛先MACアドレスを知らないときは、同じVLAN内へフラッディングすることもあります。',
+  },
+  nic: {
+    japaneseName: 'ネットワーク接続口', pronunciation: 'エヌアイシー',
+    inOneSentence: 'PCやサーバーをネットワークへつなぎ、OSのデータをEthernetやWi-Fiで送受信するための窓口です。',
+    whyNeeded: 'アプリケーションやOSが作ったデータを、ケーブル・光・電波などの実際の通信媒体へ渡し、受信したデータをOSへ戻す境界が必要です。',
+    everydayImage: '建物の中の作業と外の配送網をつなぐ、荷物の出入口と通訳の役割を合わせたようなものです。',
+    whenItAppears: 'PCから最初のLANへ出る直前、またはネットワークからPCへ届いた直後に登場します。',
+    beginnerNote: 'NICは必ずしも後から挿すカードではありません。機器に内蔵されることや、仮想的なネットワークインターフェースとして作られることもあります。',
+  },
+  http: {
+    japaneseName: 'ウェブの要求と応答の約束', pronunciation: 'エイチティーティーピー',
+    inOneSentence: 'ウェブブラウザとウェブサーバーが、「何をほしいか」と「何を返すか」をやり取りするための約束です。',
+    whyNeeded: 'URLで指定したページや画像などを受け取るには、GETやPOST、応答の状態など、双方が同じ意味で読めるメッセージの形式が必要です。',
+    everydayImage: 'レストランで注文内容を伝え、店から料理や結果を受け取るための注文票に近い役割です。',
+    whenItAppears: '代表的なHTTPS通信では、接続とTLSの準備ができた後に、HTTPリクエストとレスポンスとして登場します。',
+    beginnerNote: 'HTTP自体は暗号化やケーブル上の配送を担当しません。内容を守るTLSや、実際に運ぶTCPまたはQUIC、IP、リンク層と協調します。',
+  },
+  https: {
+    japaneseName: '保護されたウェブ通信', pronunciation: 'エイチティーティーピーエス',
+    inOneSentence: 'HTTPのやり取りをTLSで保護して行うウェブ通信です。',
+    whyNeeded: 'インターネット上の経路を通るときに、通信内容を読まれたり書き換えられたりしにくくし、接続先の確認にも役立てるためです。',
+    everydayImage: '内容が見えにくく、開けた跡も分かる封印付きの封筒を、相手の身元の確認と一緒に使うイメージです。',
+    whenItAppears: 'DNSで接続先を調べ、接続やTLSの準備をした後に、ブラウザとウェブサーバーの間でHTTPを安全に扱う場面に登場します。',
+    beginnerNote: 'HTTPSは多くの場合443番ポートを使いますが、絶対の決まりではありません。HTTP/3ではTLSを組み込んだQUICがUDPの上で使われます。',
+  },
+  tls: {
+    japaneseName: '通信内容を守る仕組み', pronunciation: 'ティーエルエス',
+    inOneSentence: '通信内容を暗号化し、改ざんの検出と接続先の確認を助けるための仕組みです。',
+    whyNeeded: '途中のネットワークを完全には信用できない環境でも、アプリケーションのデータを保護してやり取りするためです。',
+    everydayImage: '鍵をかけた封筒に、途中で開けられたら分かる封印と、受取人を確かめる身分証を組み合わせるイメージです。',
+    whenItAppears: 'このサイトの代表的なHTTPS通信では、TCP接続を作った後、HTTPを送る前にTLSハンドシェイクとして登場します。',
+    beginnerNote: 'TLSで暗号化されていても、サイトの内容が安全・正確であることまで自動で保証するわけではありません。HTTP/3ではTLSはQUICと一体で使われます。',
+  },
+  dhcp: {
+    japaneseName: 'ネットワーク設定の配布', pronunciation: 'ディーエイチシーピー',
+    inOneSentence: 'ネットワークへ参加する端末に、IPアドレスや出口となるルーター、DNSの設定を配る仕組みです。',
+    whyNeeded: '端末ごとに住所や出口を手作業で設定すると、入力ミスや重複が起きやすくなります。必要な設定をまとめて渡せるようにします。',
+    everydayImage: '新しい建物に入った人へ、部屋番号、出口の案内、問い合わせ先を受付が渡すようなものです。',
+    whenItAppears: '端末がネットワークへ接続したときや、設定の有効期限を更新するときに登場します。通常のウェブアクセスより前に済んでいることが多いです。',
+    beginnerNote: 'すべての端末がDHCPを使うわけではありません。固定IPアドレスを手動で設定する場合もあり、配られる設定の内容はネットワークごとに異なります。',
+  },
+  arp: {
+    japaneseName: 'IPv4で次の相手のMACアドレスを調べる仕組み', pronunciation: 'アープ',
+    inOneSentence: 'IPv4のLAN内で、次にフレームを渡す相手のIPアドレスからMACアドレスを調べる仕組みです。',
+    whyNeeded: 'IPアドレスで次の中継先を決めても、Ethernetフレームには宛先MACアドレスが必要です。その対応を知る必要があります。',
+    everydayImage: '近くにいる人へ「この住所を持っている人は、どの宛名ですか」と尋ねる案内に近いものです。',
+    whenItAppears: 'PCが送信先またはデフォルトゲートウェイへEthernetフレームを送る前に、対応表へ必要なMACアドレスがないときに登場します。',
+    beginnerNote: 'ARPは同じブロードキャストドメイン内だけで使われ、ルーターを越えません。遠いウェブサーバーのMACアドレスを調べるものではなく、IPv6ではNDPが同様の役割を担います。',
+  },
+  nat: {
+    japaneseName: 'ネットワーク境界でのアドレス変換', pronunciation: 'ナット',
+    inOneSentence: 'ネットワークの境界で、パケットに書かれたIPアドレスなどを対応表に基づいて書き換える仕組みです。',
+    whyNeeded: '家庭や組織の内部で使うプライベートIPアドレスと、外部ネットワークで使うアドレスをつなぎ、複数の端末が外部接続を共有しやすくするためです。',
+    everydayImage: '建物の受付が、部屋番号と外線番号の対応表を持ち、帰ってきた連絡を正しい部屋へ戻すようなものです。',
+    whenItAppears: '家庭用ルーターなどが、内部ネットワークから外部へパケットを出すときや、その返信を内部へ戻すときに登場します。',
+    beginnerNote: '家庭用ルーターでよく使われるのは、ポート番号も変換するNAPTです。NATそのものが通信を安全にする機能と同じ意味ではありません。',
+  },
+  'default-gateway': {
+    japaneseName: 'LANの外へ出る最初のルーター', pronunciation: 'デフォルトゲートウェイ',
+    inOneSentence: 'PCが自分のLANの外にある相手へ送るとき、最初にデータを渡すルーターです。',
+    whyNeeded: 'PCは遠いネットワークの細かな経路をすべて知る必要はありません。まず近くの出口へ渡し、その先の経路選択をルーターに任せられます。',
+    everydayImage: '自分の町の外へ郵便を出すときに、最初に持ち込む地域の郵便局のようなものです。',
+    whenItAppears: '宛先IPアドレスが自分と同じIPネットワークにないとPCが判断したときに、次の相手として選ばれます。ARPでこのルーターのMACアドレスを調べることがあります。',
+    beginnerNote: 'デフォルトゲートウェイは「必ず家庭用ルーター」を意味しません。組織のネットワークなどでは別のルーターや設定された経路が使われることがあります。',
+  },
+  cpu: {
+    japaneseName: '中央処理装置', pronunciation: 'シーピーユー',
+    inOneSentence: 'プログラムの命令を順に読み取り、計算や判断を行うコンピュータの中心的な処理装置です。',
+    whyNeeded: 'メモリにあるプログラムの手順を実際に実行し、入力に応じて結果を作る役割が必要です。',
+    everydayImage: 'レシピを一つずつ読み、必要な道具を使って作業を進める料理人に近い役割です。',
+    whenItAppears: 'ブラウザがURLを処理するときも、OSが通信を準備するときも、各ソフトウェアの命令はCPUによって実行されます。',
+    beginnerNote: 'CPUがすべてのデータを内部に持つわけではありません。レジスタ、キャッシュ、メモリ、入出力装置と役割を分けながら処理します。',
+  },
+  process: {
+    japaneseName: '実行中のプログラムのまとまり', pronunciation: 'プロセス',
+    inOneSentence: 'OSが実行中のプログラムを管理するための、独立した作業単位です。',
+    whyNeeded: '複数のアプリケーションが同時に動いても、使うメモリや資源を分け、問題が広がりにくくするためです。',
+    everydayImage: '同じ作業場にいる複数の仕事チームのようなものです。それぞれに使える場所や道具の管理があります。',
+    whenItAppears: 'ブラウザやDNS問い合わせを行うソフトウェアも、OS上では1つ以上のプロセスとして動き、CPU時間やメモリを受け取ります。',
+    beginnerNote: 'プロセスとスレッドは同じではありません。1つのプロセスの中に複数のスレッドがあり、メモリなどを共有して働く場合があります。',
+  },
+  database: {
+    japaneseName: 'データを安全に扱う仕組み', pronunciation: 'データベース',
+    inOneSentence: 'アプリケーションが使うデータを、検索・更新・整合性の仕組みとともに保存し、取り出せるようにするシステムです。',
+    whyNeeded: '利用者、商品、投稿などの大量の情報を、複数の処理から矛盾しにくい形で扱う必要があるためです。',
+    everydayImage: '単なるノートの束ではなく、探しやすい索引と、同時に書き換えるときのルールを備えた記録室のようなものです。',
+    whenItAppears: 'ウェブサーバーがリクエストを処理し、利用者情報やコンテンツを読み書きする必要があるときに、背後のシステムとして登場します。',
+    beginnerNote: 'すべてのウェブサイトが必ずデータベースを使うわけではありません。またデータベースは表形式だけではなく、用途に応じたさまざまな種類があります。',
+  },
+  certificate: {
+    japaneseName: '接続先を確かめる電子証明書', pronunciation: 'サーティフィケート',
+    inOneSentence: 'TLSで、接続先の名前と公開鍵などを示し、相手の確認に使う電子的な証明書です。',
+    whyNeeded: '暗号化だけでは「誰と暗号化しているか」が分かりません。意図したウェブサイトへ接続しているかを確認する手がかりが必要です。',
+    everydayImage: '相手の名前と身元を確認するための、信頼できる発行者の署名付き身分証に近いものです。',
+    whenItAppears: 'HTTPSのTLSハンドシェイクで、サーバーがブラウザへ提示し、ブラウザが名前や有効期限、発行者などを確認します。',
+    beginnerNote: '証明書が有効でも、そのサイトの内容や運営がすべて安全であることを自動で保証するわけではありません。ブラウザは複数の条件を確認します。',
+  },
+  'load-balancer': {
+    japaneseName: '負荷分散の入口', pronunciation: 'ロードバランサー',
+    inOneSentence: '利用者からのリクエストを受け、複数のサーバーへ振り分ける役割を持つ仕組みです。',
+    whyNeeded: '1台のサーバーへ処理が集中しすぎないようにし、障害中のサーバーを避けながらサービスを続けやすくするためです。',
+    everydayImage: '複数の窓口がある受付で、空いていて対応できる窓口へ順に案内する係に近い役割です。',
+    whenItAppears: '大きなウェブサービスでは、利用者からのHTTPSリクエストがウェブサーバーへ届く前の入口として登場することがあります。',
+    beginnerNote: 'すべてのウェブサイトにロードバランサーがあるわけではありません。どの情報を見て振り分けるか、TLSをどこで扱うかは構成によって異なります。',
+  },
+  algorithm: {
+    japaneseName: '問題を解く手順', pronunciation: 'アルゴリズム',
+    inOneSentence: '目的の答えを得るために、入力をどの順番で処理するかを決めた明確な手順です。',
+    whyNeeded: '同じ結果を求める場合でも、手順によって必要な時間やメモリが大きく変わるため、目的に合う進め方を選ぶ必要があります。',
+    everydayImage: '料理のレシピのようなものです。同じ料理でも、材料を切る順番や加熱方法によって手間や結果が変わります。',
+    whenItAppears: 'ネットワークの経路選択、データベースの検索、画面表示など、コンピュータが何かを処理するときのあらゆる場所で使われます。',
+    beginnerNote: 'アルゴリズムはプログラミング言語そのものではありません。同じアルゴリズムを複数の言語で実装できます。',
+  },
+  'binary-search': {
+    japaneseName: '二分探索', pronunciation: 'バイナリーサーチ',
+    inOneSentence: '整列済みのデータで、中央と比べながら探す範囲を半分ずつ絞る探索方法です。',
+    whyNeeded: '最初から1件ずつ確かめるより、データが多いときの比較回数を大きく減らせる場合があります。',
+    everydayImage: '辞書で単語を探すとき、最初のページからめくらずに中央を開き、前半か後半かを決めていく方法に近いものです。',
+    whenItAppears: '索引、探索、プログラムの内部処理など、すでに順番に並んだデータから目的の値を探す場面で登場します。',
+    beginnerNote: '二分探索が使えるのは、比較できる順にデータが整列しているときです。並んでいないデータへそのまま使うことはできません。',
+  },
+}
+
 const TERM_CATEGORIES: Record<string, GlossaryCategoryId> = {
   alu: 'computer', cpu: 'computer', register: 'computer', instruction: 'computer', cache: 'computer', memory: 'computer', 'program-counter': 'computer', 'instruction-register': 'computer', 'control-unit': 'computer', fetch: 'computer', decode: 'computer', execute: 'computer', writeback: 'computer', 'cache-line': 'computer', 'cache-hit': 'computer', 'cache-miss': 'computer',
   process: 'os', thread: 'os', scheduler: 'os', 'context-switch': 'os', 'virtual-memory': 'os', paging: 'os', 'ready-queue': 'os', io: 'os', 'time-slice': 'os', interrupt: 'os', 'page-table': 'os', 'page-fault': 'os', tlb: 'os',
@@ -360,7 +567,12 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   { id: 'dfs', term: 'DFS', expansion: 'Depth-First Search', summary: '1つの経路をできるだけ深く進んでから戻るように探索するGraph探索の方法です。再帰やStackで表現できます。', why: '連結している範囲を調べたり、探索木を作ったりするために使われます。', related: ['Graph', 'Stack', 'BFS'], matches: ['DFS', 'Depth-First Search', '深さ優先探索'] },
   { id: 'queue', term: 'Queue', summary: '先に入れた要素から先に取り出す、First In First Outのデータ構造です。', why: 'BFSのように、先に見つけた候補から順に処理したい場合に使うためです。', related: ['BFS', 'Graph'], matches: ['Queue', 'キュー'] },
   { id: 'stack', term: 'Stack', summary: '最後に入れた要素から先に取り出す、Last In First Outのデータ構造です。', why: 'DFSのように、直近の分岐から先に深くたどりたい場合に使うためです。', related: ['DFS', 'Graph'], matches: ['Stack', 'スタック'] },
-].map(term => ({ ...term, category: TERM_CATEGORIES[term.id] ?? 'link', deepDive: DEEP_DIVES[term.id] ?? [] }))
+].map(term => ({
+  ...term,
+  category: TERM_CATEGORIES[term.id] ?? 'link',
+  beginnerGuide: BEGINNER_GUIDES[term.id],
+  deepDive: DEEP_DIVES[term.id] ?? [],
+}))
 
 export function glossaryTermsFor(context: string[]) {
   const text = context.join(' ')

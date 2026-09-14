@@ -12,10 +12,18 @@ const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\
 /** Turns known terms in explanatory prose into lightweight in-app glossary links. */
 export function GlossaryText({ text, onOpenTerm, className }: Props) {
   const { expression, termsByLabel } = useMemo(() => {
-    const labels = GLOSSARY_TERMS.flatMap(term => [term.term, ...term.matches])
+    // A one-character Japanese alias (for example 「行」 for Row) is useful
+    // for glossary search, but it is too broad to safely turn into a link in
+    // ordinary prose such as 「実行する」. Keep those aliases in the data and
+    // search UI, while only linking labels that are unambiguous in context.
+    const labels = GLOSSARY_TERMS
+      .flatMap(term => [term.term, ...term.matches])
+      .filter(label => label.length > 1)
     const uniqueLabels = [...new Set(labels)].sort((a, b) => b.length - a.length)
     const map = new Map<string, string>()
-    GLOSSARY_TERMS.forEach(term => [term.term, ...term.matches].forEach(label => map.set(label, term.id)))
+    GLOSSARY_TERMS.forEach(term => [term.term, ...term.matches]
+      .filter(label => label.length > 1)
+      .forEach(label => map.set(label, term.id)))
     return { expression: new RegExp(`(${uniqueLabels.map(escapeRegExp).join('|')})`, 'g'), termsByLabel: map }
   }, [])
   const parts = text.split(expression)

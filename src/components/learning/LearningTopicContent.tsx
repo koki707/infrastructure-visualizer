@@ -1,6 +1,6 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { GLOSSARY_TERMS } from '../../data/glossary'
-import { LEARNING_CATEGORIES, LEARNING_TOPIC_BY_ID } from '../../data/learningTopics'
+import { BEGINNER_TOPIC_GUIDES, LEARNING_CATEGORIES, LEARNING_TOPIC_BY_ID } from '../../data/learningTopics'
 import type { LearningTopic } from '../../types/learning'
 import type { Navigate } from '../site/SiteLayout'
 import { GlossaryText } from '../ui/GlossaryText'
@@ -52,6 +52,40 @@ function TopicLinks({ ids, title, onNavigate }: { ids: string[] | undefined; tit
       {topics.map(topic => <button key={topic.id} type="button" onClick={() => onNavigate(`/learn/${topic.id}`)} className="rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2 text-left text-sm font-semibold text-cyan-900 transition hover:border-cyan-400 hover:bg-cyan-100">
         {topic.shortTitle}<span className="ml-2 text-cyan-700">→</span>
       </button>)}
+    </div>
+  </section>
+}
+
+function BeginnerGuide({ topic, onNavigate }: LessonProps) {
+  const guide = BEGINNER_TOPIC_GUIDES[topic.id]
+  if (!guide) return null
+
+  return <section className="mt-8 rounded-2xl border border-sky-200 bg-sky-50/60 p-5 sm:p-6" aria-label={`${topic.shortTitle}を初めて学ぶ方への案内`}>
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <p className="eyebrow text-cyan-800">はじめて読む方へ</p>
+        <h2 className="mt-2 text-lg font-bold text-slate-900">図解に入る前に、身近な場面から考える</h2>
+      </div>
+      <span className="rounded-full border border-sky-200 bg-white px-3 py-1.5 text-xs font-semibold text-sky-800">専門用語は押して調べられます</span>
+    </div>
+    <div className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_1.35fr]">
+      <div className="rounded-xl border border-sky-100 bg-white p-4">
+        <p className="text-sm font-bold text-slate-900">この教材に入る前に</p>
+        <p className="mt-2 text-sm leading-7 text-slate-700"><LinkedText text={guide.beforeYouStart} onNavigate={onNavigate} /></p>
+      </div>
+      <div className="rounded-xl border border-sky-100 bg-white p-4">
+        <p className="text-sm font-bold text-slate-900">最初に知っておく言葉</p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          {guide.keyTerms.map(item => <button key={item.termId} type="button" onClick={() => onNavigate(`/glossary/${item.termId}`)} className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-left transition hover:border-cyan-300 hover:bg-cyan-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600">
+            <span className="block text-sm font-bold text-cyan-900">{item.label}</span>
+            <span className="mt-1 block text-xs leading-5 text-slate-600">{item.explanation}</span>
+          </button>)}
+        </div>
+      </div>
+    </div>
+    <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+      <p className="text-sm font-bold text-emerald-950">この教材を読むと何がつながるか</p>
+      <p className="mt-1 text-sm leading-7 text-emerald-950/85"><LinkedText text={guide.connection} onNavigate={onNavigate} /></p>
     </div>
   </section>
 }
@@ -250,6 +284,7 @@ export function LearningTopicContent({ topic, onNavigate }: LessonProps) {
       <div><p className="eyebrow">{category?.title ?? 'IT学習'} · {visualizationLabel[topic.visualization]}</p><h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{topic.title}</h1><p className="mt-5 max-w-3xl text-base leading-8 text-slate-600"><LinkedText text={topic.summary} onNavigate={onNavigate} /></p></div>
       <aside className="rounded-2xl border border-amber-200 bg-amber-50 p-5"><p className="text-sm font-bold text-amber-950">なぜ必要？</p><p className="mt-2 text-sm leading-7 text-amber-950/85"><LinkedText text={topic.why} onNavigate={onNavigate} /></p></aside>
     </section>
+    <BeginnerGuide topic={topic} onNavigate={onNavigate} />
     <section className="mt-9 rounded-2xl border border-slate-200 bg-white p-5"><p className="eyebrow">学習の目標</p><ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-700 sm:grid-cols-3">{topic.learningGoals.map(goal => <li key={goal} className="rounded-xl bg-slate-50 px-3 py-3"><span className="mr-2 font-bold text-cyan-700">✓</span>{goal}</li>)}</ul></section>
     <div className="mt-7"><LearningPathNavigator topicId={topic.id} onNavigate={onNavigate} /></div>
     {topic.prerequisites && topic.prerequisites.length > 0 && <div className="mt-7"><TopicLinks title="先に見ると分かりやすい教材" ids={topic.prerequisites} onNavigate={onNavigate} /></div>}

@@ -327,6 +327,205 @@ export const LEARNING_TOPICS: LearningTopic[] = [
   },
 ]
 
+/**
+ * A short, plain-language doorway for each lesson.  The full lesson still
+ * contains the precise explanation and interactive diagram; this data only
+ * helps a reader who has not encountered the vocabulary yet decide where to
+ * begin.
+ */
+export type BeginnerTopicGuide = {
+  beforeYouStart: string
+  keyTerms: Array<{
+    termId: string
+    label: string
+    explanation: string
+  }>
+  connection: string
+}
+
+export const BEGINNER_TOPIC_GUIDES: Record<string, BeginnerTopicGuide> = {
+  dhcp: {
+    beforeYouStart: '新しいPCやスマートフォンをWi-Fiや有線LANにつなぐと、すぐ通信できることがあります。その「通信に必要な住所や出口の情報は、どこから来るのだろう？」という疑問から始めます。',
+    keyTerms: [
+      { termId: 'dhcp', label: 'DHCP', explanation: 'ネットワークに参加する機器へ、必要な設定を渡す仕組みです。' },
+      { termId: 'ipv4', label: 'IPアドレス', explanation: 'ネットワーク上で、届け先を表すための住所のような情報です。' },
+      { termId: 'default-gateway', label: 'デフォルトゲートウェイ', explanation: '別のネットワークへ出るときに、まず渡す出口の機器です。' },
+    ],
+    connection: 'ここで受け取るIPアドレス・DNSサーバー・デフォルトゲートウェイの情報が、次のARP、名前解決、ウェブアクセスの出発点になります。',
+  },
+  arp: {
+    beforeYouStart: 'PCがウェブサーバーへ送る前には、まず家庭内LANで「次に渡す相手」を見つける必要があります。IPアドレスと、LANで使う宛先情報は別のものだと考えるところから始めましょう。',
+    keyTerms: [
+      { termId: 'ipv4', label: 'IPアドレス', explanation: '最終的にどのネットワーク・機器へ届けるかを考えるための住所です。' },
+      { termId: 'mac', label: 'MACアドレス', explanation: '同じLANの次の相手へフレームを渡すときに使う宛先情報です。' },
+      { termId: 'ethernet', label: 'イーサネット', explanation: '家庭や職場の有線LANなどで、機器どうしをつなぐ代表的な仕組みです。' },
+    ],
+    connection: 'ARPで次の相手のMACアドレスが分かると、PCはイーサネットフレームをホームルーターへ送り、ルーターが次の経路を選べるようになります。',
+  },
+  routing: {
+    beforeYouStart: '郵便物を送るときに、配達員が地図を見て次の中継地点を選ぶように、ルーターも宛先を見て次の送り先を決めます。1台のPCを直接探すのではなく、ネットワークのまとまりを手がかりにします。',
+    keyTerms: [
+      { termId: 'ipv4', label: 'IPアドレス', explanation: 'ルーターが「どのネットワークへ向けるか」を判断する手がかりです。' },
+      { termId: 'routing-table', label: 'ルーティングテーブル', explanation: '宛先のまとまりと、次に渡す先を並べた案内表です。' },
+      { termId: 'default-gateway', label: 'デフォルトゲートウェイ', explanation: '家庭内PCから外部ネットワークへ出るための最初の出口です。' },
+    ],
+    connection: '経路が選べると、DNSサーバーやウェブサーバーへ向かうパケットが、ルーターをまたいで次のネットワークへ進めます。',
+  },
+  'dns-resolution': {
+    beforeYouStart: 'ブラウザに入力する「example.com」のような名前は、人には覚えやすい一方で、ネットワークが配送に使う住所とは別です。名前から接続先を知る流れを見ていきます。',
+    keyTerms: [
+      { termId: 'url', label: 'URL', explanation: 'ブラウザへ渡すウェブ上の場所を表す文字列です。' },
+      { termId: 'dns', label: 'DNS', explanation: '名前とIPアドレスなどの情報を対応付ける仕組みです。' },
+      { termId: 'ip', label: 'IPアドレス', explanation: 'ネットワーク上で接続先をたどるための住所です。' },
+    ],
+    connection: 'DNSで接続先の情報を得たあと、PCはその相手へTCP接続を始め、続いてTLSやHTTPの通信へ進みます。',
+  },
+  'tcp-connection': {
+    beforeYouStart: '宛先のIPアドレスが分かっても、アプリケーション同士がすぐに安心してデータを送り合えるわけではありません。TCPは、両端が通信を始める準備をそろえる役目です。',
+    keyTerms: [
+      { termId: 'tcp', label: 'TCP', explanation: '順番・確認・再送などを扱いながら、アプリケーション間の通信を支える仕組みです。' },
+      { termId: 'syn', label: 'SYN', explanation: 'TCP接続を始めるときに使う、最初の合図の一つです。' },
+      { termId: 'port', label: 'ポート番号', explanation: '同じPCの中で、どの通信先を扱うかを区別する番号です。' },
+    ],
+    connection: 'TCP接続ができると、その上でTLSが接続先を確かめて通信を保護し、HTTPのリクエストを送れるようになります。',
+  },
+  'nat-napt': {
+    beforeYouStart: '家庭内のPCには、家庭の外からはそのまま使わない住所が割り当てられることがよくあります。ホームルーターが内側と外側の情報をどう対応させるかを追います。',
+    keyTerms: [
+      { termId: 'nat', label: 'NAT', explanation: '内側と外側で使うIPアドレスを対応付ける、アドレス変換の考え方です。' },
+      { termId: 'napt', label: 'NAPT', explanation: 'IPアドレスだけでなく、ポート番号も使って複数の通信を区別する代表例です。' },
+      { termId: 'router', label: 'ホームルーター', explanation: '家庭内LANとインターネット側の境目で、転送や変換を行う機器です。' },
+    ],
+    connection: 'NAT / NAPTの対応表があることで、外側から返ってきた通信を、正しい家庭内PCの通信へ戻すことができます。',
+  },
+  ipv6: {
+    beforeYouStart: 'IPアドレスには、見慣れた「192.168...」形式のIPv4だけでなく、より長い16進数表記を使うIPv6があります。まずは住所の書き方が違うものだと捉えて大丈夫です。',
+    keyTerms: [
+      { termId: 'ipv6', label: 'IPv6', explanation: '128ビットのアドレスを使うIPの方式です。' },
+      { termId: 'ipv4', label: 'IPv4', explanation: '32ビットのアドレスを使う、現在も広く使われるIPの方式です。' },
+      { termId: 'router', label: 'ルーター', explanation: '宛先のネットワークへ向けて、パケットを次の機器へ渡します。' },
+    ],
+    connection: 'IPv6でも、宛先に向けてルーターが経路を選ぶ考え方は重要です。ただしLAN内の近隣探索にはARPではなくNDPを使います。',
+  },
+  firewall: {
+    beforeYouStart: 'ネットワークにつながるだけでは、すべての通信を無条件に受け入れるべきとは限りません。ファイアウォールは「どの通信を通してよいか」を条件で考える門番のような役割です。',
+    keyTerms: [
+      { termId: 'firewall', label: 'ファイアウォール', explanation: '通信の条件をルールと照合し、許可や拒否を判断する仕組みです。' },
+      { termId: 'ip', label: 'IPアドレス', explanation: '送信元や宛先を条件として見るときの情報の一つです。' },
+      { termId: 'port', label: 'ポート番号', explanation: 'ウェブなど、どの種類の通信を扱うかを区別する手がかりです。' },
+    ],
+    connection: 'ファイアウォールを通過した通信は、目的のサービスへ届きます。TCPやTLSと組み合わせて、必要な通信だけを安全に扱うことにつながります。',
+  },
+  'cpu-instruction-cycle': {
+    beforeYouStart: 'アプリを開いたり文字を入力したりすると、PCの中ではCPUが小さな命令を順に実行しています。「プログラムが動く」を、命令を読む・意味を決める・計算するという流れに分けて見ます。',
+    keyTerms: [
+      { termId: 'cpu', label: 'CPU', explanation: '命令を読み取り、計算や判断を実行する中心の部品です。' },
+      { termId: 'instruction', label: '命令', explanation: 'CPUに「何をするか」を伝える、小さな処理の単位です。' },
+      { termId: 'register', label: 'レジスタ', explanation: 'CPUの内部で、計算に使う値を短時間置いておく高速な場所です。' },
+    ],
+    connection: 'CPUが命令を実行するときは、キャッシュやメモリからデータを読みます。その土台の上でOSが複数の処理を切り替えます。',
+  },
+  'cache-memory': {
+    beforeYouStart: 'CPUはとても速く計算できますが、必要なデータが届くまで待つと力を発揮しにくくなります。よく使うものを近くに置く「キャッシュ」という工夫を見ます。',
+    keyTerms: [
+      { termId: 'cpu', label: 'CPU', explanation: '計算を実行するため、データや命令を取り出して使います。' },
+      { termId: 'cache', label: 'キャッシュ', explanation: 'CPUの近くに、よく使うデータのコピーを置く高速な記憶領域です。' },
+      { termId: 'memory', label: '主記憶', explanation: '実行中のプログラムやデータを置く、CPUより大きな記憶領域です。' },
+    ],
+    connection: 'キャッシュと主記憶の役割の違いを知ると、仮想メモリや「CPUがメモリ待ちになる」場面を理解しやすくなります。',
+  },
+  'virtual-memory-paging': {
+    beforeYouStart: 'アプリごとに大きな連続したメモリを使えているように見えても、実際のメモリの置き場所はもっと細かく管理されています。その見え方と実体をつなぐ仕組みを見ます。',
+    keyTerms: [
+      { termId: 'virtual-memory', label: '仮想メモリ', explanation: '各プロセスが使う住所と、実際のメモリの置き場所を分けて扱う仕組みです。' },
+      { termId: 'paging', label: 'ページング', explanation: 'メモリを一定の大きさに分けて対応付ける考え方です。' },
+      { termId: 'process', label: 'プロセス', explanation: 'OSが管理する、実行中または実行できるプログラムの単位です。' },
+    ],
+    connection: '仮想メモリにより、複数のプロセスは互いの領域を分けて使えます。そのプロセスをCPUへ順番に割り当てるのが次のOSの役目です。',
+  },
+  'process-scheduling': {
+    beforeYouStart: 'PCではブラウザ、音楽再生、保存処理など、複数の仕事が同時に進んでいるように見えます。CPUの時間をどの仕事へ渡すかをOSが調整する視点で見ていきます。',
+    keyTerms: [
+      { termId: 'process', label: 'プロセス', explanation: 'OSが仕事として管理する、プログラムの実行単位です。' },
+      { termId: 'scheduler', label: 'スケジューラー', explanation: '次にどの処理へCPUを使わせるかを選ぶOSの仕組みです。' },
+      { termId: 'context-switch', label: 'コンテキストスイッチ', explanation: 'CPUが別の処理へ切り替わるときに、必要な状態を保存・復元することです。' },
+    ],
+    connection: 'CPUの命令実行や仮想メモリと組み合わさることで、複数のアプリが1台のPCを安全に共有して動けるようになります。',
+  },
+  'database-transaction': {
+    beforeYouStart: 'ネット通販の注文や口座振替では、いくつかのデータ更新が「全部成功」か「全部失敗」になってほしい場面があります。途中だけ変更される困りごとから考えます。',
+    keyTerms: [
+      { termId: 'database', label: 'データベース', explanation: 'アプリが使うデータを、保存・検索・更新できる形で扱う仕組みです。' },
+      { termId: 'transaction', label: 'トランザクション', explanation: '複数の更新を、ひとまとまりの処理として扱う単位です。' },
+      { termId: 'lock', label: 'ロック', explanation: '同じデータを同時に変えて矛盾しないように、順番を調整する仕組みです。' },
+    ],
+    connection: 'トランザクションが更新の正しさを支え、インデックスが必要な行を速く見つける手助けをします。ウェブサービスの裏側では両方が使われます。',
+  },
+  'database-index': {
+    beforeYouStart: '住所録から名前を探すとき、最初のページから順に読むより索引を使うほうが早いことがあります。データベースのインデックスも、目的の行への近道です。',
+    keyTerms: [
+      { termId: 'database', label: 'データベース', explanation: '多くのデータを保存し、条件に合うものを検索・更新する仕組みです。' },
+      { termId: 'index', label: 'インデックス', explanation: '目的のデータの場所へ近づくための補助的な構造です。' },
+      { termId: 'row', label: '行', explanation: '表形式のデータベースで、1件分のデータを表す単位です。' },
+    ],
+    connection: 'インデックスは検索を速くしますが、追加・更新のたびに整える仕事も必要です。トランザクションと合わせて、速さと正しさの両方を考える入口になります。',
+  },
+  'tls-handshake': {
+    beforeYouStart: 'HTTPSの鍵マークを見るとき、ブラウザは単に文字を暗号化しているだけではありません。通信を始める前に、相手が意図したサーバーかを確かめ、共有する秘密を準備します。',
+    keyTerms: [
+      { termId: 'tls', label: 'TLS', explanation: '通信内容を守り、接続先の確認にも使う仕組みです。' },
+      { termId: 'certificate', label: '証明書', explanation: '接続先の公開鍵などを、信頼の仕組みと結び付ける情報です。' },
+      { termId: 'session-key', label: 'セッション鍵', explanation: '実際の通信データを効率よく守るために使う、一時的な共通の鍵です。' },
+    ],
+    connection: 'TCPで通信を始めたあとにTLSが保護を整え、その上でHTTPのリクエストやレスポンスを安全にやり取りします。',
+  },
+  'digital-signature': {
+    beforeYouStart: 'ダウンロードしたファイルや受け取った情報が、途中で書き換えられていないかを確かめたい場面があります。電子署名は「内容」と「署名した人」を確かめるための仕組みです。',
+    keyTerms: [
+      { termId: 'digital-signature', label: '電子署名', explanation: '改ざん検出と、対応する秘密鍵の所有者による署名を確かめる仕組みです。' },
+      { termId: 'hash', label: 'ハッシュ', explanation: 'データから作る短い要約値で、内容が変わると通常は値も変わります。' },
+      { termId: 'public-key', label: '公開鍵', explanation: '署名を確かめるために共有できる鍵です。秘密鍵とは役割が異なります。' },
+    ],
+    connection: '電子署名の考え方は、TLSで証明書を検証するときにも関わります。暗号化と署名は目的が違うことを比べてみましょう。',
+  },
+  'load-balancing': {
+    beforeYouStart: 'たくさんの人が同じウェブサイトを使うと、1台のサーバーだけでは処理が集中することがあります。入口でリクエストを分ける役割を、交通整理のように見ます。',
+    keyTerms: [
+      { termId: 'load-balancer', label: 'ロードバランサー', explanation: '受け取ったリクエストを複数のサーバーへ振り分ける仕組みです。' },
+      { termId: 'health-check', label: 'ヘルスチェック', explanation: '送り先のサーバーが応答できそうかを確かめるための確認です。' },
+      { termId: 'https', label: 'HTTPS', explanation: 'ウェブの通信をTLSで保護して使う代表的な方法です。' },
+    ],
+    connection: 'ロードバランサーの先に複数のウェブサーバーを置くと、負荷を分けたり、一部の障害時に別のサーバーへ回したりする設計につながります。',
+  },
+  'system-failover': {
+    beforeYouStart: '使っているサービスの機器が1台故障しても、できるだけ止まらないでほしい場面があります。異常を見つけ、別の機器へ役割を渡すまでを見ます。',
+    keyTerms: [
+      { termId: 'failover', label: 'フェイルオーバー', explanation: '障害が起きたときに、別の健全な系へ役割を切り替える仕組みです。' },
+      { termId: 'redundancy', label: '冗長化', explanation: '1つが故障しても続けられるよう、予備や複数の系を用意する考え方です。' },
+      { termId: 'health-check', label: 'ヘルスチェック', explanation: '機器やサービスが正常に応答できるかを確認する仕組みです。' },
+    ],
+    connection: 'ロードバランサーによる振り分けとフェイルオーバーを組み合わせると、障害があってもサービスを続けやすいシステム構成につながります。',
+  },
+  'binary-search': {
+    beforeYouStart: '辞書で単語を探すとき、最初から1ページずつ読むより、真ん中を開いて探す範囲を半分にするほうが速いことがあります。その考え方を配列で試します。',
+    keyTerms: [
+      { termId: 'array', label: '配列', explanation: '値を順番に並べて扱う、基本的なデータの入れ物です。' },
+      { termId: 'binary-search', label: '二分探索', explanation: '中央と比べながら、探す範囲を半分ずつ小さくする方法です。' },
+      { termId: 'algorithm', label: 'アルゴリズム', explanation: '問題を解くための、手順の組み立て方です。' },
+    ],
+    connection: '二分探索は「値が整列している」ことを利用します。この考え方は、データベースのインデックスや木構造を理解する土台にもなります。',
+  },
+  'graph-traversal': {
+    beforeYouStart: '路線図や人間関係のように、情報が一直線に並ばず、複数のつながりを持つことがあります。グラフは、そのような「点と線」の関係を表す方法です。',
+    keyTerms: [
+      { termId: 'graph', label: 'グラフ', explanation: '点と、それらを結ぶ線で、つながりを表すデータ構造です。' },
+      { termId: 'node', label: 'ノード', explanation: 'グラフの中の点で、駅・人・機器などを表せます。' },
+      { termId: 'edge', label: 'エッジ', explanation: 'ノードどうしのつながりを表す線です。' },
+    ],
+    connection: 'グラフ探索は、ネットワークの経路、サービスの依存関係、地図など、つながりを順に調べる多くの場面につながります。',
+  },
+}
+
 export const LEARNING_TOPIC_BY_ID = new Map(LEARNING_TOPICS.map(topic => [topic.id, topic]))
 
 /**
