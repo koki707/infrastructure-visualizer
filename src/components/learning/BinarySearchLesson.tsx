@@ -94,7 +94,7 @@ export function BinarySearchLesson({ onNavigate }: BinarySearchLessonProps) {
   return <section aria-label="二分探索のステップ図解" className="rounded-3xl border border-cyan-200 bg-cyan-50/45 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="eyebrow text-cyan-700">INTERACTIVE ALGORITHM</p>
+        <p className="eyebrow text-cyan-700">操作して学ぶアルゴリズム</p>
         <h2 className="mt-2 text-xl font-bold text-slate-900">中央を比べ、候補を半分ずつ絞る</h2>
         <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="二分探索は、値が小さい順などに整列された配列から目的の値を探す方法です。中央の値との比較を止めながら、なぜ候補を半分にできるのかを確認します。" onNavigate={onNavigate} /></p>
       </div>

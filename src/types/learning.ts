@@ -51,3 +51,17 @@ export interface LearningPath {
     topicIds: string[]
   }>
 }
+
+/**
+ * The site-wide entry sequence. Unlike a LearningPath, this begins with the
+ * existing Web-access simulator and then offers progressively broader areas
+ * to explore.
+ */
+export interface LearningJourneyStep {
+  id: string
+  label: string
+  title: string
+  description: string
+  path: string
+  actionLabel: string
+}

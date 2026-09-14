@@ -19,8 +19,8 @@ type PacketPlan = {
 
 const LAN_NODES: NetworkNode[] = [
   { id: 'pc', name: 'PC', type: 'pc', position: [-4.6, -0.05, 0], detail: '192.168.1.10', description: 'ARPを送信するPCです。' },
-  { id: 'switch', name: 'LAN Switch', type: 'switch', position: [0, -0.05, 0], detail: '同一LAN内で転送', description: '同一ブロードキャストドメイン内でFrameを転送します。' },
-  { id: 'home-router', name: 'Home Router', type: 'router', position: [4.6, -0.05, 0], detail: '192.168.1.1 · Default Gateway', description: '別ネットワーク向けの次ホップです。' },
+  { id: 'switch', name: 'LANスイッチ', type: 'switch', position: [0, -0.05, 0], detail: '同一LAN内で転送', description: '同一ブロードキャストドメイン内でフレーム（Frame）を転送します。' },
+  { id: 'home-router', name: '家庭用ルーター', type: 'router', position: [4.6, -0.05, 0], detail: '192.168.1.1 · デフォルトゲートウェイ', description: '別ネットワーク向けの次ホップです。' },
 ]
 
 const PC_POSITION = LAN_NODES[0].position
@@ -29,29 +29,29 @@ const ROUTER_POSITION = LAN_NODES[2].position
 
 function packetPlanFor(step: ArpSceneStep): PacketPlan | null {
   if (step === 1) return {
-    label: 'ARP Request',
+    label: 'ARP要求（ARP Request）',
     detail: 'L2: FF:FF:FF:FF:FF:FF',
     color: '#0ea5e9',
     kind: 'arp',
     path: [PC_POSITION, SWITCH_POSITION],
   }
   if (step === 2) return {
-    label: 'ARP Request',
-    detail: 'SwitchがLAN内へ転送',
+    label: 'ARP要求（ARP Request）',
+    detail: 'スイッチがLAN内へ転送',
     color: '#0ea5e9',
     kind: 'arp',
     path: [PC_POSITION, SWITCH_POSITION, ROUTER_POSITION],
   }
   if (step === 3) return {
-    label: 'ARP Reply',
+    label: 'ARP応答（ARP Reply）',
     detail: '192.168.1.1 = 02:00:5E:10:00:01',
     color: '#10b981',
     kind: 'arp',
     path: [ROUTER_POSITION, SWITCH_POSITION, PC_POSITION],
   }
   if (step === 4) return {
-    label: 'Ethernet Frame',
-    detail: 'L2: Gateway MAC · L3: Web Server IP',
+    label: 'イーサネットフレーム',
+    detail: 'L2: ゲートウェイMAC · L3: WebサーバーIP',
     color: '#f59e0b',
     kind: 'frame',
     path: [PC_POSITION, SWITCH_POSITION, ROUTER_POSITION],
@@ -184,7 +184,7 @@ function LanScene({ step, replayKey }: { step: ArpSceneStep; replayKey: number }
       <planeGeometry args={[13.8, 6.8]} />
       <meshBasicMaterial color="#dff5ff" transparent opacity={step === 0 ? 0.26 : 0.38} depthWrite={false} />
     </mesh>
-    <VisibleText position={[0, -1.36, -3.1]} fontSize={0.2} color="#0f4c6f" anchorX="center">HOME LAN · 192.168.1.0 /24</VisibleText>
+    <VisibleText position={[0, -1.36, -3.1]} fontSize={0.2} color="#0f4c6f" anchorX="center">家庭内LAN · 192.168.1.0 /24</VisibleText>
     <VisibleText position={[0, -1.6, -3.1]} fontSize={0.11} color="#475569" anchorX="center">ARPはこのリンク内で次ホップを見つけます</VisibleText>
 
     <Line points={[PC_POSITION, SWITCH_POSITION]} color={step === 1 || step === 2 || step === 3 || step === 4 ? '#0ea5e9' : '#94a3b8'} lineWidth={step === 0 ? 1.1 : 2.1} />

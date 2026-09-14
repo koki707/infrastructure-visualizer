@@ -7,7 +7,7 @@ export function LearningTopicPage({ topic, onNavigate }: { topic: LearningTopic;
   const category = LEARNING_CATEGORIES.find(item => item.id === topic.category)
   return <PageContainer>
     <nav aria-label="パンくず" className="mb-7 flex flex-wrap items-center gap-2 text-sm text-slate-500">
-      <button type="button" onClick={() => onNavigate('/topics')} className="font-semibold text-cyan-700 transition hover:text-cyan-900">学習を探す</button>
+      <button type="button" onClick={() => onNavigate('/topics')} className="font-semibold text-cyan-700 transition hover:text-cyan-900">学びを深める</button>
       <span aria-hidden="true">›</span>
       <span className="font-semibold text-slate-700">{category?.title ?? '学習'}</span>
       <span aria-hidden="true">›</span>

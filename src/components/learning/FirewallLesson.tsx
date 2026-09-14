@@ -125,35 +125,35 @@ export function FirewallLesson({ onNavigate }: { onNavigate: Navigate }) {
   const packet = EXAMPLE_PACKETS.find(item => item.id === packetId) ?? EXAMPLE_PACKETS[0]
   const matchedRuleIndex = useMemo(() => FIREWALL_RULES.findIndex(rule => rule.matches(packet)), [packet])
   const matchedRule = FIREWALL_RULES[matchedRuleIndex]
-  const directionLabel = packet.direction === 'outbound' ? '送信（LAN → Internet）' : '受信（Internet → LAN）'
+  const directionLabel = packet.direction === 'outbound' ? '送信（LAN → インターネット）' : '受信（インターネット → LAN）'
 
-  return <section aria-label="Firewallのルール判定を追う図解" className="rounded-3xl border border-slate-300 bg-slate-50 p-5 sm:p-7">
+  return <section aria-label="ファイアウォールのルール判定を追う図解" className="rounded-3xl border border-slate-300 bg-slate-50 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="eyebrow">INTERACTIVE FIREWALL</p>
+        <p className="eyebrow">操作して学ぶファイアウォール</p>
         <h2 className="mt-2 text-xl font-bold text-slate-900">通信を上から順に照合して、通すか決める</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="Firewallは、通信の送受信方向、IPアドレス、TCPのPort、通信状態などを条件として、通すか止めるかを決める仕組みです。" onNavigate={onNavigate} /></p>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="ファイアウォール（Firewall）は、通信の送受信方向、IPアドレス、TCPのポート（Port）、通信状態などを条件として、通すか止めるかを決める仕組みです。" onNavigate={onNavigate} /></p>
       </div>
       <span className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700">上から順に最初の一致を採用</span>
     </div>
 
     <div className="mt-6 grid gap-3 md:grid-cols-3" role="radiogroup" aria-label="確認する通信を選択">
       {EXAMPLE_PACKETS.map(item => <button key={item.id} type="button" role="radio" aria-checked={packet.id === item.id} onClick={() => setPacketId(item.id)} className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${packet.id === item.id ? 'border-slate-500 bg-white text-slate-950 shadow-sm' : 'border-slate-200 bg-slate-100/70 text-slate-600 hover:border-slate-400 hover:bg-white'}`}>
-        <span className="block text-[10px] font-bold tracking-[.12em] text-cyan-700">EXAMPLE</span>
+        <span className="block text-[10px] font-bold tracking-[.12em] text-cyan-700">通信例</span>
         <span className="mt-1 block">{item.label}</span>
       </button>)}
     </div>
 
     <div className="mt-6 grid gap-5 lg:grid-cols-[.8fr_1.2fr]">
       <aside className="rounded-2xl border border-slate-200 bg-white p-5" aria-live="polite">
-        <p className="eyebrow">PACKET TO CHECK</p>
+        <p className="eyebrow">確認するパケット</p>
         <h3 className="mt-2 text-lg font-bold text-slate-900">{packet.title}</h3>
         <p className="mt-2 text-sm leading-7 text-slate-600"><LinkedText text={packet.description} onNavigate={onNavigate} /></p>
         <dl className="mt-5 grid gap-2 text-xs">
           {[
             ['方向', directionLabel],
             ['状態', packet.state],
-            ['Protocol', packet.protocol],
+            ['プロトコル', packet.protocol],
             ['送信元', packet.source],
             ['宛先', packet.destination],
           ].map(([label, value]) => <div key={label} className="grid grid-cols-[5rem_1fr] gap-2 rounded-lg bg-slate-50 px-3 py-2"><dt className="font-semibold text-slate-500">{label}</dt><dd className="break-all font-mono text-slate-800">{value}</dd></div>)}
@@ -195,7 +195,7 @@ export function FirewallLesson({ onNavigate }: { onNavigate: Navigate }) {
 
     <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-6 text-amber-950">
       <p className="font-bold">教材上の簡略化</p>
-      <p className="mt-1"><LinkedText text="この図は状態を追跡する（stateful）Firewallの代表例です。実際にはstateful / statelessの違い、NAT、Interface、ログ、製品の仕様やルールの順番によって判定が変わります。Firewallは重要な防御の一つですが、認証、更新、暗号化、監視などを置き換える完全なセキュリティ対策ではありません。" onNavigate={onNavigate} /></p>
+      <p className="mt-1"><LinkedText text="この図は状態を追跡するステートフル（stateful）ファイアウォールの代表例です。実際にはステートフル / ステートレス（stateless）の違い、NAT、インターフェース（Interface）、ログ、製品の仕様やルールの順番によって判定が変わります。ファイアウォールは重要な防御の一つですが、認証、更新、暗号化、監視などを置き換える完全なセキュリティ対策ではありません。" onNavigate={onNavigate} /></p>
     </div>
   </section>
 }

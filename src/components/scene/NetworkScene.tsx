@@ -111,11 +111,11 @@ export function NetworkScene({ selectedId, journey, onSelect, onExploreNode }: P
     <ambientLight intensity={1.1} /><directionalLight position={[6, 14, 8]} intensity={2.35} castShadow shadow-mapSize={[1024, 1024]} /><pointLight position={[-7, 5, 4]} intensity={16} color="#7dd3fc" />
     <mesh position={[0, -3.75, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow><planeGeometry args={[34, 24]} /><meshStandardMaterial color="#f8fafc" roughness={.92} /></mesh>
     <gridHelper args={[34, 34, '#bfdbfe', '#e2e8f0']} position={[0, -3.72, 0]} />
-    <Region title="HOME NETWORK" subtitle="192.168.x.x /24" position={[-5.7, -1.65, .4]} size={[8, 6]} color="#bae6fd" active={activity.activeRegion === 'home'} />
-    <Region title="DNS RESOLUTION" subtitle="ISP DNS Resolver" position={[-.7, 3.05, -3.4]} size={[4.5, 4]} color="#c4b5fd" active={activity.activeRegion === 'dns'} />
-    <Region title="ISP NETWORK" subtitle="Provider routing" position={[1.5, .8, .3]} size={[5, 5]} color="#a7f3d0" active={activity.activeRegion === 'isp'} />
-    <Region title="INTERNET" subtitle="Interconnected routers" position={[4.7, -2.05, 1.7]} size={[5.5, 4.5]} color="#fde68a" active={activity.activeRegion === 'internet'} />
-    <Region title="SERVER NETWORK" subtitle="Data center / Web Server" position={[8.7, 2, -1.8]} size={[5, 5.2]} color="#bfdbfe" active={activity.activeRegion === 'server'} />
+    <Region title="家庭内ネットワーク" subtitle="192.168.x.x /24" position={[-5.7, -1.65, .4]} size={[8, 6]} color="#bae6fd" active={activity.activeRegion === 'home'} />
+    <Region title="DNS名前解決" subtitle="ISP DNSリゾルバ" position={[-.7, 3.05, -3.4]} size={[4.5, 4]} color="#c4b5fd" active={activity.activeRegion === 'dns'} />
+    <Region title="ISPネットワーク" subtitle="事業者ルーティング" position={[1.5, .8, .3]} size={[5, 5]} color="#a7f3d0" active={activity.activeRegion === 'isp'} />
+    <Region title="インターネット" subtitle="接続されたルーター群" position={[4.7, -2.05, 1.7]} size={[5.5, 4.5]} color="#fde68a" active={activity.activeRegion === 'internet'} />
+    <Region title="サーバーネットワーク" subtitle="データセンター / Webサーバー" position={[8.7, 2, -1.8]} size={[5, 5.2]} color="#bfdbfe" active={activity.activeRegion === 'server'} />
     <HomeEnvironment />
     <ProviderFacility />
     <FiberTerminal />

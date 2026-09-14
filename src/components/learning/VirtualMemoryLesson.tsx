@@ -36,112 +36,112 @@ const MEMORY_SCENARIOS: VirtualMemoryScenario[] = [
   {
     id: 'present',
     label: '通常アクセス',
-    description: '必要なVirtual PageがすでにPhysical Memoryに載っている例です。',
+    description: '必要な仮想ページ（Virtual Page）がすでに物理メモリに載っている例です。',
     steps: [
       {
-        shortTitle: 'Virtual address',
-        title: 'CPUはVirtual Addressで値を読みたい',
-        body: `CPUが ${VIRTUAL_ADDRESS} を読みます。この例では4 KiB Pageを使うため、Virtual Pageは ${VIRTUAL_PAGE}、Page内のOffsetは ${OFFSET} として分けて考えます。`,
-        detail: '各Processは通常、自分専用に見えるVirtual Address Spaceを使います。Virtual AddressをそのままPhysical Memoryの番地として扱うのではなく、OSが用意した対応表を通して変換します。',
-        signal: `CPU → address translation: ${VIRTUAL_ADDRESS}`,
+        shortTitle: '仮想アドレス',
+        title: 'CPUは仮想アドレス（Virtual Address）で値を読みたい',
+        body: `CPUが ${VIRTUAL_ADDRESS} を読みます。この例では4 KiBのページを使うため、仮想ページは ${VIRTUAL_PAGE}、ページ内のオフセット（Offset）は ${OFFSET} として分けて考えます。`,
+        detail: '各プロセス（Process）は通常、自分専用に見える仮想アドレス空間（Virtual Address Space）を使います。仮想アドレスをそのまま物理メモリの番地として扱うのではなく、OSが用意した対応表を通して変換します。',
+        signal: `CPU → アドレス変換: ${VIRTUAL_ADDRESS}`,
         activeParts: ['cpu', 'page-table'],
         pageTable: `VPN ${VIRTUAL_PAGE}  |  確認中`,
-        physicalMemory: 'Physical Frameを確認前',
+        physicalMemory: '物理フレームを確認前',
         storage: '待機中',
       },
       {
-        shortTitle: 'Page table lookup',
-        title: 'Page Tableから、Virtual Pageに対応するFrameを探す',
-        body: `Page TableのEntryは、Virtual Page ${VIRTUAL_PAGE} がPhysical Frame ${PHYSICAL_FRAME} に存在することを示しています。Presentのため、Page Faultは起きません。`,
-        detail: '実際にはCPUのMMUがアドレス変換を支援し、TLBという小さな高速Cacheが変換結果を保持することがあります。この教材ではPage Tableを直接確認する流れとして示します。',
-        signal: `Page Table: ${VIRTUAL_PAGE} → frame ${PHYSICAL_FRAME} (present)`,
+        shortTitle: 'ページテーブルを引く',
+        title: 'ページテーブル（Page Table）から、仮想ページに対応するフレームを探す',
+        body: `ページテーブルのエントリ（Entry）は、仮想ページ ${VIRTUAL_PAGE} が物理フレーム（Physical Frame）${PHYSICAL_FRAME} に存在することを示しています。配置済み（Present）のため、ページフォールト（Page Fault）は起きません。`,
+        detail: '実際にはCPUのMMUがアドレス変換を支援し、TLBという小さな高速キャッシュが変換結果を保持することがあります。この教材ではページテーブルを直接確認する流れとして示します。',
+        signal: `ページテーブル: ${VIRTUAL_PAGE} → フレーム ${PHYSICAL_FRAME}（配置済み）`,
         activeParts: ['page-table'],
         pageTable: `VPN ${VIRTUAL_PAGE}  →  PFN ${PHYSICAL_FRAME}  |  Present=1`,
-        physicalMemory: `Frame ${PHYSICAL_FRAME} を選択`,
+        physicalMemory: `フレーム ${PHYSICAL_FRAME} を選択`,
         storage: '待機中',
       },
       {
-        shortTitle: 'Physical memory read',
-        title: 'FrameとOffsetをつないで、Physical Memoryを読む',
-        body: `Physical Frame ${PHYSICAL_FRAME} とOffset ${OFFSET} を組み合わせ、代表的なPhysical Address ${PHYSICAL_FRAME}_${OFFSET} を得ます。必要なPageはすでにRAMにあるため、そのまま値を読めます。`,
-        detail: 'Page内のOffsetは変換の前後で変わりません。Pageの大きさが2のべき乗であるため、Addressの下位ビットをOffsetとして扱える、というのが基本的な考え方です。',
-        signal: `Physical Memory: frame ${PHYSICAL_FRAME} + offset ${OFFSET}`,
+        shortTitle: '物理メモリを読む',
+        title: 'フレームとオフセットをつないで、物理メモリを読む',
+        body: `物理フレーム ${PHYSICAL_FRAME} とオフセット ${OFFSET} を組み合わせ、代表的な物理アドレス（Physical Address）${PHYSICAL_FRAME}_${OFFSET} を得ます。必要なページはすでにRAMにあるため、そのまま値を読めます。`,
+        detail: 'ページ内のオフセットは変換の前後で変わりません。ページの大きさが2のべき乗であるため、アドレス（Address）の下位ビットをオフセットとして扱える、というのが基本的な考え方です。',
+        signal: `物理メモリ: フレーム ${PHYSICAL_FRAME} + オフセット ${OFFSET}`,
         activeParts: ['memory'],
         pageTable: `VPN ${VIRTUAL_PAGE}  →  PFN ${PHYSICAL_FRAME}  |  Present=1`,
-        physicalMemory: `Frame ${PHYSICAL_FRAME}  |  value = 42`,
+        physicalMemory: `フレーム ${PHYSICAL_FRAME}  |  値 = 42`,
         storage: 'アクセスしない',
       },
       {
-        shortTitle: 'Return value',
+        shortTitle: '値を返す',
         title: 'CPUが、変換された番地の値を受け取る',
-        body: 'CPUはPhysical Memoryから値 42 を受け取り、命令の実行を続けます。Virtual Memoryによって、プログラムはPhysical Memoryの配置を直接意識せずに動けます。',
-        detail: '同じVirtual Addressでも、別のProcessでは別のPhysical Frameへ対応付けられることがあります。これによりProcess間の保護やMemoryの柔軟な利用を助けます。',
-        signal: 'Physical Memory → CPU: value 42',
+        body: 'CPUは物理メモリから値 42 を受け取り、命令の実行を続けます。仮想メモリ（Virtual Memory）によって、プログラムは物理メモリの配置を直接意識せずに動けます。',
+        detail: '同じ仮想アドレスでも、別のプロセスでは別の物理フレームへ対応付けられることがあります。これによりプロセス間の保護やメモリの柔軟な利用を助けます。',
+        signal: '物理メモリ → CPU: 値 42',
         activeParts: ['cpu', 'memory'],
         pageTable: `VPN ${VIRTUAL_PAGE}  →  PFN ${PHYSICAL_FRAME}  |  Present=1`,
-        physicalMemory: `Frame ${PHYSICAL_FRAME}  |  42 を返す`,
+        physicalMemory: `フレーム ${PHYSICAL_FRAME}  |  42 を返す`,
         storage: '待機中',
       },
     ],
   },
   {
     id: 'fault',
-    label: 'Page Fault の例',
-    description: '必要なVirtual PageがRAMにないため、OSが読み込みを調整する例です。',
+    label: 'ページフォールト（Page Fault）の例',
+    description: '必要な仮想ページがRAMにないため、OSが読み込みを調整する例です。',
     steps: [
       {
-        shortTitle: 'Virtual address',
-        title: 'CPUが、まだRAMにないVirtual Pageを参照する',
-        body: `CPUは ${VIRTUAL_ADDRESS} を読みますが、この例ではVirtual Page ${VIRTUAL_PAGE} が現在Physical Memoryにありません。まず通常と同じようにAddress Translationを試みます。`,
-        detail: 'Page Faultは、プログラムがVirtual Addressを使ったこと自体が誤りだという意味ではありません。適切なPageが一時的にRAMにない場合にも、正当なアクセスとして発生します。',
-        signal: `CPU → address translation: ${VIRTUAL_ADDRESS}`,
+        shortTitle: '仮想アドレス',
+        title: 'CPUが、まだRAMにない仮想ページを参照する',
+        body: `CPUは ${VIRTUAL_ADDRESS} を読みますが、この例では仮想ページ ${VIRTUAL_PAGE} が現在物理メモリにありません。まず通常と同じようにアドレス変換を試みます。`,
+        detail: 'ページフォールトは、プログラムが仮想アドレスを使ったこと自体が誤りだという意味ではありません。適切なページが一時的にRAMにない場合にも、正当なアクセスとして発生します。',
+        signal: `CPU → アドレス変換: ${VIRTUAL_ADDRESS}`,
         activeParts: ['cpu', 'page-table'],
         pageTable: `VPN ${VIRTUAL_PAGE}  |  確認中`,
-        physicalMemory: '該当Pageは未配置',
-        storage: 'Backing Storageに保存済み（例）',
+        physicalMemory: '該当ページは未配置',
+        storage: 'バックイングストレージに保存済み（例）',
       },
       {
-        shortTitle: 'Not present',
-        title: 'Page Tableが「現在RAMにない」と示す',
-        body: `Page Table EntryのPresent bitが0のため、MMUは通常のMemory Readを続けられません。CPUはPage Faultという例外でOSに処理を渡します。`,
-        detail: 'アクセス権がないPageを参照した場合も例外が起きますが、それは単に「Page Faultを解決して続ける」ケースとは異なります。この教材では、正当なPageをRAMへ読み込める代表例に絞ります。',
-        signal: `Page Table: ${VIRTUAL_PAGE} → Present=0 → Page Fault`,
+        shortTitle: '未配置を検出する',
+        title: 'ページテーブルが「現在RAMにない」と示す',
+        body: `ページテーブルのエントリにある配置済みビット（Present bit）が0のため、MMUは通常のメモリ読み取りを続けられません。CPUはページフォールトという例外でOSに処理を渡します。`,
+        detail: 'アクセス権がないページを参照した場合も例外が起きますが、それは単に「ページフォールトを解決して続ける」ケースとは異なります。この教材では、正当なページをRAMへ読み込める代表例に絞ります。',
+        signal: `ページテーブル: ${VIRTUAL_PAGE} → 配置済み=0 → ページフォールト`,
         activeParts: ['page-table', 'os'],
         pageTable: `VPN ${VIRTUAL_PAGE}  →  Present=0  |  Page Fault`,
-        physicalMemory: '空きFrameまたは置換先を探す',
-        storage: 'Pageを読み込む準備',
+        physicalMemory: '空きフレームまたは置換先を探す',
+        storage: 'ページを読み込む準備',
       },
       {
-        shortTitle: 'OS handles fault',
-        title: 'OSが、Pageをどこから読み込むか調整する',
-        body: 'OSは、必要なPageが実行ファイル、メモリマップしたファイル、またはSwap領域などのどこにあるかを確認し、Physical Memory内のFrameを確保します。',
-        detail: '空きFrameがない場合、OSはPage Replacementの方針で別のPageを追い出すことがあります。追い出すPageが変更済みなら、先に書き戻しが必要な場合もあります。ここではその選択を省きます。',
-        signal: 'OS: source を決め、Frameを確保する',
+        shortTitle: 'OSが例外を処理する',
+        title: 'OSが、ページをどこから読み込むか調整する',
+        body: 'OSは、必要なページが実行ファイル、メモリマップしたファイル、またはスワップ（Swap）領域などのどこにあるかを確認し、物理メモリ内のフレームを確保します。',
+        detail: '空きフレームがない場合、OSはページ置換（Page Replacement）の方針で別のページを追い出すことがあります。追い出すページが変更済みなら、先に書き戻しが必要な場合もあります。ここではその選択を省きます。',
+        signal: 'OS: 読み込み元を決め、フレームを確保する',
         activeParts: ['os', 'memory', 'storage'],
         pageTable: `VPN ${VIRTUAL_PAGE}  →  Present=0（更新待ち）`,
-        physicalMemory: `Frame ${PHYSICAL_FRAME} を確保（教育用の例）`,
-        storage: 'Backing Storage → RAM へ読み込み中',
+        physicalMemory: `フレーム ${PHYSICAL_FRAME} を確保（教育用の例）`,
+        storage: 'バックイングストレージ → RAM へ読み込み中',
       },
       {
-        shortTitle: 'Page in',
-        title: 'Backing StorageからPageをRAMへ取り込む',
-        body: `必要なPageをPhysical Frame ${PHYSICAL_FRAME} へ読み込み、Page Tableを更新します。この読み込みはRAM内の通常アクセスより時間がかかるため、Page Faultが多いと性能に影響します。`,
-        detail: '「Backing Storage」はPageの出所をまとめて表した用語です。常にディスク上のSwapだけを意味するわけではなく、ファイルやゼロ初期化Pageなど、Pageの種類で扱いが異なります。',
-        signal: `Backing Storage → frame ${PHYSICAL_FRAME}; Page Tableを更新`,
+        shortTitle: 'ページを取り込む',
+        title: 'バックイングストレージ（Backing Storage）からページをRAMへ取り込む',
+        body: `必要なページを物理フレーム ${PHYSICAL_FRAME} へ読み込み、ページテーブルを更新します。この読み込みはRAM内の通常アクセスより時間がかかるため、ページフォールトが多いと性能に影響します。`,
+        detail: '「バックイングストレージ」はページの出所をまとめて表した用語です。常にディスク上のスワップだけを意味するわけではなく、ファイルやゼロ初期化ページなど、ページの種類で扱いが異なります。',
+        signal: `バックイングストレージ → フレーム ${PHYSICAL_FRAME}; ページテーブルを更新`,
         activeParts: ['page-table', 'memory', 'storage'],
         pageTable: `VPN ${VIRTUAL_PAGE}  →  PFN ${PHYSICAL_FRAME}  |  Present=1`,
-        physicalMemory: `Frame ${PHYSICAL_FRAME} へPageを配置`,
+        physicalMemory: `フレーム ${PHYSICAL_FRAME} へページを配置`,
         storage: '読み込み完了',
       },
       {
-        shortTitle: 'Retry access',
+        shortTitle: 'アクセスをやり直す',
         title: '元の命令をやり直し、RAMから値を読む',
-        body: 'Page Tableが更新されたため、OSは元の命令を再開できます。今度はVirtual PageがRAMに存在し、Physical Memoryから値を取得できます。',
-        detail: 'Page Faultの処理後に命令を再試行できるよう、CPUとOSは例外発生時の状態を管理します。詳細な保存・復元の方式はアーキテクチャとOSにより異なります。',
-        signal: `retry: frame ${PHYSICAL_FRAME} + offset ${OFFSET} → value 42`,
+        body: 'ページテーブルが更新されたため、OSは元の命令を再開できます。今度は仮想ページがRAMに存在し、物理メモリから値を取得できます。',
+        detail: 'ページフォールトの処理後に命令を再試行できるよう、CPUとOSは例外発生時の状態を管理します。詳細な保存・復元の方式はアーキテクチャとOSにより異なります。',
+        signal: `再試行: フレーム ${PHYSICAL_FRAME} + オフセット ${OFFSET} → 値 42`,
         activeParts: ['cpu', 'memory'],
         pageTable: `VPN ${VIRTUAL_PAGE}  →  PFN ${PHYSICAL_FRAME}  |  Present=1`,
-        physicalMemory: `Frame ${PHYSICAL_FRAME}  |  value = 42`,
+        physicalMemory: `フレーム ${PHYSICAL_FRAME}  |  値 = 42`,
         storage: '待機中',
       },
     ],
@@ -199,17 +199,17 @@ export function VirtualMemoryLesson({ onNavigate }: VirtualMemoryLessonProps) {
 
   const reset = () => setStep(0)
 
-  return <section aria-label="Virtual MemoryとPagingのステップ図解" className="rounded-3xl border border-indigo-200 bg-indigo-50/45 p-5 sm:p-7">
+  return <section aria-label="仮想メモリとページングのステップ図解" className="rounded-3xl border border-indigo-200 bg-indigo-50/45 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="eyebrow text-indigo-700">INTERACTIVE VIRTUAL MEMORY</p>
-        <h2 className="mt-2 text-xl font-bold text-slate-900">Virtual AddressがRAMへ届くまでを、止めて追う</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="Virtual Memoryでは、プログラムが使うVirtual AddressをPage TableでPhysical MemoryのFrameへ対応付けます。通常の変換とPage Faultを、同じAddressの例で見比べます。" onNavigate={onNavigate} /></p>
+        <p className="eyebrow text-indigo-700">仮想メモリを操作して学ぶ</p>
+        <h2 className="mt-2 text-xl font-bold text-slate-900">仮想アドレスがRAMへ届くまでを、止めて追う</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="仮想メモリでは、プログラムが使う仮想アドレスをページテーブルで物理メモリのフレームへ対応付けます。通常の変換とページフォールトを、同じアドレスの例で見比べます。" onNavigate={onNavigate} /></p>
       </div>
       <span className="rounded-full border border-indigo-200 bg-white px-3 py-1.5 text-xs font-bold text-indigo-800">{step + 1} / {scenario.steps.length}</span>
     </div>
 
-    <div className="mt-6 grid gap-3 sm:grid-cols-2" role="tablist" aria-label="Virtual Memoryの例を選ぶ">
+    <div className="mt-6 grid gap-3 sm:grid-cols-2" role="tablist" aria-label="仮想メモリの例を選ぶ">
       {MEMORY_SCENARIOS.map(item => <button
         key={item.id}
         id={`vm-scenario-${item.id}`}
@@ -236,11 +236,11 @@ export function VirtualMemoryLesson({ onNavigate }: VirtualMemoryLessonProps) {
       </div>
 
       <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-        <MemoryPart title="CPU" subtitle="Virtual Addressを出す" content={`${VIRTUAL_ADDRESS}\nVPN ${VIRTUAL_PAGE} / offset ${OFFSET}`} active={active('cpu')} tone="sky" />
-        <MemoryPart title="Page Table / MMU" subtitle="対応表で変換する" content={current.pageTable} active={active('page-table')} tone="indigo" />
-        <MemoryPart title="Physical Memory" subtitle="RAMのFrame" content={current.physicalMemory} active={active('memory')} tone="emerald" />
-        <MemoryPart title="OS" subtitle="Fault時に調整する" content={active('os') ? 'Page Fault handler が動作中' : '通常は変換を準備する'} active={active('os')} tone="violet" />
-        <MemoryPart title="Backing Storage" subtitle="Pageの出所（例）" content={current.storage} active={active('storage')} tone="amber" />
+        <MemoryPart title="CPU" subtitle="仮想アドレスを出す" content={`${VIRTUAL_ADDRESS}\nVPN ${VIRTUAL_PAGE} / オフセット ${OFFSET}`} active={active('cpu')} tone="sky" />
+        <MemoryPart title="ページテーブル / MMU" subtitle="対応表で変換する" content={current.pageTable} active={active('page-table')} tone="indigo" />
+        <MemoryPart title="物理メモリ" subtitle="RAMのフレーム" content={current.physicalMemory} active={active('memory')} tone="emerald" />
+        <MemoryPart title="OS" subtitle="例外時に調整する" content={active('os') ? 'ページフォールトの処理中' : '通常は変換を準備する'} active={active('os')} tone="violet" />
+        <MemoryPart title="バックイングストレージ" subtitle="ページの出所（例）" content={current.storage} active={active('storage')} tone="amber" />
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
@@ -251,17 +251,17 @@ export function VirtualMemoryLesson({ onNavigate }: VirtualMemoryLessonProps) {
           <p className="mt-3 rounded-lg border-l-2 border-amber-400 bg-amber-50 px-3 py-2 text-xs leading-6 text-amber-950"><LinkedText text={current.detail} onNavigate={onNavigate} /></p>
         </article>
         <aside className="rounded-xl border border-indigo-200 bg-indigo-50 p-4">
-          <p className="text-xs font-bold text-indigo-900">Addressを分けて考える</p>
+          <p className="text-xs font-bold text-indigo-900">アドレスを分けて考える</p>
           <dl className="mt-3 space-y-2 text-xs leading-6 text-slate-700">
-            <div className="rounded-lg border border-white bg-white/80 px-3 py-2"><dt className="font-bold text-indigo-900">Virtual Page Number</dt><dd className="font-mono">{VIRTUAL_PAGE}</dd></div>
-            <div className="rounded-lg border border-white bg-white/80 px-3 py-2"><dt className="font-bold text-indigo-900">Page Offset</dt><dd className="font-mono">{OFFSET}（変換後も同じ）</dd></div>
-            <div className="rounded-lg border border-white bg-white/80 px-3 py-2"><dt className="font-bold text-indigo-900">Physical Frame Number</dt><dd className="font-mono">{PHYSICAL_FRAME}（Presentなら取得）</dd></div>
+            <div className="rounded-lg border border-white bg-white/80 px-3 py-2"><dt className="font-bold text-indigo-900">仮想ページ番号（Virtual Page Number）</dt><dd className="font-mono">{VIRTUAL_PAGE}</dd></div>
+            <div className="rounded-lg border border-white bg-white/80 px-3 py-2"><dt className="font-bold text-indigo-900">ページオフセット（Page Offset）</dt><dd className="font-mono">{OFFSET}（変換後も同じ）</dd></div>
+            <div className="rounded-lg border border-white bg-white/80 px-3 py-2"><dt className="font-bold text-indigo-900">物理フレーム番号（Physical Frame Number）</dt><dd className="font-mono">{PHYSICAL_FRAME}（配置済みなら取得）</dd></div>
           </dl>
         </aside>
       </div>
     </div>
 
-    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-950"><b>教材上の簡略化：</b>この例は4 KiB Page、単純なPage Table、1つのBacking Storage経路を使う概念モデルです。実際にはTLB、多段Page Table、Page Replacement、Copy-on-Write、Memory-mapped file、アクセス権、複数Process・複数CPUなどが関係します。Page Faultが常にディスク読み込みを意味するわけでもありません。</p>
+    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-950"><b>教材上の簡略化：</b>この例は4 KiBのページ、単純なページテーブル、1つのバックイングストレージ経路を使う概念モデルです。実際にはTLB、多段ページテーブル、ページ置換、コピーオンライト（Copy-on-Write）、メモリマップトファイル（Memory-mapped file）、アクセス権、複数プロセス・複数CPUなどが関係します。ページフォールトが常にディスク読み込みを意味するわけでもありません。</p>
   </section>
 }
 

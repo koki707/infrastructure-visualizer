@@ -7,7 +7,7 @@ type DhcpLessonProps = {
 }
 
 type DhcpStep = {
-  shortTitle: 'Discover' | 'Offer' | 'Request' | 'ACK'
+  shortTitle: '検出（Discover）' | '提案（Offer）' | '要求（Request）' | '確認（ACK）'
   title: string
   body: string
   detail: string
@@ -19,7 +19,7 @@ type DhcpStep = {
 
 const DHCP_STEPS: DhcpStep[] = [
   {
-    shortTitle: 'Discover',
+    shortTitle: '検出（Discover）',
     title: 'まだ設定を持たないPCが、DHCPサーバーを探す',
     body: 'PCは利用できるIPv4設定がない状態で、DHCPDISCOVERをLAN内へ送ります。宛先のDHCPサーバーがまだ分からないため、初回取得の代表例ではブロードキャストを使います。',
     detail: 'DHCPv4では、クライアントは通常UDP 68番、サーバーはUDP 67番を使います。この例のPCは、まだ正式なIPv4アドレスを使える状態ではありません。',
@@ -29,9 +29,9 @@ const DHCP_STEPS: DhcpStep[] = [
     active: 'client',
   },
   {
-    shortTitle: 'Offer',
+    shortTitle: '提案（Offer）',
     title: 'DHCPサーバーが、使えそうな設定を提案する',
-    body: 'DHCPサーバーはDHCPOFFERで、候補となるIPv4アドレスと、Subnet Mask、Default Gateway、DNS Serverなどの設定を提案します。',
+    body: 'DHCPサーバーはDHCPOFFERで、候補となるIPv4アドレスと、サブネットマスク（Subnet Mask）、デフォルトゲートウェイ（Default Gateway）、DNSサーバー（DNS Server）などの設定を提案します。',
     detail: 'この時点では、まだ最終確定ではありません。複数のDHCPサーバーからDHCPOFFERが届くこともあり、クライアントは候補を選びます。',
     source: '192.168.1.1:67',
     destination: 'PC（UDP 68）',
@@ -39,7 +39,7 @@ const DHCP_STEPS: DhcpStep[] = [
     active: 'server',
   },
   {
-    shortTitle: 'Request',
+    shortTitle: '要求（Request）',
     title: 'PCが、利用したい設定を選んで要求する',
     body: 'PCはDHCPREQUESTで、選んだ候補のIPv4アドレスを使いたいことを伝えます。初回取得では、ほかのDHCPサーバーにも選択結果が分かるよう、ブロードキャストになる代表例があります。',
     detail: '同じDHCPREQUESTでも、リースの更新や再取得では送信方法・内容が変わることがあります。ここでは最初にネットワークへ参加する流れを示しています。',
@@ -49,7 +49,7 @@ const DHCP_STEPS: DhcpStep[] = [
     active: 'both',
   },
   {
-    shortTitle: 'ACK',
+    shortTitle: '確認（ACK）',
     title: 'DHCPサーバーが、設定とリースを確定する',
     body: 'DHCPACKが届くと、PCは提案されたIPv4アドレスとネットワーク設定を一定期間利用できるようになります。この期間をリースと呼びます。',
     detail: 'PCはリース期限より前に更新を試みます。利用できない場合はDHCPNAKなど別の応答になることもあり、実際の運用はネットワークの設定により異なります。',
@@ -78,9 +78,9 @@ export function DhcpLesson({ onNavigate }: DhcpLessonProps) {
   return <section aria-label="DHCPv4 DORAのステップ図解" className="rounded-3xl border border-sky-200 bg-sky-50/50 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="eyebrow">INTERACTIVE DHCPv4</p>
+        <p className="eyebrow">操作して学ぶDHCPv4</p>
         <h2 className="mt-2 text-xl font-bold text-slate-900">PCがネットワーク設定を受け取るまで</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="DHCPは、PCがIPv4アドレス、Default Gateway、DNS Serverなどを手作業で入力せずにネットワークへ参加するための仕組みです。" onNavigate={onNavigate} /></p>
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="DHCPは、PCがIPv4アドレス、デフォルトゲートウェイ（Default Gateway）、DNSサーバー（DNS Server）などを手作業で入力せずにネットワークへ参加するための仕組みです。" onNavigate={onNavigate} /></p>
       </div>
       <span className="rounded-full border border-sky-200 bg-white px-3 py-1.5 text-xs font-bold text-sky-800">{step + 1} / {DHCP_STEPS.length}</span>
     </div>
@@ -105,20 +105,20 @@ export function DhcpLesson({ onNavigate }: DhcpLessonProps) {
       <div className="grid items-center gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
         <div className={`lesson-device ${current.active === 'client' || current.active === 'both' ? 'lesson-device-active' : ''}`}>
           <span className="lesson-device-icon bg-sky-100 text-sky-800">PC</span>
-          <b>DHCP Client</b>
+          <b>DHCPクライアント</b>
           <span>ネットワークへ参加するPC</span>
         </div>
         <div className={`lesson-arrow ${current.direction === 'client-to-server' ? 'lesson-arrow-active' : ''}`} aria-hidden="true">{directionArrow}</div>
         <div className="lesson-device">
           <span className="lesson-device-icon bg-violet-100 text-violet-800">SW</span>
-          <b>LAN Switch</b>
-          <span>LAN内のbroadcastを転送</span>
+          <b>LANスイッチ</b>
+          <span>LAN内のブロードキャストを転送</span>
         </div>
         <div className={`lesson-arrow ${current.direction === 'server-to-client' ? 'lesson-arrow-active' : ''}`} aria-hidden="true">{directionArrow}</div>
         <div className={`lesson-device ${current.active === 'server' || current.active === 'both' ? 'lesson-device-active' : ''}`}>
           <span className="lesson-device-icon bg-amber-100 text-amber-800">DHCP</span>
-          <b>DHCP Server</b>
-          <span>この例ではHome Router内</span>
+          <b>DHCPサーバー</b>
+          <span>この例では家庭用ルーター内</span>
         </div>
       </div>
 
@@ -140,21 +140,21 @@ export function DhcpLesson({ onNavigate }: DhcpLessonProps) {
 
       <section className={`mt-5 rounded-xl border p-4 transition ${configurationIsFinal ? 'border-emerald-300 bg-emerald-50' : configurationIsProposed ? 'border-sky-200 bg-sky-50' : 'border-slate-200 bg-slate-50'}`} aria-label="DHCPから受け取る設定の例">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div><p className="text-sm font-bold text-slate-900">{configurationIsFinal ? 'PCで利用できる設定' : configurationIsProposed ? 'DHCP Serverが提案した設定' : 'DHCPで受け取る設定'}</p><p className="mt-1 text-xs text-slate-600">{configurationIsFinal ? 'ACK後、PCはこの例の設定を使って次の通信へ進めます。' : configurationIsProposed ? 'Requestで選び、ACKで確定します。' : 'Offer以降で、ネットワークに必要な情報が渡されます。'}</p></div>
+          <div><p className="text-sm font-bold text-slate-900">{configurationIsFinal ? 'PCで利用できる設定' : configurationIsProposed ? 'DHCPサーバーが提案した設定' : 'DHCPで受け取る設定'}</p><p className="mt-1 text-xs text-slate-600">{configurationIsFinal ? 'ACK後、PCはこの例の設定を使って次の通信へ進めます。' : configurationIsProposed ? '要求（Request）で選び、ACKで確定します。' : '提案（Offer）以降で、ネットワークに必要な情報が渡されます。'}</p></div>
           <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${configurationIsFinal ? 'bg-emerald-600 text-white' : configurationIsProposed ? 'bg-sky-600 text-white' : 'bg-slate-200 text-slate-600'}`}>{configurationIsFinal ? '確定' : configurationIsProposed ? '候補' : '待機中'}</span>
         </div>
         <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ['IPv4 Address', '192.168.1.10 /24'],
-            ['Default Gateway', '192.168.1.1'],
-            ['DNS Server', '192.168.1.53'],
-            ['Lease', '8 hours（例）'],
+            ['IPv4アドレス', '192.168.1.10 /24'],
+            ['デフォルトゲートウェイ', '192.168.1.1'],
+            ['DNSサーバー', '192.168.1.53'],
+            ['リース期間', '8時間（例）'],
           ].map(([label, value]) => <div key={label} className={`rounded-lg border px-3 py-2.5 ${configurationIsProposed ? 'border-white bg-white/90' : 'border-slate-200 bg-white'}`}><p className="text-[10px] font-semibold text-slate-500">{label}</p><code className="mt-1 block break-all text-xs font-bold text-slate-800">{value}</code></div>)}
         </div>
       </section>
     </div>
 
-    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-950"><b>教材上の簡略化：</b>ここでは同一LANにDHCP Serverがある初回取得の代表例を示しています。実際にはOFFER / ACKがunicastになる場合、別ネットワークのDHCP ServerへDHCP Relayが中継する場合、既存リースを更新する場合などがあります。</p>
+    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-950"><b>教材上の簡略化：</b>ここでは同一LANにDHCPサーバーがある初回取得の代表例を示しています。実際にはOFFER / ACKがユニキャスト（unicast）になる場合、別ネットワークのDHCPサーバーへDHCPリレー（DHCP Relay）が中継する場合、既存リースを更新する場合などがあります。</p>
   </section>
 }
 

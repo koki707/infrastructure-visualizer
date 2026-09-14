@@ -204,6 +204,12 @@ export default function VisualizerPage({ onNavigate }: { onNavigate: Navigate })
         {world ? <DetailPanel world={world} selectedId={selectedItemId} onOpenTerm={openGlossary} /> : <InfoPanel node={selectedNode} sending={sending} onExplore={enterSelectedNode} onOpenTerm={openGlossary} />}
         <ProgressBar activeNodeId={activeNodeId} nodeIds={progressNodeIds} />
         <RequestTimeline activeId={requestStage?.id ?? null} onExplore={openWorld} onOpenTerm={openGlossary} />
+        <section className="rounded-2xl border border-cyan-200 bg-cyan-50/70 p-5 shadow-sm">
+          <p className="eyebrow">次の学び方</p>
+          <h2 className="mt-2 text-sm font-bold text-slate-900">全体像を見たら、通信の仕組みを深掘りする</h2>
+          <p className="mt-2 text-xs leading-5 text-slate-700">まずこのシミュレーションでPCからWebサーバーまでの流れを確認し、そのあとDNS、TCP、IP、Ethernetを通信の順に学べます。</p>
+          <button type="button" onClick={() => onNavigate('/topics')} className="mt-3 text-xs font-bold text-cyan-800 transition hover:text-cyan-950">通信の仕組みを深掘りする →</button>
+        </section>
         {world && <section className="panel p-5"><p className="eyebrow">探索のヒント</p><p className="mt-3 text-sm leading-6 text-slate-700">光る要素をクリックすると、より具体的な世界へ入れます。通信シミュレーション中でも探索は続けられます。</p></section>}
         <GlossaryPanel context={glossaryContext} onOpenTerm={openGlossary} />
       </aside>

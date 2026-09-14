@@ -7,22 +7,22 @@ type Segment = { label: string; color: string; textColor: string; width?: number
 
 const SEGMENTS: Record<PacketUnitKind, Segment[]> = {
   data: [
-    { label: 'HTTP DATA', color: '#dbeef6', textColor: '#164e63', width: 1.1 },
+    { label: 'HTTPデータ', color: '#dbeef6', textColor: '#164e63', width: 1.1 },
   ],
   segment: [
     { label: 'TCP', color: '#e4e7f5', textColor: '#3730a3' },
-    { label: 'HTTP DATA', color: '#dbeef6', textColor: '#164e63', width: 1.1 },
+    { label: 'HTTPデータ', color: '#dbeef6', textColor: '#164e63', width: 1.1 },
   ],
   packet: [
     { label: 'IPv4', color: '#f3ead2', textColor: '#854d0e' },
     { label: 'TCP', color: '#e4e7f5', textColor: '#3730a3' },
-    { label: 'HTTP DATA', color: '#dbeef6', textColor: '#164e63', width: 1.1 },
+    { label: 'HTTPデータ', color: '#dbeef6', textColor: '#164e63', width: 1.1 },
   ],
   frame: [
     { label: 'ETH', color: '#d7eee8', textColor: '#115e59' },
     { label: 'IPv4', color: '#f3ead2', textColor: '#854d0e' },
     { label: 'TCP', color: '#e4e7f5', textColor: '#3730a3' },
-    { label: 'DATA', color: '#dbeef6', textColor: '#164e63' },
+    { label: 'データ', color: '#dbeef6', textColor: '#164e63' },
     { label: 'FCS', color: '#e2e8f0', textColor: '#334155' },
   ],
 }

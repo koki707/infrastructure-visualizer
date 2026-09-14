@@ -25,7 +25,7 @@ export function Ipv6Lesson({ onNavigate }: Ipv6LessonProps) {
   return <section aria-label="IPv6アドレスの図解" className="rounded-3xl border border-indigo-200 bg-indigo-50/45 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="eyebrow text-indigo-700">INTERACTIVE IPv6</p>
+        <p className="eyebrow text-indigo-700">操作して学ぶIPv6</p>
         <h2 className="mt-2 text-xl font-bold text-slate-900">128ビットの住所を、まとまりで読む</h2>
       </div>
       <span className="rounded-full border border-indigo-200 bg-white px-3 py-1.5 text-xs font-bold text-indigo-800">IPv4とは別のアドレス方式</span>
@@ -49,7 +49,7 @@ export function Ipv6Lesson({ onNavigate }: Ipv6LessonProps) {
       </div>
       <div className="mt-5 grid gap-4 rounded-xl border border-indigo-200 bg-indigo-50 p-4 sm:grid-cols-2">
         <div><p className="text-xs font-bold text-indigo-900">選択中のグループ</p><code className="mt-2 block text-xl font-bold text-slate-900">0x{group.toUpperCase()}</code><p className="mt-2 text-xs leading-6 text-slate-600">16進数4桁で、ちょうど16ビットを表せます。</p></div>
-        <div><p className="text-xs font-bold text-indigo-900">Binary（16ビット）</p><code className="mt-2 block break-all text-sm font-bold tracking-wide text-indigo-950">{binaryForGroup(group).slice(0, 8)} {binaryForGroup(group).slice(8)}</code><p className="mt-2 text-xs leading-6 text-slate-600">サイトでは構造を確かめるための表現です。実際の通信ではアドレス全体がヘッダのフィールドとして扱われます。</p></div>
+        <div><p className="text-xs font-bold text-indigo-900">2進数（Binary・16ビット）</p><code className="mt-2 block break-all text-sm font-bold tracking-wide text-indigo-950">{binaryForGroup(group).slice(0, 8)} {binaryForGroup(group).slice(8)}</code><p className="mt-2 text-xs leading-6 text-slate-600">サイトでは構造を確かめるための表現です。実際の通信ではアドレス全体がヘッダーのフィールドとして扱われます。</p></div>
       </div>
       <p className="mt-4 font-mono text-xs leading-6 text-slate-500">{FULL_ADDRESS.join(':')}</p>
     </div>}
@@ -66,8 +66,8 @@ export function Ipv6Lesson({ onNavigate }: Ipv6LessonProps) {
     </div>}
 
     {view === 'lan' && <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-      <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-center"><div className="lesson-device"><span className="lesson-device-icon bg-sky-100 text-sky-800">PC</span><b>IPv6対応の端末</b><span>自分の設定を得る</span></div><div className="lesson-arrow" aria-hidden="true">→</div><div className="lesson-device lesson-device-active"><span className="lesson-device-icon bg-indigo-100 text-indigo-800">LAN</span><b>同一リンク</b><span>Router Advertisement / NDP</span></div><div className="lesson-arrow" aria-hidden="true">→</div><div className="lesson-device"><span className="lesson-device-icon bg-amber-100 text-amber-800">GW</span><b>Default Router</b><span>次のネットワークへ</span></div></div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-3"><article className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="font-semibold text-slate-900">アドレス設定</p><p className="mt-2 text-sm leading-6 text-slate-600">IPv6ではSLAAC、DHCPv6、手動設定など、環境に応じた方法があります。DHCPv4の流れがそのまま必須になるわけではありません。</p></article><article className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="font-semibold text-slate-900">次の相手を知る</p><p className="mt-2 text-sm leading-6 text-slate-600"><LinkedText text="IPv6の同一LANではARPではなく、ICMPv6のNeighbor Discovery Protocol（NDP）が近隣機器やルーターを見つける役割を担います。" onNavigate={onNavigate} /></p></article><article className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="font-semibold text-slate-900">IPv4との併用</p><p className="mt-2 text-sm leading-6 text-slate-600">実際の環境ではIPv4とIPv6を同時に使うデュアルスタックもあります。どちらが使われるかは端末・ネットワーク・接続先の対応状況で変わります。</p></article></div>
+      <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-center"><div className="lesson-device"><span className="lesson-device-icon bg-sky-100 text-sky-800">PC</span><b>IPv6対応の端末</b><span>自分の設定を得る</span></div><div className="lesson-arrow" aria-hidden="true">→</div><div className="lesson-device lesson-device-active"><span className="lesson-device-icon bg-indigo-100 text-indigo-800">LAN</span><b>同一リンク</b><span>ルーター広告 / NDP</span></div><div className="lesson-arrow" aria-hidden="true">→</div><div className="lesson-device"><span className="lesson-device-icon bg-amber-100 text-amber-800">GW</span><b>デフォルトルーター</b><span>次のネットワークへ</span></div></div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-3"><article className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="font-semibold text-slate-900">アドレス設定</p><p className="mt-2 text-sm leading-6 text-slate-600">IPv6ではSLAAC、DHCPv6、手動設定など、環境に応じた方法があります。DHCPv4の流れがそのまま必須になるわけではありません。</p></article><article className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="font-semibold text-slate-900">次の相手を知る</p><p className="mt-2 text-sm leading-6 text-slate-600"><LinkedText text="IPv6の同一LANではARPではなく、ICMPv6の近隣探索プロトコル（Neighbor Discovery Protocol: NDP）が近隣機器やルーターを見つける役割を担います。" onNavigate={onNavigate} /></p></article><article className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="font-semibold text-slate-900">IPv4との併用</p><p className="mt-2 text-sm leading-6 text-slate-600">実際の環境ではIPv4とIPv6を同時に使うデュアルスタックもあります。どちらが使われるかは端末・ネットワーク・接続先の対応状況で変わります。</p></article></div>
     </div>}
 
     <p className="mt-4 text-xs leading-6 text-slate-600">この教材はIPv6の表記と基本的な関係を理解するためのモデルです。実際のアドレス割り当て、ルーター広告、DNS、経路制御には環境ごとの設定があります。</p>

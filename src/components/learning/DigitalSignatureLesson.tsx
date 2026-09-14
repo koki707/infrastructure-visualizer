@@ -19,32 +19,32 @@ const SIGNATURE_STEPS: SignatureStep[] = [
   {
     label: '原文',
     title: '作成者が、署名したいデータを用意する',
-    body: 'ここでは請求額を含む短い文書を例にします。Digital Signatureは、文書そのものを秘密にするためではなく、文書が想定した秘密鍵の保持者によって署名され、途中で変わっていないかを確かめるために使います。',
+    body: 'ここでは請求額を含む短い文書を例にします。デジタル署名（Digital Signature）は、文書そのものを秘密にするためではなく、文書が想定した秘密鍵の保持者によって署名され、途中で変わっていないかを確かめるために使います。',
     detail: '署名する対象は文書全体だけとは限りません。プロトコルや形式に応じて、どのデータを保護の対象にするかが決められています。',
   },
   {
-    label: 'Hash',
+    label: 'ハッシュ（Hash）',
     title: 'データから、内容に対応する短い値を計算する',
-    body: '作成者は文書にHash Functionを適用し、内容に対応するHash値（Digest）を得ます。同じ内容なら同じHash値になり、内容が変われば通常は大きく異なる値になります。',
-    detail: 'Hash値は文書を復元するための値ではありません。また、短いHash値だけを見て内容が安全に秘密になるわけでもありません。',
+    body: '作成者は文書にハッシュ関数（Hash Function）を適用し、内容に対応するハッシュ値（Digest）を得ます。同じ内容なら同じハッシュ値になり、内容が変われば通常は大きく異なる値になります。',
+    detail: 'ハッシュ値は文書を復元するための値ではありません。また、短いハッシュ値だけを見て内容が安全に秘密になるわけでもありません。',
   },
   {
     label: '署名',
-    title: '秘密鍵を使い、Hash値に対する署名を作る',
-    body: '作成者はPrivate Keyを使って、Hash値を入力にDigital Signatureを生成します。受信者へは通常、文書・署名・検証に必要な公開鍵情報や証明書の情報が渡されます。',
-    detail: '「秘密鍵でHashを暗号化する」と説明されることがありますが、これは一般的な署名方式を正確に表す言い方ではありません。署名の生成・検証は、方式ごとに定められた署名アルゴリズムで行われます。',
+    title: '秘密鍵を使い、ハッシュ値に対する署名を作る',
+    body: '作成者は秘密鍵（Private Key）を使って、ハッシュ値を入力にデジタル署名（Digital Signature）を生成します。受信者へは通常、文書・署名・検証に必要な公開鍵情報や証明書の情報が渡されます。',
+    detail: '「秘密鍵でハッシュを暗号化する」と説明されることがありますが、これは一般的な署名方式を正確に表す言い方ではありません。署名の生成・検証は、方式ごとに定められた署名アルゴリズムで行われます。',
   },
   {
     label: '検証',
     title: '受信者が公開鍵で、署名と受信データの対応を確かめる',
-    body: '受信者は受け取った文書から改めてHash値を計算し、Public Keyを使って署名を検証します。署名がその文書のHash値と対応し、鍵の組み合わせが正しければ検証は成功します。',
-    detail: '公開鍵だけでは「誰の鍵か」を自動で保証できません。Webで接続先を確かめるときなどは、公開鍵と主体の結び付きを検証するためにCertificateや信頼の仕組みも必要です。',
+    body: '受信者は受け取った文書から改めてハッシュ値を計算し、公開鍵（Public Key）を使って署名を検証します。署名がその文書のハッシュ値と対応し、鍵の組み合わせが正しければ検証は成功します。',
+    detail: '公開鍵だけでは「誰の鍵か」を自動で保証できません。Webで接続先を確かめるときなどは、公開鍵と主体の結び付きを検証するために証明書（Certificate）や信頼の仕組みも必要です。',
   },
   {
     label: '結果',
     title: '変更があれば、署名の検証に失敗する',
-    body: '署名後に保護対象のデータが変わると、受信側で計算するHash値が一致しなくなり、通常は署名を検証できません。これにより、意図しない改ざんを検出する助けになります。',
-    detail: 'Digital Signatureはデータの暗号化そのものではありません。内容を秘密にするには別の暗号化が必要であり、署名は完全性と署名鍵の保持者による作成を検証するための仕組みです。',
+    body: '署名後に保護対象のデータが変わると、受信側で計算するハッシュ値が一致しなくなり、通常は署名を検証できません。これにより、意図しない改ざんを検出する助けになります。',
+    detail: 'デジタル署名（Digital Signature）はデータの暗号化そのものではありません。内容を秘密にするには別の暗号化が必要であり、署名は完全性と署名鍵の保持者による作成を検証するための仕組みです。',
   },
 ]
 
@@ -94,21 +94,21 @@ export function DigitalSignatureLesson({ onNavigate }: DigitalSignatureLessonPro
   const actionHint = step === 0
     ? 'まず、署名する文書と受信側に届いた文書を見比べます。'
     : step === 1
-      ? '文書の内容からHash値を作る役割を確認します。'
+      ? '文書の内容からハッシュ値を作る役割を確認します。'
       : step === 2
         ? '秘密鍵は署名を生成する側だけが保持します。'
         : step === 3
-          ? '受信側は公開鍵と、受信した文書から作ったHash値を使います。'
+        ? '受信側は公開鍵と、受信した文書から作ったハッシュ値を使います。'
           : verificationSucceeded
             ? '署名と受信データの対応を検証できました。'
             : '受信データが変わったため、署名との対応を検証できません。'
 
-  return <section aria-label="Digital Signatureのステップ図解" className="rounded-3xl border border-violet-200 bg-violet-50/45 p-5 sm:p-7">
+  return <section aria-label="デジタル署名のステップ図解" className="rounded-3xl border border-violet-200 bg-violet-50/45 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="eyebrow text-violet-700">INTERACTIVE SECURITY</p>
+        <p className="eyebrow text-violet-700">操作して学ぶセキュリティ</p>
         <h2 className="mt-2 text-xl font-bold text-slate-900">署名と検証を止めながら、改ざん検出を追う</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="Digital Signatureは、データが途中で変わっていないかと、対応するPrivate Keyを持つ側が署名を作ったかを確かめるための仕組みです。正常な例と改ざんされた例を切り替え、Hash・署名・Public Keyによる検証を1段階ずつ確認できます。" onNavigate={onNavigate} /></p>
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="デジタル署名（Digital Signature）は、データが途中で変わっていないかと、対応する秘密鍵（Private Key）を持つ側が署名を作ったかを確かめるための仕組みです。正常な例と改ざんされた例を切り替え、ハッシュ・署名・公開鍵（Public Key）による検証を1段階ずつ確認できます。" onNavigate={onNavigate} /></p>
       </div>
       <span className="rounded-full border border-violet-200 bg-white px-3 py-1.5 text-xs font-bold text-violet-800">{step + 1} / {SIGNATURE_STEPS.length}</span>
     </div>
@@ -124,7 +124,7 @@ export function DigitalSignatureLesson({ onNavigate }: DigitalSignatureLessonPro
       </div>
     </div>
 
-    <div className="mt-5 grid gap-2 sm:grid-cols-5" role="tablist" aria-label="Digital Signatureの段階">
+    <div className="mt-5 grid gap-2 sm:grid-cols-5" role="tablist" aria-label="デジタル署名の段階">
       {SIGNATURE_STEPS.map((item, index) => <button
         key={item.label}
         id={`signature-step-${index}`}
@@ -143,13 +143,13 @@ export function DigitalSignatureLesson({ onNavigate }: DigitalSignatureLessonPro
     <div id="signature-step-panel" role="tabpanel" aria-labelledby={`signature-step-${step}`} className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
       <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-stretch">
         <article className="rounded-2xl border border-sky-200 bg-sky-50/60 p-4">
-          <div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-bold tracking-[.14em] text-sky-700">SIGNER</p><h3 className="mt-1 text-base font-bold text-slate-900">作成者</h3></div><span className="rounded-full bg-sky-100 px-2 py-1 text-[10px] font-bold text-sky-800">Private Keyを保持</span></div>
-          <div className="mt-4 grid gap-2"><DataChip label="署名した文書" value={ORIGINAL_DOCUMENT} tone="slate" /><DataChip label="作成時のHash値" value={ORIGINAL_DIGEST} tone="violet" /><DataChip label="生成した署名" value={SIGNATURE_VALUE} tone="violet" /></div>
+          <div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-bold tracking-[.14em] text-sky-700">署名する側</p><h3 className="mt-1 text-base font-bold text-slate-900">作成者</h3></div><span className="rounded-full bg-sky-100 px-2 py-1 text-[10px] font-bold text-sky-800">秘密鍵（Private Key）を保持</span></div>
+          <div className="mt-4 grid gap-2"><DataChip label="署名した文書" value={ORIGINAL_DOCUMENT} tone="slate" /><DataChip label="作成時のハッシュ値" value={ORIGINAL_DIGEST} tone="violet" /><DataChip label="生成した署名" value={SIGNATURE_VALUE} tone="violet" /></div>
         </article>
         <div className="flex items-center justify-center" aria-hidden="true"><span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-2 text-center text-xs font-bold text-violet-800">文書<br />+<br />署名</span></div>
         <article className={`rounded-2xl border p-4 ${isTampered ? 'border-rose-200 bg-rose-50/60' : 'border-emerald-200 bg-emerald-50/55'}`}>
-          <div className="flex items-start justify-between gap-3"><div><p className={`text-[10px] font-bold tracking-[.14em] ${isTampered ? 'text-rose-700' : 'text-emerald-700'}`}>VERIFIER</p><h3 className="mt-1 text-base font-bold text-slate-900">受信者</h3></div><span className={`rounded-full px-2 py-1 text-[10px] font-bold ${isTampered ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}`}>{isTampered ? '文書が変更された例' : '同じ文書を受信'}</span></div>
-          <div className="mt-4 grid gap-2"><DataChip label="受信した文書" value={receivedDocument} tone={isTampered ? 'rose' : 'slate'} /><DataChip label="受信側で計算したHash値" value={receivedDigest} tone={isTampered ? 'rose' : 'emerald'} /><DataChip label="受信した署名" value={SIGNATURE_VALUE} tone="violet" /></div>
+          <div className="flex items-start justify-between gap-3"><div><p className={`text-[10px] font-bold tracking-[.14em] ${isTampered ? 'text-rose-700' : 'text-emerald-700'}`}>検証する側</p><h3 className="mt-1 text-base font-bold text-slate-900">受信者</h3></div><span className={`rounded-full px-2 py-1 text-[10px] font-bold ${isTampered ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}`}>{isTampered ? '文書が変更された例' : '同じ文書を受信'}</span></div>
+          <div className="mt-4 grid gap-2"><DataChip label="受信した文書" value={receivedDocument} tone={isTampered ? 'rose' : 'slate'} /><DataChip label="受信側で計算したハッシュ値" value={receivedDigest} tone={isTampered ? 'rose' : 'emerald'} /><DataChip label="受信した署名" value={SIGNATURE_VALUE} tone="violet" /></div>
         </article>
       </div>
 
@@ -175,8 +175,8 @@ export function DigitalSignatureLesson({ onNavigate }: DigitalSignatureLessonPro
     </div>
 
     <div className="mt-4 grid gap-3 md:grid-cols-2">
-      <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-950"><b>署名と暗号化は別の役割：</b>Digital Signatureは、主に完全性と署名鍵の保持者による作成を検証する仕組みです。文書の内容を読めないようにする暗号化そのものではありません。</p>
-      <p className="rounded-xl border border-violet-200 bg-white px-4 py-3 text-xs leading-6 text-slate-700"><b>教材上の簡略化：</b>具体的な署名方式、Hash Function、鍵の保護、Certificateの信頼確認や失効確認は省いています。ここでは、Hash → 秘密鍵による署名生成 → 公開鍵による検証という役割の流れだけを扱います。</p>
+      <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-950"><b>署名と暗号化は別の役割：</b>デジタル署名（Digital Signature）は、主に完全性と署名鍵の保持者による作成を検証する仕組みです。文書の内容を読めないようにする暗号化そのものではありません。</p>
+      <p className="rounded-xl border border-violet-200 bg-white px-4 py-3 text-xs leading-6 text-slate-700"><b>教材上の簡略化：</b>具体的な署名方式、ハッシュ関数（Hash Function）、鍵の保護、証明書（Certificate）の信頼確認や失効確認は省いています。ここでは、ハッシュ → 秘密鍵による署名生成 → 公開鍵による検証という役割の流れだけを扱います。</p>
     </div>
   </section>
 }

@@ -41,9 +41,9 @@ export default function App() {
     const glossaryTerm = glossaryId ? GLOSSARY_TERMS.find(term => term.id === glossaryId) : null
     const learningTopic = learningTopicFromPath(path)
     const [title, description] = learningTopic
-      ? [`${learningTopic.shortTitle} | 学習を探す | Infrastructure Simulator`, learningTopic.summary]
+      ? [`${learningTopic.shortTitle} | 学びを深める | ITインフラ・シミュレーター`, learningTopic.summary]
       : glossaryTerm
-      ? [`${glossaryTerm.term} | 用語集 | Infrastructure Simulator`, glossaryTerm.summary]
+      ? [`${glossaryTerm.term} | 用語集 | ITインフラ・シミュレーター`, glossaryTerm.summary]
       : PAGE_META[path as StaticSitePath] ?? PAGE_META['/404']
     document.title = title
     let descriptionElement = document.querySelector<HTMLMetaElement>('meta[name="description"]')

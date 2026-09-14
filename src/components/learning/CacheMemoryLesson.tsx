@@ -30,39 +30,39 @@ type CacheScenario = {
 const CACHE_SCENARIOS: CacheScenario[] = [
   {
     id: 'hit',
-    label: 'Cache Hit の例',
-    description: 'CPUが必要とする番地を、すでにCacheが持っている場合です。',
+    label: 'キャッシュヒット（Cache Hit）の例',
+    description: 'CPUが必要とする番地を、すでにキャッシュ（Cache）が持っている場合です。',
     steps: [
       {
-        shortTitle: 'Read request',
+        shortTitle: '読み取り要求',
         title: 'CPUが番地 0x1040 の値を読みたい',
-        body: 'CPUは命令を実行するために、Memory上の番地 0x1040 にある値を読みます。まず近くにあるCacheへ要求を出します。',
-        detail: 'CacheはCPUと主記憶の間に置かれる、小さく高速な記憶領域です。すべてのデータを入れるのではなく、最近または近くで使われそうなデータの一部を保持します。',
-        signal: 'CPU → Cache: read 0x1040',
+        body: 'CPUは命令を実行するために、メモリ上の番地 0x1040 にある値を読みます。まず近くにあるキャッシュ（Cache）へ要求を出します。',
+        detail: 'キャッシュ（Cache）はCPUと主記憶の間に置かれる、小さく高速な記憶領域です。すべてのデータを入れるのではなく、最近または近くで使われそうなデータの一部を保持します。',
+        signal: 'CPU → キャッシュ: 読み取り 0x1040',
         activeParts: ['cpu', 'cache'],
         cacheStatus: '番地を照合中',
         cacheLine: 'Line 12  |  tag=0x10  |  [0x1040…0x107F]',
         memoryStatus: '待機中',
       },
       {
-        shortTitle: 'Tag lookup',
-        title: 'Cacheが、目的のデータを持つか照合する',
-        body: 'Cacheは、要求された番地に対応するCache LineのTagなどを照合します。この例では、番地 0x1040 を含むLineがすでにCacheにあります。',
-        detail: '実際のCacheは、直接マップ、セット連想、完全連想などの構成を持つことがあります。ここでは「番地に対応するLineを見つける」という役割だけを示します。',
-        signal: 'Cache: tag match → Hit',
+        shortTitle: 'タグの照合',
+        title: 'キャッシュが、目的のデータを持つか照合する',
+        body: 'キャッシュは、要求された番地に対応するキャッシュライン（Cache Line）のタグ（Tag）などを照合します。この例では、番地 0x1040 を含むラインがすでにキャッシュにあります。',
+        detail: '実際のキャッシュは、直接マップ、セット連想、完全連想などの構成を持つことがあります。ここでは「番地に対応するラインを見つける」という役割だけを示します。',
+        signal: 'キャッシュ: タグ一致 → ヒット',
         activeParts: ['cache'],
-        cacheStatus: 'Hit: Line 12 が一致',
+        cacheStatus: 'ヒット: ライン 12 が一致',
         cacheLine: 'Line 12  |  tag=0x10  |  0x1040 の値を含む',
         memoryStatus: '主記憶へは読みに行かない',
       },
       {
-        shortTitle: 'Return data',
-        title: 'Cacheが値をCPUへ返し、主記憶への待ちを避ける',
-        body: '必要な値がCache内にあるため、主記憶まで読みに行かずにCPUへ返せます。これがCache Hitです。',
-        detail: 'HitでもCacheの速度は一定ではなく、階層や設計により遅延が異なります。それでも一般に、主記憶へアクセスするより短い待ち時間で済むことが多い、というのがCacheを置く理由です。',
-        signal: 'Cache → CPU: value 42',
+        shortTitle: '値を返す',
+        title: 'キャッシュが値をCPUへ返し、主記憶への待ちを避ける',
+        body: '必要な値がキャッシュ内にあるため、主記憶まで読みに行かずにCPUへ返せます。これがキャッシュヒットです。',
+        detail: 'ヒット時でもキャッシュの速度は一定ではなく、階層や設計により遅延が異なります。それでも一般に、主記憶へアクセスするより短い待ち時間で済むことが多い、というのがキャッシュを置く理由です。',
+        signal: 'キャッシュ → CPU: 値 42',
         activeParts: ['cpu', 'cache'],
-        cacheStatus: 'Hit: value 42 を返す',
+        cacheStatus: 'ヒット: 値 42 を返す',
         cacheLine: 'Line 12  |  0x1040 → 42',
         memoryStatus: '待機中',
       },
@@ -70,50 +70,50 @@ const CACHE_SCENARIOS: CacheScenario[] = [
   },
   {
     id: 'miss',
-    label: 'Cache Miss の例',
-    description: 'CPUが必要とする番地がCacheになく、主記憶からLineを取り込む場合です。',
+    label: 'キャッシュミス（Cache Miss）の例',
+    description: 'CPUが必要とする番地がキャッシュになく、主記憶からラインを取り込む場合です。',
     steps: [
       {
-        shortTitle: 'Read request',
+        shortTitle: '読み取り要求',
         title: 'CPUが番地 0x2088 の値を読みたい',
-        body: 'CPUは番地 0x2088 の値を必要としています。最初にCacheへ要求しますが、この番地を含むLineはまだCacheにありません。',
-        detail: 'Cache Missは異常ではなく、Cache容量より多くのデータを使うときや、初めて読むデータなどで自然に起きます。',
-        signal: 'CPU → Cache: read 0x2088',
+        body: 'CPUは番地 0x2088 の値を必要としています。最初にキャッシュへ要求しますが、この番地を含むラインはまだキャッシュにありません。',
+        detail: 'キャッシュミスは異常ではなく、キャッシュ容量より多くのデータを使うときや、初めて読むデータなどで自然に起きます。',
+        signal: 'CPU → キャッシュ: 読み取り 0x2088',
         activeParts: ['cpu', 'cache'],
         cacheStatus: '番地を照合中',
         cacheLine: 'Line 12  |  tag=0x10  |  [0x1040…0x107F]',
         memoryStatus: '待機中',
       },
       {
-        shortTitle: 'Miss detected',
-        title: 'Cacheに一致するLineがなく、Missになる',
-        body: 'Cacheは番地 0x2088 に対応する内容を見つけられません。そこで、主記憶から必要なデータを含むCache Lineを取得する処理へ進みます。',
-        detail: 'どのLineを入れ替えるかはCacheの構成や置換方針によって決まります。この例では、空きまたは置換先がすぐ選べるものとして扱います。',
-        signal: 'Cache: tag mismatch → Miss',
+        shortTitle: 'ミスを検出する',
+        title: 'キャッシュに一致するラインがなく、ミスになる',
+        body: 'キャッシュは番地 0x2088 に対応する内容を見つけられません。そこで、主記憶から必要なデータを含むキャッシュラインを取得する処理へ進みます。',
+        detail: 'どのラインを入れ替えるかはキャッシュの構成や置換方針によって決まります。この例では、空きまたは置換先がすぐ選べるものとして扱います。',
+        signal: 'キャッシュ: タグ不一致 → ミス',
         activeParts: ['cache'],
-        cacheStatus: 'Miss: 主記憶へ要求',
+        cacheStatus: 'ミス: 主記憶へ要求',
         cacheLine: 'Line 12  |  置換候補（教育用の例）',
-        memoryStatus: 'read [0x2080…0x20BF] を受け取る',
+        memoryStatus: '[0x2080…0x20BF] の読み取り要求を受け取る',
       },
       {
-        shortTitle: 'Line fill',
-        title: '主記憶から、必要な値を含むLineを読む',
-        body: '主記憶は、要求された1つの値だけでなく、近くの番地を含むまとまりをCache Lineとして返す代表例です。この例では 0x2080 から 0x20BF の範囲を読みます。',
-        detail: '近くの番地も続けて使われやすいという局所性を利用するためです。Lineの大きさや、どこまで一度に取り込むかはCPUの実装で異なります。',
-        signal: 'Main Memory → Cache: line [0x2080…0x20BF]',
+        shortTitle: 'ラインを取り込む',
+        title: '主記憶から、必要な値を含むラインを読む',
+        body: '主記憶は、要求された1つの値だけでなく、近くの番地を含むまとまりをキャッシュラインとして返す代表例です。この例では 0x2080 から 0x20BF の範囲を読みます。',
+        detail: '近くの番地も続けて使われやすいという局所性を利用するためです。ラインの大きさや、どこまで一度に取り込むかはCPUの実装で異なります。',
+        signal: '主記憶 → キャッシュ: ライン [0x2080…0x20BF]',
         activeParts: ['cache', 'memory'],
-        cacheStatus: 'Line fill 中',
+        cacheStatus: 'ラインの取り込み中',
         cacheLine: 'Line 12  |  [0x2080…0x20BF] を受信中',
-        memoryStatus: '主記憶からCacheへ転送中',
+        memoryStatus: '主記憶からキャッシュへ転送中',
       },
       {
-        shortTitle: 'Return data',
-        title: 'LineをCacheへ置き、目的の値をCPUへ返す',
-        body: 'Cacheは受け取ったLineを保持し、その中の番地 0x2088 の値をCPUへ返します。次に近い番地を読むときは、Cache Hitになる可能性があります。',
-        detail: '読み込みだけを扱うため、この教材では書き込み時のWrite Through・Write Backなどを省いています。Cacheは高速化の仕組みであり、正しい結果を保つためにはMemoryとの整合も必要です。',
-        signal: 'Cache → CPU: value 99',
+        shortTitle: '値を返す',
+        title: 'ラインをキャッシュへ置き、目的の値をCPUへ返す',
+        body: 'キャッシュは受け取ったラインを保持し、その中の番地 0x2088 の値をCPUへ返します。次に近い番地を読むときは、キャッシュヒットになる可能性があります。',
+        detail: '読み込みだけを扱うため、この教材では書き込み時のライトスルー（Write Through）・ライトバック（Write Back）などを省いています。キャッシュは高速化の仕組みであり、正しい結果を保つためにはメモリとの整合も必要です。',
+        signal: 'キャッシュ → CPU: 値 99',
         activeParts: ['cpu', 'cache'],
-        cacheStatus: 'Line fill 完了: value 99 を返す',
+        cacheStatus: 'ラインの取り込み完了: 値 99 を返す',
         cacheLine: 'Line 12  |  0x2088 → 99',
         memoryStatus: '待機中',
       },
@@ -172,17 +172,17 @@ export function CacheMemoryLesson({ onNavigate }: CacheMemoryLessonProps) {
 
   const reset = () => setStep(0)
 
-  return <section aria-label="CPU CacheとMain Memoryのステップ図解" className="rounded-3xl border border-cyan-200 bg-cyan-50/45 p-5 sm:p-7">
+  return <section aria-label="CPUキャッシュと主記憶のステップ図解" className="rounded-3xl border border-cyan-200 bg-cyan-50/45 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="eyebrow">INTERACTIVE MEMORY</p>
-        <h2 className="mt-2 text-xl font-bold text-slate-900">CPUが値を読むとき、Cacheは何を短くするのか</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="CPUはMain Memoryのすべてを同じ速さで読めるわけではありません。近くのCacheに必要な値がある場合と、Main Memoryまで読みに行く場合を、1つのread要求で比べます。" onNavigate={onNavigate} /></p>
+        <p className="eyebrow">メモリを操作して学ぶ</p>
+        <h2 className="mt-2 text-xl font-bold text-slate-900">CPUが値を読むとき、キャッシュは何を短くするのか</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700"><LinkedText text="CPUは主記憶（メインメモリ）のすべてを同じ速さで読めるわけではありません。近くのキャッシュに必要な値がある場合と、主記憶まで読みに行く場合を、1つの読み取り要求で比べます。" onNavigate={onNavigate} /></p>
       </div>
       <span className="rounded-full border border-cyan-200 bg-white px-3 py-1.5 text-xs font-bold text-cyan-800">{step + 1} / {scenario.steps.length}</span>
     </div>
 
-    <div className="mt-6 grid gap-3 sm:grid-cols-2" role="tablist" aria-label="Cacheの例を選ぶ">
+    <div className="mt-6 grid gap-3 sm:grid-cols-2" role="tablist" aria-label="キャッシュの例を選ぶ">
       {CACHE_SCENARIOS.map(item => <button
         key={item.id}
         id={`cache-scenario-${item.id}`}
@@ -209,11 +209,11 @@ export function CacheMemoryLesson({ onNavigate }: CacheMemoryLessonProps) {
       </div>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_auto_1.2fr_auto_1fr] lg:items-center">
-        <HardwareCard title="CPU" subtitle="命令を実行する" content={scenarioId === 'hit' ? 'read 0x1040' : 'read 0x2088'} active={active('cpu')} tone="cyan" />
+        <HardwareCard title="CPU" subtitle="命令を実行する" content={scenarioId === 'hit' ? '読み取り 0x1040' : '読み取り 0x2088'} active={active('cpu')} tone="cyan" />
         <span className={`hidden text-xl font-bold lg:block ${active('cpu') && active('cache') ? 'text-cyan-600' : 'text-slate-300'}`} aria-hidden="true">→</span>
-        <HardwareCard title="Cache" subtitle="小さく高速な記憶領域" content={`${current.cacheStatus}\n${current.cacheLine}`} active={active('cache')} tone="violet" />
+        <HardwareCard title="キャッシュ（Cache）" subtitle="小さく高速な記憶領域" content={`${current.cacheStatus}\n${current.cacheLine}`} active={active('cache')} tone="violet" />
         <span className={`hidden text-xl font-bold lg:block ${active('memory') ? 'text-amber-600' : 'text-slate-300'}`} aria-hidden="true">→</span>
-        <HardwareCard title="Main Memory" subtitle="大きな主記憶" content={current.memoryStatus} active={active('memory')} tone="amber" />
+        <HardwareCard title="主記憶（メインメモリ）" subtitle="大きな主記憶" content={current.memoryStatus} active={active('memory')} tone="amber" />
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
@@ -226,15 +226,15 @@ export function CacheMemoryLesson({ onNavigate }: CacheMemoryLessonProps) {
         <aside className="rounded-xl border border-violet-200 bg-violet-50 p-4">
           <p className="text-xs font-bold text-violet-900">この例で見るポイント</p>
           <ol className="mt-3 space-y-2 text-xs leading-6 text-slate-700">
-            <li><span className="font-bold text-violet-800">1.</span> CPUはまずCacheを確認する</li>
-            <li><span className="font-bold text-violet-800">2.</span> HitならMain Memoryへの待ちを避けられる</li>
-            <li><span className="font-bold text-violet-800">3.</span> Missなら近くのデータを含むLineを取り込む</li>
+            <li><span className="font-bold text-violet-800">1.</span> CPUはまずキャッシュを確認する</li>
+            <li><span className="font-bold text-violet-800">2.</span> ヒットなら主記憶への待ちを避けられる</li>
+            <li><span className="font-bold text-violet-800">3.</span> ミスなら近くのデータを含むラインを取り込む</li>
           </ol>
         </aside>
       </div>
     </div>
 
-    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-950"><b>教材上の簡略化：</b>ここではreadだけを扱い、1つのCacheとMain Memoryの代表的な経路を示しています。実際のCPUにはL1/L2/L3など複数階層のCache、セット連想、置換方針、prefetch、書き込み方針、複数コア間のCache Coherenceなどがあり、Cache Lineの大きさも実装ごとに異なります。</p>
+    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-950"><b>教材上の簡略化：</b>ここでは読み取りだけを扱い、1つのキャッシュと主記憶の代表的な経路を示しています。実際のCPUにはL1/L2/L3など複数階層のキャッシュ、セット連想、置換方針、プリフェッチ（prefetch）、書き込み方針、複数コア間のキャッシュコヒーレンス（Cache Coherence）などがあり、キャッシュラインの大きさも実装ごとに異なります。</p>
   </section>
 }
 

@@ -16,9 +16,9 @@ type PacketPlan = {
 }
 
 const DNS_NODES: NetworkNode[] = [
-  { id: 'pc', name: 'PC', type: 'pc', position: [-5.1, -0.05, 0], detail: 'Browser · docs.example.test', description: 'DNS Queryを始めるPCです。' },
-  { id: 'home-router', name: 'Home Router', type: 'router', position: [-1.45, -0.05, 0], detail: 'Default Gateway', description: 'DNSリゾルバへ向けて転送する代表例です。' },
-  { id: 'dns-server', name: 'DNS Resolver', type: 'dns', position: [2.8, -0.05, 0], detail: '設定済みの再帰リゾルバ', description: '名前解決を行う教育用の代表モデルです。' },
+  { id: 'pc', name: 'PC', type: 'pc', position: [-5.1, -0.05, 0], detail: 'ブラウザ · docs.example.test', description: 'DNS問い合わせ（DNS Query）を始めるPCです。' },
+  { id: 'home-router', name: '家庭用ルーター', type: 'router', position: [-1.45, -0.05, 0], detail: 'デフォルトゲートウェイ', description: 'DNSリゾルバーへ向けて転送する代表例です。' },
+  { id: 'dns-server', name: 'DNSリゾルバー', type: 'dns', position: [2.8, -0.05, 0], detail: '設定済みの再帰リゾルバー', description: '名前解決を行う教育用の代表モデルです。' },
 ]
 
 const PC_POSITION = DNS_NODES[0].position
@@ -27,10 +27,10 @@ const RESOLVER_POSITION = DNS_NODES[2].position
 const UPSTREAM_POSITION: Position = [6.1, -0.05, 1.9]
 
 function packetPlanFor(step: DnsSceneStep, cacheHit: boolean): PacketPlan | null {
-  if (step === 1) return { label: 'DNS Query', detail: 'QNAME: docs.example.test', color: '#0ea5e9', path: [PC_POSITION, ROUTER_POSITION] }
-  if (step === 2) return { label: 'DNS Query', detail: 'QTYPE: A · Resolverへ到着', color: '#0ea5e9', path: [ROUTER_POSITION, RESOLVER_POSITION] }
-  if (step === 3 && !cacheHit) return { label: 'Upstream Query', detail: '必要な情報を上流へ問い合わせ', color: '#8b5cf6', path: [RESOLVER_POSITION, UPSTREAM_POSITION, RESOLVER_POSITION] }
-  if (step === 4) return { label: 'DNS Answer', detail: 'docs.example.test → 203.0.113.10', color: '#10b981', path: [RESOLVER_POSITION, ROUTER_POSITION, PC_POSITION] }
+  if (step === 1) return { label: 'DNS問い合わせ', detail: 'QNAME: docs.example.test', color: '#0ea5e9', path: [PC_POSITION, ROUTER_POSITION] }
+  if (step === 2) return { label: 'DNS問い合わせ', detail: 'QTYPE: A · リゾルバーへ到着', color: '#0ea5e9', path: [ROUTER_POSITION, RESOLVER_POSITION] }
+  if (step === 3 && !cacheHit) return { label: '上流への問い合わせ', detail: '必要な情報を上流へ問い合わせ', color: '#8b5cf6', path: [RESOLVER_POSITION, UPSTREAM_POSITION, RESOLVER_POSITION] }
+  if (step === 4) return { label: 'DNS応答', detail: 'docs.example.test → 203.0.113.10', color: '#10b981', path: [RESOLVER_POSITION, ROUTER_POSITION, PC_POSITION] }
   return null
 }
 
@@ -101,8 +101,8 @@ function ResolverCache({ active, cacheHit }: { active: boolean; cacheHit: boolea
       <circleGeometry args={[0.07, 16]} />
       <meshStandardMaterial color={indicatorColor} emissive={indicatorColor} emissiveIntensity={active ? 1.9 : 0.45} />
     </mesh>
-    <VisibleText position={[0, 0.08, 0.22]} fontSize={0.12} color="#0f172a" anchorX="center">Resolver Cache</VisibleText>
-    <VisibleText position={[0, -0.13, 0.22]} fontSize={0.08} color="#475569" anchorX="center">{cacheHit ? 'Answer found' : 'Cache miss（例）'}</VisibleText>
+    <VisibleText position={[0, 0.08, 0.22]} fontSize={0.12} color="#0f172a" anchorX="center">リゾルバーキャッシュ</VisibleText>
+    <VisibleText position={[0, -0.13, 0.22]} fontSize={0.08} color="#475569" anchorX="center">{cacheHit ? '回答あり' : 'キャッシュミス（例）'}</VisibleText>
   </group>
 }
 
@@ -117,7 +117,7 @@ function UpstreamDns({ active }: { active: boolean }) {
       <mesh position={[0, y, 0.33]}><boxGeometry args={[0.82, 0.15, 0.02]} /><meshStandardMaterial color="#475569" /></mesh>
       <mesh position={[-0.31, y, 0.35]}><circleGeometry args={[0.026, 12]} /><meshStandardMaterial color={active && index === 1 ? indicator : '#67e8f9'} emissive={active && index === 1 ? indicator : '#0891b2'} emissiveIntensity={active && index === 1 ? 2.2 : 0.6} /></mesh>
     </group>)}
-    <VisibleText position={[0, -0.85, 0]} fontSize={0.15} color="#0f172a" anchorX="center">Upstream DNS</VisibleText>
+    <VisibleText position={[0, -0.85, 0]} fontSize={0.15} color="#0f172a" anchorX="center">上流DNS</VisibleText>
     <VisibleText position={[0, -1.07, 0]} fontSize={0.09} color="#475569" anchorX="center">論理的な問い合わせ先</VisibleText>
   </group>
 }
@@ -167,7 +167,7 @@ function DnsScene({ step, replayKey, cacheHit }: { step: DnsSceneStep; replayKey
       <planeGeometry args={[15.3, 7.3]} />
       <meshBasicMaterial color="#e0f2fe" transparent opacity={0.34} depthWrite={false} />
     </mesh>
-    <VisibleText position={[0.5, -1.36, -3.35]} fontSize={0.2} color="#0f4c6f" anchorX="center">DNS RESOLUTION · 教育用の代表例</VisibleText>
+    <VisibleText position={[0.5, -1.36, -3.35]} fontSize={0.2} color="#0f4c6f" anchorX="center">DNS名前解決 · 教育用の代表例</VisibleText>
     <VisibleText position={[0.5, -1.6, -3.35]} fontSize={0.11} color="#475569" anchorX="center">PCは設定済みの再帰リゾルバへ問い合わせます</VisibleText>
 
     <Line points={[PC_POSITION, ROUTER_POSITION]} color={step === 1 || step === 4 ? '#0ea5e9' : '#94a3b8'} lineWidth={step === 1 || step === 4 ? 2.1 : 1.1} />

@@ -46,7 +46,7 @@ function Cpu({ item, selected, onSelect }: { item: ExplorationItem; selected: bo
 function Memory({ item, selected, onSelect }: { item: ExplorationItem; selected: boolean; onSelect: (item: ExplorationItem) => void }) {
   return <group position={[-3.75, -.48, -.65]} onClick={select(item, onSelect)} onPointerOver={() => hoverCursor(true)} onPointerOut={() => hoverCursor(false)}>
     {[0, .46].map(offset => <group key={offset} position={[offset, 0, 0]} rotation={[0, .08, 0]}><mesh scale={selected ? 1.06 : 1}><boxGeometry args={[.28, .18, 2.35]} /><meshStandardMaterial color="#4f46e5" emissive="#6366f1" emissiveIntensity={selected ? .55 : .16} metalness={.45} /></mesh>{[-.7, -.25, .2, .65].map(z => <mesh key={z} position={[0, .13, z]}><boxGeometry args={[.3, .04, .22]} /><meshStandardMaterial color="#a5b4fc" /></mesh>)}</group>)}
-    <Text position={[.2, .43, 0]} fontSize={.21} color="#f8fafc" outlineWidth={.011} outlineColor="#020617" anchorX="center">MEMORY</Text>
+    <Text position={[.2, .43, 0]} fontSize={.21} color="#f8fafc" outlineWidth={.011} outlineColor="#020617" anchorX="center">メモリ</Text>
   </group>
 }
 
@@ -103,8 +103,8 @@ export function PcInteriorScene({ world, selectedId, onSelect }: { world: Explor
     <Storage item={items.storage} selected={selectedId === 'storage'} onSelect={onSelect} />
     <Nic item={items.nic} selected={selectedId === 'nic'} onSelect={onSelect} />
     <DataPulse />
-    <Text position={[-4.7, 2.95, -.65]} fontSize={.18} color="#0f172a" outlineWidth={.006} outlineColor="#f8fafc">SOFTWARE / 論理層</Text>
-    <Text position={[-5.05, -1.4, 2.05]} fontSize={.18} color="#0f172a" outlineWidth={.006} outlineColor="#f8fafc">MOTHERBOARD / ハードウェア</Text>
+    <Text position={[-4.7, 2.95, -.65]} fontSize={.18} color="#0f172a" outlineWidth={.006} outlineColor="#f8fafc">ソフトウェア / 論理層</Text>
+    <Text position={[-5.05, -1.4, 2.05]} fontSize={.18} color="#0f172a" outlineWidth={.006} outlineColor="#f8fafc">マザーボード / ハードウェア</Text>
     <Text position={[5.25, -.22, -1.28]} fontSize={.17} color="#0f172a" outlineWidth={.006} outlineColor="#f8fafc">LANへ</Text>
     <OrbitControls enablePan enableDamping minDistance={7} maxDistance={52} maxPolarAngle={Math.PI / 2.05} target={[0, .2, 0]} zoomToCursor />
   </Canvas>

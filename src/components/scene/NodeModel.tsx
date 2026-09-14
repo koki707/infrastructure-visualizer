@@ -67,7 +67,7 @@ function CoreRouter({ activity }: ModelProps) {
     <mesh position={[0, -.04, 0]} castShadow><boxGeometry args={[1.72, .76, .92]} /><meshStandardMaterial color="#172033" metalness={.78} roughness={.26} /></mesh>
     <mesh position={[0, -.04, .47]}><boxGeometry args={[1.6, .63, .025]} /><meshStandardMaterial color="#020617" metalness={.8} roughness={.22} /></mesh>
     <mesh position={[-.62, .19, .5]}><boxGeometry args={[.2, .13, .018]} /><meshStandardMaterial color="#0f766e" emissive="#2dd4bf" emissiveIntensity={.45} /></mesh>
-    <Text position={[-.62, .19, .58]} fontSize={.065} color="#ecfeff" anchorX="center">EDGE</Text>
+    <Text position={[-.62, .19, .58]} fontSize={.065} color="#ecfeff" anchorX="center">エッジ</Text>
     {ports.map(({ x, y }, index) => <group key={`${x}-${y}`} position={[x, y, .5]}>
       <mesh><boxGeometry args={[.13, .11, .02]} /><meshStandardMaterial color="#0f172a" metalness={.75} /></mesh>
       <mesh position={[0, .065, .012]}><circleGeometry args={[.013, 10]} /><meshStandardMaterial color={activity && index === litPort ? indicator : index % 3 === 0 ? '#a855f7' : '#34d399'} emissive={activity && index === litPort ? indicator : index % 3 === 0 ? '#9333ea' : '#059669'} emissiveIntensity={activity && index === litPort ? 5 : .75} /></mesh>
@@ -83,7 +83,7 @@ function Switch({ activity }: ModelProps) {
     <mesh position={[0, -.1, 0]} castShadow><boxGeometry args={[1.48, .48, .72]} /><meshStandardMaterial color="#1f2937" metalness={.75} roughness={.28} /></mesh>
     <mesh position={[0, .16, .03]}><boxGeometry args={[1.35, .05, .6]} /><meshStandardMaterial color="#334155" metalness={.7} /></mesh>
     {[-.48, -.16, .16, .48].map((x, index) => <group key={x}><mesh position={[x, -.12, .37]}><boxGeometry args={[.18, .13, .025]} /><meshStandardMaterial color="#020617" /></mesh><mesh position={[x, .08, .375]}><circleGeometry args={[.025, 12]} /><meshStandardMaterial color={activity && index === litPort ? indicator : index === 0 ? '#fbbf24' : '#34d399'} emissive={activity && index === litPort ? indicator : index === 0 ? '#d97706' : '#059669'} emissiveIntensity={activity && index === litPort ? 5.2 : .8} /></mesh></group>)}
-    <Text position={[0, .51, 0]} fontSize={.14} color="#67e8f9" anchorX="center">SWITCH</Text>
+    <Text position={[0, .51, 0]} fontSize={.14} color="#67e8f9" anchorX="center">スイッチ</Text>
   </group>
 }
 
